@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../widgets/input_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -124,7 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 15),
               Align(
                 alignment: Alignment.centerRight,
-                child: _loginButton(),
+                //child: _loginButton(),
+                child: _loginButton3d(),
               ),
               _registerText(),
             ],
@@ -163,6 +165,29 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: const Text('Login'),
+    );
+  }
+
+  Widget _loginButton3d() {
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return Button3D(
+      width: 150,
+      onPressed: _login,
+      style: StyleOf3dButton(
+        topColor: isDarkTheme
+            ? const Color.fromARGB(255, 134, 160, 234)
+            : const Color.fromARGB(255, 255, 243, 110),
+        backColor: isDarkTheme
+            ? const Color.fromARGB(255, 81, 86, 142)
+            : const Color.fromARGB(255, 255, 221, 43),
+      ),
+      child: Text('Bejelentkezés',
+          style: TextStyle(
+              color: isDarkTheme
+                  ? const Color.fromARGB(255, 67, 73, 120)
+                  : const Color.fromARGB(255, 220, 147, 70),
+              fontSize: 18)),
     );
   }
 
