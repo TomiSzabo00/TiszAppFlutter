@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "703903823299",
+    "firebase_url": "https://tiszapp-175fb-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tiszapp-175fb",
+    "storage_bucket": "tiszapp-175fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703903823299:android:05e79ee34f4b911ed87976",
+        "android_client_info": {
+          "package_name": "com.example.tiszapp_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "703903823299-fj1ug6cf8d1idtm63jegf3jtrhoaih5n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcksZNpCnw7tP9ALYiYHlqVL7ejdDuF6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "703903823299-fj1ug6cf8d1idtm63jegf3jtrhoaih5n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "703903823299-6iuchdi0lb0gpvj7dgp9oegi6uthers5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "hu.tiszap.TiszApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703903823299:android:29d3ae6299c4869bd87976",
+        "android_client_info": {
+          "package_name": "hu.tiszape.tiszapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "703903823299-fj1ug6cf8d1idtm63jegf3jtrhoaih5n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcksZNpCnw7tP9ALYiYHlqVL7ejdDuF6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "703903823299-fj1ug6cf8d1idtm63jegf3jtrhoaih5n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "703903823299-6iuchdi0lb0gpvj7dgp9oegi6uthers5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "hu.tiszap.TiszApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
