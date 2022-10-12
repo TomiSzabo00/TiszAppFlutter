@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../widgets/input_field.dart';
 
@@ -100,14 +101,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("images/bg2_night.png"),
+            image: isDarkTheme
+                ? const AssetImage("images/bg2_night.png")
+                : const AssetImage("images/bg2_day.png"),
             fit: BoxFit.cover,
           ),
         ),
@@ -175,18 +180,16 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 150,
       onPressed: _login,
       style: StyleOf3dButton(
-        topColor: isDarkTheme
-            ? const Color.fromARGB(255, 134, 160, 234)
-            : const Color.fromARGB(255, 255, 243, 110),
-        backColor: isDarkTheme
-            ? const Color.fromARGB(255, 81, 86, 142)
-            : const Color.fromARGB(255, 255, 221, 43),
+        topColor:
+            isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnFaceDay,
+        backColor:
+            isDarkTheme ? CustomColor.btnSideNight : CustomColor.btnSideDay,
       ),
       child: Text('Bejelentkezés',
           style: TextStyle(
               color: isDarkTheme
-                  ? const Color.fromARGB(255, 67, 73, 120)
-                  : const Color.fromARGB(255, 220, 147, 70),
+                  ? CustomColor.btnTextNight
+                  : CustomColor.btnTextDay,
               fontSize: 18)),
     );
   }
