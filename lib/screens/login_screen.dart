@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/screens/register_screen.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../widgets/input_field.dart';
 
@@ -70,33 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showRegisterScreen() {
-    showCupertinoModalBottomSheet(
-      expand: true,
-      isDismissible: true,
-      context: context,
-      builder: (context) => Container(
-        child: Column(
-          children: [
-            const Text("Regisztráció"),
-            const SizedBox(height: 20),
-            CupertinoTextField(
-              placeholder: "Felhasználónév",
-              controller: _emailController,
-            ),
-            const SizedBox(height: 20),
-            CupertinoTextField(
-              placeholder: "Jelszó",
-              controller: _passwordController,
-            ),
-            const SizedBox(height: 20),
-            CupertinoButton(
-              child: const Text("Regisztráció"),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ),
-    );
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) {
+          return const RegisterScreen();
+        },
+        fullscreenDialog: true));
   }
 
   @override
@@ -130,7 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 15),
               Align(
                 alignment: Alignment.centerRight,
-                //child: _loginButton(),
                 child: _loginButton3d(),
               ),
               _registerText(),
@@ -155,21 +132,6 @@ class _LoginScreenState extends State<LoginScreen> {
       placeholder: "Jelszó",
       icon: const Icon(CupertinoIcons.lock_fill),
       obscureText: true,
-    );
-  }
-
-  Widget _loginButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text('Logging in...')),
-          // );
-          print("logging in");
-          _login();
-        }
-      },
-      child: const Text('Login'),
     );
   }
 

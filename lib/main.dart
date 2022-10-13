@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'firebase_options.dart';
 import 'widget_tree.dart';
 
@@ -20,10 +21,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
+        primarySwatch: Colors.green,
+        iconTheme: const IconThemeData(color: CustomColor.btnTextDay),
       ),
       darkTheme: ThemeData(
-          brightness: Brightness.dark, primarySwatch: Colors.deepPurple),
+        brightness: Brightness.dark,
+        primarySwatch: CustomColor.white,
+        iconTheme: const IconThemeData(color: CustomColor.btnTextNight),
+      ),
       home: const WidgetTree(),
     );
   }
