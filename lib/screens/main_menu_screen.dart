@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tiszapp_flutter/widgets/menu_icon.dart';
 
 class MainMenu extends StatelessWidget {
   MainMenu({super.key});
@@ -36,6 +37,7 @@ class MainMenu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _userId(),
+            MenuIcon(),
             _signOutButton(),
           ],
         ),
