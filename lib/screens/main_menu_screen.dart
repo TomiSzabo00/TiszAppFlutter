@@ -31,17 +31,17 @@ class MainMenu extends StatelessWidget {
         children: [
           MenuIcon(
             icon: Icons.calendar_today,
-            text: "Napirend",
+            text: "Napirend 1",
             onPressed: () {},
           ),
           MenuIcon(
             icon: Icons.calendar_today,
-            text: "Napirend",
+            text: "Napirend 2",
             onPressed: () {},
           ),
           MenuIcon(
             icon: Icons.calendar_today,
-            text: "Napirend",
+            text: "Napirend 3",
             onPressed: () {},
           ),
           MenuIcon(
