@@ -25,22 +25,41 @@ class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Main Menu'),
-      ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _userId(),
-            MenuIcon(),
-            _signOutButton(),
-          ],
-        ),
+      body: GridView.count(
+        padding: const EdgeInsets.only(top: 60),
+        crossAxisCount: 2,
+        children: [
+          MenuIcon(
+            icon: Icons.calendar_today,
+            text: "Napirend",
+            onPressed: () {},
+          ),
+          MenuIcon(
+            icon: Icons.calendar_today,
+            text: "Napirend",
+            onPressed: () {},
+          ),
+          MenuIcon(
+            icon: Icons.calendar_today,
+            text: "Napirend",
+            onPressed: () {},
+          ),
+          MenuIcon(
+            icon: Icons.calendar_today,
+            text: "Napirend",
+            onPressed: () {},
+          ),
+          MenuIcon(
+            icon: Icons.calendar_today,
+            text: "Napirend",
+            onPressed: () {},
+          ),
+          MenuIcon(
+            icon: Icons.calendar_today,
+            text: "Napirend",
+            onPressed: () {},
+          ),
+        ],
       ),
     );
   }

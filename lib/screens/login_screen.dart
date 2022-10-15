@@ -82,36 +82,38 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDarkTheme =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: isDarkTheme
-                ? const AssetImage("images/bg2_night.png")
-                : const AssetImage("images/bg2_day.png"),
-            fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: isDarkTheme
+                  ? const AssetImage("images/bg2_night.png")
+                  : const AssetImage("images/bg2_day.png"),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset("images/logo2_outline.png", width: 200, height: 200),
-              const SizedBox(height: 50),
-              _emailField(),
-              const SizedBox(height: 15),
-              _passwordField(),
-              const SizedBox(height: 15),
-              Align(
-                alignment: Alignment.centerRight,
-                child: _loginButton3d(),
-              ),
-              _registerText(),
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset("images/logo2_outline.png",
+                    width: 200, height: 200),
+                const SizedBox(height: 50),
+                _emailField(),
+                const SizedBox(height: 15),
+                _passwordField(),
+                const SizedBox(height: 15),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: _loginButton3d(),
+                ),
+                _registerText(),
+              ],
+            ),
           ),
         ),
       ),
