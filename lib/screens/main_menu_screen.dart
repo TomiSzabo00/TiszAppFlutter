@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tiszapp_flutter/services/api_service.dart';
 import 'package:tiszapp_flutter/widgets/menu_icon.dart';
 import 'package:collection/collection.dart';
 
@@ -31,9 +32,9 @@ class MainMenu extends StatelessWidget {
     Icons.music_note,
     Icons.logout
   ];
-  final buttonVisible = [true, true, true, true, true, true, true, true, true];
+  //final buttonVisible = [true, true, true, true, true, true, true, true, true];
 
-  List<String> _getButtonTextsForUserRole() {
+  List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
     List<String> texts = [];
     for (var i = 0; i < buttonTexts.length; i++) {
       if (buttonVisible[i]) {
@@ -43,7 +44,7 @@ class MainMenu extends StatelessWidget {
     return texts;
   }
 
-  List<IconData> _getButtonIconsForUserRole() {
+  List<IconData> _getButtonIconsForUserRole(List<bool> buttonVisible) {
     List<IconData> icons = [];
     for (var i = 0; i < buttonIcons.length; i++) {
       if (buttonVisible[i]) {
@@ -53,14 +54,14 @@ class MainMenu extends StatelessWidget {
     return icons;
   }
 
-  List<Function> _getButtonActionsForUserRole() {
+  List<Function> _getButtonActionsForUserRole(List<bool> buttonVisible) {
     List<Function> actions = [];
-    _getButtonTextsForUserRole().forEach((element) {
+    _getButtonTextsForUserRole(buttonVisible).forEach((element) {
       if (element == "Kijelentkezés") {
         actions.add(signOut);
       } else {}
       actions.add(() {
-        Navigator.pushNamed(context, "/$element");
+        _navigateToScreen(element);
       });
     });
     return actions;
@@ -81,21 +82,35 @@ class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GridView.count(
-        padding: const EdgeInsets.only(top: 60),
-        crossAxisCount: 2,
-        children: IterableZip([
-          _getButtonTextsForUserRole(),
-          _getButtonIconsForUserRole(),
-          _getButtonActionsForUserRole(),
-        ]).map((btnData) {
-          return MenuIcon(
-            text: btnData[0] as String,
-            icon: btnData[1] as IconData,
-            onPressed: btnData[2] as Function(),
+        body: FutureBuilder(
+      future: ApiService.getButtonVisibility(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Hiba történt: ${snapshot.error}"),
           );
-        }).toList(),
-      ),
-    );
+        } else if (snapshot.hasData) {
+          return GridView.count(
+            padding: const EdgeInsets.only(top: 60),
+            crossAxisCount: 2,
+            children: IterableZip([
+              _getButtonTextsForUserRole(snapshot.data!),
+              _getButtonIconsForUserRole(snapshot.data!),
+              _getButtonActionsForUserRole(snapshot.data!),
+            ]).map((btnData) {
+              return MenuIcon(
+                text: btnData[0] as String,
+                icon: btnData[1] as IconData,
+                onPressed: btnData[2] as Function(),
+              );
+            }).toList(),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    ));
   }
 }
