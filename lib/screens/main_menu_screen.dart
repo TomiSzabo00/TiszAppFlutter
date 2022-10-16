@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/widgets/menu_icon.dart';
+import 'package:collection/collection.dart';
 
 class MainMenu extends StatelessWidget {
   MainMenu({super.key});
 
   final User? user = FirebaseAuth.instance.currentUser;
+
+  final buttonTexts = ["Napirend", "Hírek", "Értesítések", "Beállítások"];
+  final buttonIcons = [
+    Icons.calendar_today,
+    Icons.new_releases,
+    Icons.notifications,
+    Icons.settings
+  ];
+  final buttonActions = [
+    () {
+      print("txt");
+    },
+    () {
+      print("txt");
+    },
+    () {
+      print("txt");
+    },
+    () {
+      print("txt");
+    },
+  ];
+  final buttonVisible = [true, true, false, true];
+
+  List<String> _getButtonTextsForUserRole() {
+    List<String> texts = [];
+    for (var i = 0; i < buttonTexts.length; i++) {
+      if (buttonVisible[i]) {
+        texts.add(buttonTexts[i]);
+      }
+    }
+    return texts;
+  }
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -28,38 +62,15 @@ class MainMenu extends StatelessWidget {
       body: GridView.count(
         padding: const EdgeInsets.only(top: 60),
         crossAxisCount: 2,
-        children: [
-          MenuIcon(
-            icon: Icons.calendar_today,
-            text: "Napirend 1",
-            onPressed: () {},
-          ),
-          MenuIcon(
-            icon: Icons.calendar_today,
-            text: "Napirend 2",
-            onPressed: () {},
-          ),
-          MenuIcon(
-            icon: Icons.calendar_today,
-            text: "Napirend 3",
-            onPressed: () {},
-          ),
-          MenuIcon(
-            icon: Icons.calendar_today,
-            text: "Napirend",
-            onPressed: () {},
-          ),
-          MenuIcon(
-            icon: Icons.calendar_today,
-            text: "Napirend",
-            onPressed: () {},
-          ),
-          MenuIcon(
-            icon: Icons.calendar_today,
-            text: "Napirend",
-            onPressed: () {},
-          ),
-        ],
+        children: IterableZip(
+                [_getButtonTextsForUserRole(), buttonIcons, buttonActions])
+            .map((btnData) {
+          return MenuIcon(
+            text: btnData[0] as String,
+            icon: btnData[1] as IconData,
+            onPressed: btnData[2] as Function(),
+          );
+        }).toList(),
       ),
     );
   }
