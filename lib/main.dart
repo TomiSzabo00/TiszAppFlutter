@@ -4,6 +4,13 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'firebase_options.dart';
 import 'widget_tree.dart';
 import 'package:tiszapp_flutter/screens/schedule_screen.dart';
+import 'package:tiszapp_flutter/screens/scores_screen.dart';
+import 'package:tiszapp_flutter/screens/songs_screen.dart';
+import 'package:tiszapp_flutter/screens/upload_score_screen.dart';
+import 'package:tiszapp_flutter/screens/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/screens/upload_texts_screen.dart';
+import 'package:tiszapp_flutter/screens/pictures_screen.dart';
+import 'package:tiszapp_flutter/screens/texts_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,13 +39,13 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/Napirend': (context) => const ScheduleScreen(),
-        '/Pontállás': (context) => const ScheduleScreen(),
-        '/Pontok feltöltése': (context) => const ScheduleScreen(),
-        '/Képek': (context) => const ScheduleScreen(),
-        '/Képek feltöltése': (context) => const ScheduleScreen(),
-        '/Szövegek': (context) => const ScheduleScreen(),
-        '/Szövegek feltöltése': (context) => const ScheduleScreen(),
-        '/Daloskönyv': (context) => const ScheduleScreen(),
+        '/Pontállás': (context) => const ScoresScreen(),
+        '/Pontok feltöltése': (context) => const UploadScoreScreen(),
+        '/Képek': (context) => const PicturesScreen(),
+        '/Képek feltöltése': (context) => const UploadPicturesScreen(),
+        '/Szövegek': (context) => const TextsScreen(),
+        '/Szövegek feltöltése': (context) => const UploadTextsScreen(),
+        '/Daloskönyv': (context) => const SongsScreen(),
       },
       home: const WidgetTree(),
     );
