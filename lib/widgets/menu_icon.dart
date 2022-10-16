@@ -35,14 +35,20 @@ class MenuIcon extends StatelessWidget {
             size: 50,
           ),
           const SizedBox(height: 10),
-          Text(text,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              text,
               style: TextStyle(
                 color: isDarkTheme
                     ? CustomColor.btnTextNight
                     : CustomColor.btnTextDay,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-              )),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          )
         ],
       ),
       onPressed: () {

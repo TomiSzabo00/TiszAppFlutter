@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'firebase_options.dart';
 import 'widget_tree.dart';
+import 'package:tiszapp_flutter/screens/schedule_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,16 @@ class MyApp extends StatelessWidget {
         primarySwatch: CustomColor.white,
         iconTheme: const IconThemeData(color: CustomColor.btnTextNight),
       ),
+      routes: {
+        '/Napirend': (context) => const ScheduleScreen(),
+        '/Pontállás': (context) => const ScheduleScreen(),
+        '/Pontok feltöltése': (context) => const ScheduleScreen(),
+        '/Képek': (context) => const ScheduleScreen(),
+        '/Képek feltöltése': (context) => const ScheduleScreen(),
+        '/Szövegek': (context) => const ScheduleScreen(),
+        '/Szövegek feltöltése': (context) => const ScheduleScreen(),
+        '/Daloskönyv': (context) => const ScheduleScreen(),
+      },
       home: const WidgetTree(),
     );
   }

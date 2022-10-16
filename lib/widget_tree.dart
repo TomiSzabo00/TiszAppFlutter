@@ -23,7 +23,7 @@ class _WidgetTreeState extends State<WidgetTree> {
           if (user == null) {
             return const LoginScreen();
           }
-          return MainMenu();
+          return MainMenu(context: context);
         }
         return const Scaffold(
           body: Center(

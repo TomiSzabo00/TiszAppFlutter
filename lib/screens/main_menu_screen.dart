@@ -4,32 +4,34 @@ import 'package:tiszapp_flutter/widgets/menu_icon.dart';
 import 'package:collection/collection.dart';
 
 class MainMenu extends StatelessWidget {
-  MainMenu({super.key});
+  MainMenu({super.key, required this.context});
 
+  final BuildContext context;
   final User? user = FirebaseAuth.instance.currentUser;
 
-  final buttonTexts = ["Napirend", "Hírek", "Értesítések", "Beállítások"];
+  final buttonTexts = [
+    "Napirend",
+    "Pontállás",
+    "Pontok feltöltése",
+    "Képek",
+    "Képek feltöltése",
+    "Szövegek",
+    "Szövegek feltöltése",
+    "Daloskönyv",
+    "Kijelentkezés"
+  ];
   final buttonIcons = [
     Icons.calendar_today,
-    Icons.new_releases,
-    Icons.notifications,
-    Icons.settings
+    Icons.format_list_numbered,
+    Icons.add,
+    Icons.image,
+    Icons.add,
+    Icons.text_fields,
+    Icons.add,
+    Icons.music_note,
+    Icons.logout
   ];
-  final buttonActions = [
-    () {
-      print("txt");
-    },
-    () {
-      print("txt");
-    },
-    () {
-      print("txt");
-    },
-    () {
-      print("txt");
-    },
-  ];
-  final buttonVisible = [true, true, false, true];
+  final buttonVisible = [true, true, true, true, true, true, true, true, true];
 
   List<String> _getButtonTextsForUserRole() {
     List<String> texts = [];
@@ -41,6 +43,33 @@ class MainMenu extends StatelessWidget {
     return texts;
   }
 
+  List<IconData> _getButtonIconsForUserRole() {
+    List<IconData> icons = [];
+    for (var i = 0; i < buttonIcons.length; i++) {
+      if (buttonVisible[i]) {
+        icons.add(buttonIcons[i]);
+      }
+    }
+    return icons;
+  }
+
+  List<Function> _getButtonActionsForUserRole() {
+    List<Function> actions = [];
+    _getButtonTextsForUserRole().forEach((element) {
+      if (element == "Kijelentkezés") {
+        actions.add(signOut);
+      } else {}
+      actions.add(() {
+        Navigator.pushNamed(context, "/$element");
+      });
+    });
+    return actions;
+  }
+
+  void _navigateToScreen(String screenName) {
+    Navigator.pushNamed(context, '/$screenName');
+  }
+
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
   }
@@ -49,22 +78,17 @@ class MainMenu extends StatelessWidget {
     return Text(user!.email ?? "No email");
   }
 
-  Widget _signOutButton() {
-    return ElevatedButton(
-      onPressed: signOut,
-      child: const Text("Sign out"),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GridView.count(
         padding: const EdgeInsets.only(top: 60),
         crossAxisCount: 2,
-        children: IterableZip(
-                [_getButtonTextsForUserRole(), buttonIcons, buttonActions])
-            .map((btnData) {
+        children: IterableZip([
+          _getButtonTextsForUserRole(),
+          _getButtonIconsForUserRole(),
+          _getButtonActionsForUserRole(),
+        ]).map((btnData) {
           return MenuIcon(
             text: btnData[0] as String,
             icon: btnData[1] as IconData,
