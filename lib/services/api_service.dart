@@ -8,7 +8,8 @@ class ApiService {
       'https://opensheet.elk.sh/10JPtOuuQAMpGmorEHFW_yU-M2M99AAhpZn09CRcGPK4';
 
   static Future<List<bool>> getButtonVisibility() async {
-    final response = await http.Client().get(Uri.parse('$apiURL/user_menu'));
+    final response =
+        await http.Client().get(Uri.parse('$apiURL/user_menu_debug'));
 
     return compute(_parseButtonVisibility, response.body);
   }
