@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/data/schedule_data.dart';
 import 'package:tiszapp_flutter/screens/schedule_info_screen.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -23,15 +25,32 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     "Vasárnap"
   ];
   String currentTitle = "";
-  final firstDay = "Csütörtök";
+  DatabaseReference ref = FirebaseDatabase.instance.ref();
+  var firstDay = "Csütörtök";
 
   @override
   void initState() {
-    initTitleList();
-    currentTitle = titleList[0];
     _tcontroller = TabController(length: 7, vsync: this);
     _tcontroller.addListener(changeTitle);
     super.initState();
+  }
+
+  Future<void> getFirstDay() async {
+    final snapshot = await ref.child('debug/firstDayOfWeek').get();
+    if (snapshot.exists) {
+      firstDay = snapshot.value as String;
+      if (currentTitle.isEmpty) {
+        currentTitle = firstDay;
+      }
+    } else {
+      print('Couldnt get first day data');
+    }
+  }
+
+  Future<List<ScheduleData>> getScheduleData() async {
+    getFirstDay();
+    initTitleList();
+    return ApiService.getSchedule();
   }
 
   void initTitleList() {
@@ -57,7 +76,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return FutureBuilder(
-      future: ApiService.getSchedule(),
+      future: getScheduleData(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
