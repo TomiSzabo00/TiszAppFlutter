@@ -81,6 +81,7 @@ class MainMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
         body: FutureBuilder(
       future: ApiService.getButtonVisibility(),
@@ -90,21 +91,30 @@ class MainMenu extends StatelessWidget {
             child: Text("Hiba történt: ${snapshot.error}"),
           );
         } else if (snapshot.hasData) {
-          return GridView.count(
-            padding: const EdgeInsets.only(top: 60),
-            crossAxisCount: 2,
-            children: IterableZip([
-              _getButtonTextsForUserRole(snapshot.data!),
-              _getButtonIconsForUserRole(snapshot.data!),
-              _getButtonActionsForUserRole(snapshot.data!),
-            ]).map((btnData) {
-              return MenuIcon(
-                text: btnData[0] as String,
-                icon: btnData[1] as IconData,
-                onPressed: btnData[2] as Function(),
-              );
-            }).toList(),
-          );
+          return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(isDarkTheme
+                      ? "images/bg2_night.png"
+                      : "images/bg2_day.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: GridView.count(
+                padding: const EdgeInsets.only(top: 60),
+                crossAxisCount: 2,
+                children: IterableZip([
+                  _getButtonTextsForUserRole(snapshot.data!),
+                  _getButtonIconsForUserRole(snapshot.data!),
+                  _getButtonActionsForUserRole(snapshot.data!),
+                ]).map((btnData) {
+                  return MenuIcon(
+                    text: btnData[0] as String,
+                    icon: btnData[1] as IconData,
+                    onPressed: btnData[2] as Function(),
+                  );
+                }).toList(),
+              ));
         } else {
           return const Center(
             child: CircularProgressIndicator(),
