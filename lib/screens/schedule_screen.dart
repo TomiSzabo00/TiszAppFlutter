@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/screens/schedule_info_screen.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -92,32 +93,12 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 ],
               ),
             ),
-            body: TabBarView(
-              controller: _tcontroller,
-              children: [
-                Center(
-                  child: Text(titleList[0]),
+            body: TabBarView(controller: _tcontroller, children: [
+              for (int i = 0; i < (snapshot.data?.length ?? 0); i++)
+                ScheduleInfoScreen(
+                  dayInfo: snapshot.data?[i],
                 ),
-                Center(
-                  child: Text(titleList[1]),
-                ),
-                Center(
-                  child: Text(titleList[2]),
-                ),
-                Center(
-                  child: Text(titleList[3]),
-                ),
-                Center(
-                  child: Text(titleList[4]),
-                ),
-                Center(
-                  child: Text(titleList[5]),
-                ),
-                Center(
-                  child: Text(titleList[6]),
-                ),
-              ],
-            ),
+            ]),
           );
         } else {
           return Scaffold(
