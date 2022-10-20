@@ -6,7 +6,7 @@ class ScheduleData {
   final String afternoonTask;
   final String dinner;
   final String nightTask;
-  final String midnightTask;
+  final String? midnightTask;
 
   ScheduleData(
     this.day,
