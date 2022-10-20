@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class UserButtons {
   final String visible;
   final String name;

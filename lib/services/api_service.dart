@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:tiszapp_flutter/data/schedule_data.dart';
 import 'package:tiszapp_flutter/data/user_buttons.dart';
 
 class ApiService {
@@ -30,5 +31,19 @@ class ApiService {
       }
     }
     return buttonVisibility;
+  }
+
+  static Future<List<ScheduleData>> getSchedule() async {
+    final response = await http.Client().get(Uri.parse('$apiURL/schedule'));
+
+    return compute(_parseSchedule, response.body);
+  }
+
+  static List<ScheduleData> _parseSchedule(String responseBody) {
+    final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+    return parsed
+        .map<ScheduleData>((json) => ScheduleData.fromJson(json))
+        .toList();
   }
 }
