@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/screens/schedule_info_screen.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 
@@ -54,6 +55,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return FutureBuilder(
       future: ApiService.getSchedule(),
       builder: (context, snapshot) {
@@ -63,43 +65,53 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           );
         } else if (snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text(currentTitle),
-              bottom: TabBar(
-                isScrollable: true,
-                controller: _tcontroller,
-                tabs: [
-                  Tab(
-                    text: titleList[0],
-                  ),
-                  Tab(
-                    text: titleList[1],
-                  ),
-                  Tab(
-                    text: titleList[2],
-                  ),
-                  Tab(
-                    text: titleList[3],
-                  ),
-                  Tab(
-                    text: titleList[4],
-                  ),
-                  Tab(
-                    text: titleList[5],
-                  ),
-                  Tab(
-                    text: titleList[6],
-                  ),
-                ],
-              ),
-            ),
-            body: TabBarView(controller: _tcontroller, children: [
-              for (int i = 0; i < (snapshot.data?.length ?? 0); i++)
-                ScheduleInfoScreen(
-                  dayInfo: snapshot.data?[i],
+              extendBodyBehindAppBar: true,
+              appBar: AppBar(
+                backgroundColor: CustomColor.semiTransparentWhite,
+                title: Text(currentTitle),
+                bottom: TabBar(
+                  indicatorColor: CustomColor.btnFaceDay,
+                  isScrollable: true,
+                  controller: _tcontroller,
+                  tabs: [
+                    Tab(
+                      text: titleList[0],
+                    ),
+                    Tab(
+                      text: titleList[1],
+                    ),
+                    Tab(
+                      text: titleList[2],
+                    ),
+                    Tab(
+                      text: titleList[3],
+                    ),
+                    Tab(
+                      text: titleList[4],
+                    ),
+                    Tab(
+                      text: titleList[5],
+                    ),
+                    Tab(
+                      text: titleList[6],
+                    ),
+                  ],
                 ),
-            ]),
-          );
+              ),
+              body: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: isDarkTheme
+                        ? const AssetImage("images/bg2_night.png")
+                        : const AssetImage("images/bg2_day.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: TabBarView(controller: _tcontroller, children: [
+                  for (int i = 0; i < (snapshot.data?.length ?? 0); i++)
+                    ScheduleInfoScreen(dayInfo: snapshot.data?[i]),
+                ]),
+              ));
         } else {
           return Scaffold(
             appBar: AppBar(

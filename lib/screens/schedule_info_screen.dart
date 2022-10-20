@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/data/schedule_data.dart';
+import 'package:tiszapp_flutter/widgets/schedule_field.dart';
 
 class ScheduleInfoScreen extends StatelessWidget {
   const ScheduleInfoScreen({super.key, required this.dayInfo});
@@ -10,12 +11,17 @@ class ScheduleInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(dayInfo?.breakfast ?? "Nincs reggeli"),
-        Text(dayInfo?.beforenoonTask ?? "Nincs délelőtti feladat"),
-        Text(dayInfo?.lunch ?? "Nincs ebéd"),
-        Text(dayInfo?.afternoonTask ?? "Nincs délutáni feladat"),
-        Text(dayInfo?.dinner ?? "Nincs vacsora"),
-        Text(dayInfo?.nightTask ?? "Nincs éjszakai feladat"),
+        const SizedBox(
+          height: 160,
+        ),
+        ScheduleField(description: "Reggeli", value: dayInfo?.breakfast),
+        ScheduleField(
+            description: "Délelőtti program", value: dayInfo?.beforenoonTask),
+        ScheduleField(description: "Ebéd", value: dayInfo?.lunch),
+        ScheduleField(
+            description: "Délutáni program", value: dayInfo?.afternoonTask),
+        ScheduleField(description: "Vacsora", value: dayInfo?.dinner),
+        ScheduleField(description: "Esti program", value: dayInfo?.nightTask),
       ],
     );
   }

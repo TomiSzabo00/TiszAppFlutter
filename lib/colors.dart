@@ -9,6 +9,7 @@ class CustomColor extends Color {
   static const btnSideNight = Color.fromARGB(255, 81, 86, 142);
   static const btnTextDay = Color.fromARGB(255, 220, 147, 70);
   static const btnTextNight = Color.fromARGB(255, 67, 73, 120);
+  static const semiTransparentWhite = Color.fromARGB(55, 255, 255, 255);
 
   static MaterialColor white = const MaterialColor(
     0xFFFFFFFF,
