@@ -35,8 +35,9 @@ class ApiService {
 
   static Future<List<ScheduleData>> getSchedule() async {
     final response = await http.Client().get(Uri.parse('$apiURL/schedule'));
+    final encodedData = const Utf8Decoder().convert(response.bodyBytes);
 
-    return compute(_parseSchedule, response.body);
+    return compute(_parseSchedule, encodedData);
   }
 
   static List<ScheduleData> _parseSchedule(String responseBody) {
