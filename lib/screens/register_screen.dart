@@ -82,12 +82,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Button3D(
       width: 150,
       onPressed: _register,
-      style: StyleOf3dButton(
-        topColor:
-            isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnFaceDay,
-        backColor:
-            isDarkTheme ? CustomColor.btnSideNight : CustomColor.btnSideDay,
-      ),
       child: Text('Regisztráció',
           style: TextStyle(
               color: isDarkTheme

@@ -21,12 +21,6 @@ class MenuIcon extends StatelessWidget {
     return Button3D(
       width: 150,
       height: 150,
-      style: StyleOf3dButton(
-        topColor:
-            isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnFaceDay,
-        backColor:
-            isDarkTheme ? CustomColor.btnSideNight : CustomColor.btnSideDay,
-      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

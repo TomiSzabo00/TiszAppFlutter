@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Napirend': (context) => const ScheduleScreen(),
         '/Pontállás': (context) => const ScoresScreen(),
-        '/Pontok feltöltése': (context) => const UploadScoreScreen(),
+        '/Pontok feltöltése': (context) => UploadScoreScreen(),
         '/Képek': (context) => const PicturesScreen(),
         '/Képek feltöltése': (context) => const UploadPicturesScreen(),
         '/Szövegek': (context) => const TextsScreen(),

@@ -10,6 +10,7 @@ class InputField extends StatefulWidget {
     this.obscureText = false,
     this.icon,
     this.isNumber = false,
+    this.maxChar = 5,
   });
 
   final String placeholder;
@@ -17,6 +18,7 @@ class InputField extends StatefulWidget {
   final bool obscureText;
   final Icon? icon;
   final bool isNumber;
+  final int maxChar;
 
   final _padding = 15.0;
 
@@ -58,13 +60,13 @@ class _InputFieldState extends State<InputField> {
       keyboardType: widget.isNumber ? TextInputType.number : null,
       inputFormatters: widget.isNumber
           ? [
-              LengthLimitingTextInputFormatter(5),
+              LengthLimitingTextInputFormatter(widget.maxChar),
               FilteringTextInputFormatter.digitsOnly,
             ]
           : [],
       onChanged: (val) {
         if (widget.isNumber) {
-          if (val.length == 5) {
+          if (val.length == widget.maxChar) {
             FocusScope.of(context).requestFocus(FocusNode());
           }
         }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/colors.dart';
 
 class StyleOf3dButton {
-  final Color topColor;
-  final Color backColor;
   final double width;
   final double height;
   final BorderRadius borderRadius;
@@ -12,18 +11,12 @@ class StyleOf3dButton {
   const StyleOf3dButton({
     this.width = 120,
     this.height = 60,
-    this.topColor = const Color(0xFF45484c),
-    this.backColor = const Color(0xFF191a1c),
     this.borderRadius = const BorderRadius.all(
       Radius.circular(7.0),
     ),
     this.z = 10.0,
     this.tapped = 0.0,
   });
-  static const DEFAULT = StyleOf3dButton(
-    topColor: Color(0xFFffffff),
-    backColor: Color(0xFFCFD8DC),
-  );
 }
 
 class Button3D extends StatefulWidget {
@@ -37,7 +30,7 @@ class Button3D extends StatefulWidget {
     super.key,
     required this.onPressed,
     required this.child,
-    this.style = StyleOf3dButton.DEFAULT,
+    this.style = const StyleOf3dButton(),
     this.width = 120,
     this.height = 60,
   });
@@ -50,6 +43,8 @@ class Button3DState extends State<Button3D> {
   bool isTapped = false;
 
   Widget _buildBackLayout() {
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(top: widget.style.z),
       child: DecoratedBox(
@@ -58,7 +53,9 @@ class Button3DState extends State<Button3D> {
           borderRadius: widget.style.borderRadius,
           boxShadow: [
             BoxShadow(
-              color: widget.style.backColor,
+              color: isDarkTheme
+                  ? CustomColor.btnSideNight
+                  : CustomColor.btnSideDay,
               //offset: const Offset(2, 0),
             )
           ],
@@ -74,6 +71,8 @@ class Button3DState extends State<Button3D> {
   }
 
   Widget _buildTopLayout() {
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(
         top: isTapped ? widget.style.z - widget.style.tapped : 3,
@@ -84,7 +83,9 @@ class Button3DState extends State<Button3D> {
           borderRadius: widget.style.borderRadius,
           boxShadow: [
             BoxShadow(
-              color: widget.style.topColor,
+              color: isDarkTheme
+                  ? CustomColor.btnFaceNight
+                  : CustomColor.btnFaceDay,
             ),
           ],
         ),
