@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class PicturesScreen extends StatefulWidget {
   const PicturesScreen({super.key});
@@ -20,25 +19,23 @@ class _PicturesScreenState extends State<PicturesScreen> {
         title: const Text('Képek'),
       ),
       body: StreamBuilder(
-        stream: picsRef.onChildAdded,
-        builder: (context, snapshot) {
+        stream: picsRef.onValue,
+        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
           if (snapshot.hasData) {
-            final picRef = (snapshot.data!.snapshot.value as Map)['fileName'];
-            print(picRef);
-            return FutureBuilder(
-              future: FirebaseStorage.instance
-                  .ref()
-                  .child('debug/$picRef.png')
-                  .getDownloadURL(),
-              builder: (context, url) {
-                if (url.hasData) {
-                  return Image.network(url.data!);
-                }
-                return const Text('Loading...');
-              },
+            final Map<dynamic, dynamic> values =
+                snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
+            final List<Widget> children = [];
+            values.forEach((key, value) {
+              final String ref = value['fileName'];
+              children.add(Image.network(ref));
+            });
+            return ListView(
+              children: children,
             );
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),
