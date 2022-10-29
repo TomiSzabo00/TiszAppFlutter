@@ -23,12 +23,12 @@ class PictureItem extends StatelessWidget {
               fit: BoxFit.fitWidth,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text(pic.title),
           ),
-          Spacer(),
+          const Spacer(),
         ],
       ),
     );

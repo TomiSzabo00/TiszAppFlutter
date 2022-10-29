@@ -3,10 +3,11 @@ import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
-  static uploadImage(XFile file) async {
+  static uploadImage(XFile file, String title) async {
     var now = DateTime.now();
     var formatter = DateFormat('yyyyMMddHHmmssSSS');
     var key = formatter.format(now);
@@ -22,8 +23,8 @@ class StorageService {
         database.FirebaseDatabase.instance.ref().child("debug/pics");
     picsRef.child(key).set({
       'fileName': url,
-      'author': 'debug',
-      'title': 'debug',
+      'author': FirebaseAuth.instance.currentUser!.uid,
+      'title': title.isEmpty ? key : title,
     });
   }
 }
