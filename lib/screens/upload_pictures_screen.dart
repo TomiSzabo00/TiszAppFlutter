@@ -23,17 +23,10 @@ class UploadPicturesScreen extends StatelessWidget {
               await StorageService.uploadImage(image);
               // show alert that image is uplodaded
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                AlertDialog(
-                  title: const Text("Siker"),
-                  content: const Text("A kép feltöltése sikerült!"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("OK"),
-                    ),
-                  ],
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Kép feltöltve!"),
+                  ),
                 );
               });
             }

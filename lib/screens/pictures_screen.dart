@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:tiszapp_flutter/data/picture_data.dart';
+import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
 class PicturesScreen extends StatefulWidget {
   const PicturesScreen({super.key});
@@ -25,11 +27,21 @@ class _PicturesScreenState extends State<PicturesScreen> {
             final Map<dynamic, dynamic> values =
                 snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
             final List<Widget> children = [];
+            final List<Picture> pics = [];
             values.forEach((key, value) {
-              final String ref = value['fileName'];
-              children.add(Image.network(ref));
+              final pic = Picture.fromSnapshot(key, value);
+              pics.add(pic);
             });
-            return ListView(
+            pics.sort((a, b) => b.key.compareTo(a.key));
+            for (var pic in pics) {
+              children.add(PictureItem(pic: pic));
+            }
+            return GridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              padding: const EdgeInsets.all(10),
+              childAspectRatio: 1.2,
               children: children,
             );
           } else {
