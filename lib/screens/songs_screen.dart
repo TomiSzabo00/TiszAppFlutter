@@ -49,6 +49,10 @@ class SongsScreenState extends State<SongsScreen> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(_songs[index].name),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/Daloskönyv/Részlet',
+                        arguments: _songs[index]);
+                  },
                 );
               },
             );
