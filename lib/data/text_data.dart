@@ -1,3 +1,5 @@
+import 'package:firebase_database/firebase_database.dart';
+
 class TextData {
   String key;
   final String title;
@@ -10,12 +12,11 @@ class TextData {
       required this.text,
       required this.author});
 
-  factory TextData.fromSnapshot(String key, Map<String, dynamic> snapshot) =>
-      TextData(
+  factory TextData.fromSnapshot(String key, DataSnapshot snapshot) => TextData(
         key: key,
-        title: snapshot["title"],
-        text: snapshot["text"],
-        author: snapshot["author"],
+        title: (snapshot.value as Map<Object?, Object?>)['title'] as String,
+        text: (snapshot.value as Map<Object?, Object?>)['text'] as String,
+        author: (snapshot.value as Map<Object?, Object?>)['author'] as String,
       );
 
   Map<String, dynamic> toJson() => {
