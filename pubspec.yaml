@@ -71,6 +71,7 @@ flutter:
     - images/bg2_night.png
     - images/logo2_outline.png
     - assets/
+    - assets/metadata/names.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
