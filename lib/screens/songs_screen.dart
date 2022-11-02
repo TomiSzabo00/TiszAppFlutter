@@ -12,17 +12,22 @@ class SongsScreen extends StatefulWidget {
 }
 
 class SongsScreenState extends State<SongsScreen> {
-  final List<Song> _songs = [];
+  List<Song> _songs = [];
+  final List<Song> _songsCopy = [];
+  late final Future _futureSongs;
 
   Future<void> loadSongs() async {
     final data = await rootBundle.loadString('assets/metadata/names.txt');
     List<String> lines = data.split('\n');
     for (String line in lines) {
       final assetPath = _getAssetPathFromFile(line);
-      _songs.add(Song(
-          name: _getTitleFromFile(line),
-          lyrics: await rootBundle.loadString(assetPath),
-          assetPath: assetPath));
+      final currSong = Song(
+        name: line,
+        lyrics: await rootBundle.loadString(assetPath),
+        assetPath: assetPath,
+      );
+      _songs.add(currSong);
+      _songsCopy.add(currSong);
     }
     //return await rootBundle.loadString(songs[0]);
   }
@@ -36,6 +41,25 @@ class SongsScreenState extends State<SongsScreen> {
     return 'assets/$file';
   }
 
+  void setSongsBySearch(String search) {
+    setState(() {
+      _songs = _songsCopy.toList();
+    });
+    if (search.isNotEmpty) {
+      setState(() {
+        _songs.retainWhere((element) =>
+            element.name.toLowerCase().contains(search.toLowerCase()) ||
+            element.lyrics.toLowerCase().contains(search.toLowerCase()));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _futureSongs = loadSongs();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,15 +67,30 @@ class SongsScreenState extends State<SongsScreen> {
         title: const Text('Songs'),
       ),
       body: FutureBuilder(
-        future: loadSongs(),
+        future: _futureSongs,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return SongsList(songs: _songs);
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {
+                    setSongsBySearch(value);
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Search',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: SongsList(songs: _songs),
+              ),
+            ],
+          );
         },
       ),
     );
