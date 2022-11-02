@@ -12,7 +12,10 @@ class SongListItem extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, '/Daloskönyv/Részlet', arguments: song);
       },
-      trailing: const Icon(Icons.chevron_right),
+      trailing: const Icon(
+        Icons.chevron_right,
+        color: Colors.white,
+      ),
     );
   }
 }
