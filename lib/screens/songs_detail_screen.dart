@@ -12,6 +12,7 @@ class SongsDetailScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(10),
@@ -26,7 +27,7 @@ class SongsDetailScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Text(song.lyrics),
+              child: Text(song.lyrics, style: const TextStyle(fontSize: 16)),
             ),
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:tiszapp_flutter/data/song_data.dart';
+import 'package:tiszapp_flutter/widgets/song_list_item.dart';
+import 'package:tiszapp_flutter/widgets/songs_list.dart';
 
 class SongsScreen extends StatefulWidget {
   const SongsScreen({Key? key}) : super(key: key);
@@ -44,18 +46,7 @@ class SongsScreenState extends State<SongsScreen> {
         future: loadSongs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return ListView.builder(
-              itemCount: _songs.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_songs[index].name),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/Daloskönyv/Részlet',
-                        arguments: _songs[index]);
-                  },
-                );
-              },
-            );
+            return SongsList(songs: _songs);
           } else {
             return const Center(
               child: CircularProgressIndicator(),
