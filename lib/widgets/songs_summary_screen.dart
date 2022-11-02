@@ -43,7 +43,7 @@ class SongsSummaryScreenState extends State<SongsSummaryScreen> {
               setSongsBySearch(value);
             },
             decoration: const InputDecoration(
-              hintText: 'Search',
+              hintText: 'Keresés dalszöveg vagy cím alapján',
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(16.0)),

@@ -15,7 +15,7 @@ class SongsScreen extends StatefulWidget {
 }
 
 class SongsScreenState extends State<SongsScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final List<Song> _songs = [];
   late final Future _futureSongs;
 
@@ -25,11 +25,15 @@ class SongsScreenState extends State<SongsScreen>
     for (String line in lines) {
       final assetPath = _getAssetPathFromFile(line);
       final currSong = Song(
-        name: line,
+        name: _getNameFromLine(line),
         lyrics: await rootBundle.loadString(assetPath),
       );
       _songs.add(currSong);
     }
+  }
+
+  String _getNameFromLine(String line) {
+    return line.substring(0, line.length - 4);
   }
 
   String _getAssetPathFromFile(String file) {
@@ -44,6 +48,7 @@ class SongsScreenState extends State<SongsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return FutureBuilder(
       future: _futureSongs,
       builder: (context, snapshot) {
@@ -51,19 +56,29 @@ class SongsScreenState extends State<SongsScreen>
           return Scaffold(
             //extendBodyBehindAppBar: true,
             appBar: AppBar(
-              backgroundColor: CustomColor.semiTransparentWhite,
               title: const Text('Songs'),
             ),
-            body: TabBarView(
-              controller: TabController(length: _songs.length + 1, vsync: this),
-              children: [
-                SongsSummaryScreen(songs: _songs),
-                for (Song song in _songs)
-                  SongsDetailScreen(
-                    song: song,
-                    tab: true,
-                  ),
-              ],
+            body: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: isDarkTheme
+                      ? const AssetImage("images/bg2_night.png")
+                      : const AssetImage("images/bg2_day.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: TabBarView(
+                controller:
+                    TabController(length: _songs.length + 1, vsync: this),
+                children: [
+                  SongsSummaryScreen(songs: _songs),
+                  for (Song song in _songs)
+                    SongsDetailScreen(
+                      song: song,
+                      tab: true,
+                    ),
+                ],
+              ),
             ),
           );
         } else {
