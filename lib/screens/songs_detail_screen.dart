@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/data/song_data.dart';
 
 class SongsDetailScreen extends StatelessWidget {
-  const SongsDetailScreen({Key? key, required this.song}) : super(key: key);
+  const SongsDetailScreen({Key? key, required this.song, this.tab = false})
+      : super(key: key);
   final Song song;
+  final bool tab;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daloskönyv'),
-      ),
+      appBar: !tab
+          ? AppBar(
+              title: const Text('Daloskönyv'),
+            )
+          : null,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
