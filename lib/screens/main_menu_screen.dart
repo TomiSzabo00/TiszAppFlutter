@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/data/user_data.dart';
+import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/menu_icon.dart';
@@ -11,7 +13,7 @@ class MainMenu extends StatelessWidget {
   MainMenu({super.key, required this.context});
 
   final BuildContext context;
-  final User? user = FirebaseAuth.instance.currentUser;
+  UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
 
   final buttonTexts = [
     "Napirend",
@@ -78,17 +80,15 @@ class MainMenu extends StatelessWidget {
     await FirebaseAuth.instance.signOut();
   }
 
-  Widget _userId() {
-    return Text(user!.email ?? "No email");
-  }
-
-  Future<String> _getFullName() async {
+  Future<String> _getUserData() async {
     return await FirebaseDatabase.instance
         .ref()
-        .child('users/${user!.uid}/userName')
+        .child('users/${FirebaseAuth.instance.currentUser?.uid}')
         .get()
         .then((snapshot) {
-      return snapshot.value as String;
+      var userFromDatabase = UserData.fromSnapshot(snapshot);
+      user = userFromDatabase;
+      return userFromDatabase.name;
     });
   }
 
@@ -97,7 +97,7 @@ class MainMenu extends StatelessWidget {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
         body: FutureBuilder(
-      future: Future.wait([ApiService.getButtonVisibility(), _getFullName()]),
+      future: Future.wait([ApiService.getButtonVisibility(), _getUserData()]),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -163,7 +163,9 @@ class MainMenu extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/Profil');
+                        Navigator.pushNamed(context, '/Profil',
+                            arguments: ProfileScreenArguments(
+                                context: context, user: user));
                       },
                     )),
                   ),

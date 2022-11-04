@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/data/song_data.dart';
+import 'package:tiszapp_flutter/data/user_data.dart';
+import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/screens/profile_screen.dart';
 import 'package:tiszapp_flutter/screens/songs_detail_screen.dart';
 import 'firebase_options.dart';
@@ -51,7 +53,9 @@ class MyApp extends StatelessWidget {
         '/Daloskönyv': (context) => const SongsScreen(),
         '/Daloskönyv/Részlet': (context) => SongsDetailScreen(
             song: ModalRoute.of(context)!.settings.arguments as Song),
-        '/Profil': (context) => const ProfileScreen(),
+        '/Profil': (context) => ProfileScreen(
+            args: ModalRoute.of(context)!.settings.arguments
+                as ProfileScreenArguments),
       },
       home: const WidgetTree(),
     );
