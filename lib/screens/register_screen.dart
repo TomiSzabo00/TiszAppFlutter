@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/services/api_service.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+import 'package:tiszapp_flutter/widgets/autocomplete_textfield.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -23,55 +25,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text("Regisztráció"),
       ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 80,
-            ),
-            InputField(
-              controller: _nameController,
-              placeholder: "Teljes neved",
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            InputField(
-              controller: _idController,
-              placeholder: "Egyedi azonosító",
-              isNumber: true,
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            InputField(
-              controller: _usernameController,
-              placeholder: "Felhasználónév",
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            InputField(
-              controller: _passwordController,
-              placeholder: "Jelszó",
-              obscureText: true,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            InputField(
-              controller: _passwordConfirmController,
-              placeholder: "Jelszó megerősítése",
-              obscureText: true,
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Align(alignment: Alignment.centerRight, child: _registerButton()),
-          ],
-        ),
+      body: FutureBuilder(
+        future: ApiService.getNames(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(20),
+              child: ListView(
+                children: [
+                  const SizedBox(
+                    height: 80,
+                  ),
+                  AutocompleteTextField(
+                    placeholder: "Teljes neved",
+                    controller: _nameController,
+                    options: snapshot.data!,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputField(
+                    controller: _idController,
+                    placeholder: "Egyedi azonosító",
+                    isNumber: true,
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  InputField(
+                    controller: _usernameController,
+                    placeholder: "Felhasználónév",
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputField(
+                    controller: _passwordController,
+                    placeholder: "Jelszó",
+                    obscureText: true,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputField(
+                    controller: _passwordConfirmController,
+                    placeholder: "Jelszó megerősítése",
+                    obscureText: true,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Align(
+                      alignment: Alignment.centerRight,
+                      child: _registerButton()),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }
