@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/widgets/input_field.dart';
 
 class AutocompleteTextField extends StatefulWidget {
   const AutocompleteTextField({
@@ -59,6 +58,9 @@ class _AutocompleteTextFieldState extends State<AutocompleteTextField> {
               .toLowerCase()
               .contains(textEditingValue.text.toLowerCase());
         });
+      },
+      onSelected: (String selection) {
+        widget.controller.text = selection;
       },
       optionsViewBuilder: (context, onSelected, options) {
         return Align(

@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 
 class UserData {
-  final String uid;
+  String uid;
   final String name;
   final bool isAdmin;
   final int teamNum;
@@ -19,4 +19,11 @@ class UserData {
         isAdmin: (snapshot.value as Map)['admin'],
         teamNum: (snapshot.value as Map)['groupNumber']);
   }
+
+  Map<String, dynamic> toJson() => {
+        'uid': uid,
+        'userName': name,
+        'admin': isAdmin,
+        'groupNumber': teamNum,
+      };
 }

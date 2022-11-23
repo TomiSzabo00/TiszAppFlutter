@@ -49,11 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
         email: "${_emailController.text}@tiszap.hu",
         password: _passwordController.text,
       );
-      //Navigator.of(context).pushReplacementNamed('/main_menu');
     } on FirebaseAuthException catch (e) {
-      // setState(() {
-      //   errorMessage = e.message;
-      // });
       showCupertinoDialog(
           context: context,
           builder: (context) => CupertinoAlertDialog(

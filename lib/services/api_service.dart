@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:tiszapp_flutter/data/admin_api_data.dart';
 import 'package:tiszapp_flutter/data/schedule_data.dart';
 import 'package:tiszapp_flutter/data/user_api_data.dart';
 import 'package:tiszapp_flutter/data/user_buttons.dart';
+import 'package:tiszapp_flutter/data/user_data.dart';
 
 class ApiService {
   static const String apiURL =
@@ -93,5 +95,73 @@ class ApiService {
       names.add(element.name);
     }
     return names;
+  }
+
+  static Future<List<AdminApiData>> getAvailableUsers() async {
+    final responseUser = await http.Client().get(Uri.parse('$apiURL/users'));
+    final encodedUserData = const Utf8Decoder().convert(responseUser.bodyBytes);
+
+    final responseAdmin = await http.Client().get(Uri.parse('$apiURL/admins'));
+    final encodedAdminData =
+        const Utf8Decoder().convert(responseAdmin.bodyBytes);
+
+    final availableUsers = compute(_parseAvailableUsers, encodedUserData);
+    final availableAdmins = compute(_parseAvailableUsers, encodedAdminData);
+
+    return Future.wait([availableUsers, availableAdmins]).then((value) {
+      return value[0] + value[1];
+    });
+  }
+
+  static List<AdminApiData> _parseAvailableUsers(String responseBody) {
+    final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+    return parsed
+        .map<AdminApiData>((json) => AdminApiData.fromJson(json))
+        .toList();
+  }
+
+  static Future<List<UserData>> getUserInfos() async {
+    final responseUser = await http.Client().get(Uri.parse('$apiURL/users'));
+    Map encodedUserData = Map();
+    encodedUserData['data'] =
+        const Utf8Decoder().convert(responseUser.bodyBytes);
+    encodedUserData['isAdmin'] = false;
+
+    final responseAdmin = await http.Client().get(Uri.parse('$apiURL/admins'));
+    Map encodedAdminData = Map();
+    encodedAdminData['data'] =
+        const Utf8Decoder().convert(responseAdmin.bodyBytes);
+    encodedAdminData['isAdmin'] = true;
+
+    final availableUsers = compute(_parseUsers, encodedUserData);
+    final availableAdmins = compute(_parseUsers, encodedAdminData);
+
+    return Future.wait([availableUsers, availableAdmins]).then((value) {
+      return value[0] + value[1];
+    });
+  }
+
+  static List<UserData> _parseUsers(Map response) {
+    final responseBody = response['data'];
+    final isAdmin = response['isAdmin'];
+    final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+    if (isAdmin) {
+      return parsed
+          .map<AdminApiData>((json) => AdminApiData.fromJson(json))
+          .map<UserData>((adminData) => UserData(
+              uid: "", name: adminData.name, isAdmin: true, teamNum: 0))
+          .toList();
+    } else {
+      return parsed
+          .map<UserApiData>((json) => UserApiData.fromJson(json))
+          .map<UserData>((userData) => UserData(
+              uid: "",
+              name: userData.name,
+              isAdmin: false,
+              teamNum: int.parse(userData.teamNum)))
+          .toList();
+    }
   }
 }

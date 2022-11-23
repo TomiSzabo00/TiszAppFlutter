@@ -24,7 +24,6 @@ class MainMenu extends StatelessWidget {
     "Szövegek",
     "Szövegek feltöltése",
     "Daloskönyv",
-    "Kijelentkezés"
   ];
   final buttonIcons = [
     Icons.calendar_today,
@@ -35,7 +34,6 @@ class MainMenu extends StatelessWidget {
     Icons.text_fields,
     Icons.add,
     Icons.music_note,
-    Icons.logout
   ];
   //final buttonVisible = [true, true, true, true, true, true, true, true, true];
 
@@ -80,15 +78,18 @@ class MainMenu extends StatelessWidget {
     await FirebaseAuth.instance.signOut();
   }
 
-  Future<String> _getUserData() async {
+  Future<String?> _getUserData() async {
     return await FirebaseDatabase.instance
         .ref()
         .child('users/${FirebaseAuth.instance.currentUser?.uid}')
         .get()
         .then((snapshot) {
-      var userFromDatabase = UserData.fromSnapshot(snapshot);
-      user = userFromDatabase;
-      return userFromDatabase.name;
+      if (snapshot.value != null) {
+        user = UserData.fromSnapshot(snapshot);
+        return user.name;
+      } else {
+        return null;
+      }
     });
   }
 
