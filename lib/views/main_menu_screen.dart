@@ -1,104 +1,25 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
-import 'package:tiszapp_flutter/services/api_service.dart';
+import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/menu_icon.dart';
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 
 class MainMenu extends StatelessWidget {
-  MainMenu({super.key, required this.context});
+  const MainMenu({super.key, required this.context});
 
   final BuildContext context;
-  UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
-
-  final buttonTexts = [
-    "Napirend",
-    "Pontállás",
-    "Pontok feltöltése",
-    "Képek",
-    "Képek feltöltése",
-    "Szövegek",
-    "Szövegek feltöltése",
-    "Daloskönyv",
-  ];
-  final buttonIcons = [
-    Icons.calendar_today,
-    Icons.format_list_numbered,
-    Icons.add,
-    Icons.image,
-    Icons.add,
-    Icons.text_fields,
-    Icons.add,
-    Icons.music_note,
-  ];
-  //final buttonVisible = [true, true, true, true, true, true, true, true, true];
-
-  List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
-    List<String> texts = [];
-    for (var i = 0; i < buttonTexts.length; i++) {
-      if (buttonVisible[i]) {
-        texts.add(buttonTexts[i]);
-      }
-    }
-    return texts;
-  }
-
-  List<IconData> _getButtonIconsForUserRole(List<bool> buttonVisible) {
-    List<IconData> icons = [];
-    for (var i = 0; i < buttonIcons.length; i++) {
-      if (buttonVisible[i]) {
-        icons.add(buttonIcons[i]);
-      }
-    }
-    return icons;
-  }
-
-  List<Function> _getButtonActionsForUserRole(List<bool> buttonVisible) {
-    List<Function> actions = [];
-    _getButtonTextsForUserRole(buttonVisible).forEach((element) {
-      if (element == "Kijelentkezés") {
-        actions.add(signOut);
-      } else {}
-      actions.add(() {
-        _navigateToScreen(element);
-      });
-    });
-    return actions;
-  }
-
-  void _navigateToScreen(String screenName) {
-    Navigator.pushNamed(context, '/$screenName');
-  }
-
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  Future<String?> _getUserData() async {
-    return await FirebaseDatabase.instance
-        .ref()
-        .child('users/${FirebaseAuth.instance.currentUser?.uid}')
-        .get()
-        .then((snapshot) {
-      if (snapshot.value != null) {
-        user = UserData.fromSnapshot(snapshot);
-        return user.name;
-      } else {
-        return null;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final _viewModel = MainMenuViewModel(context);
     return Scaffold(
         body: FutureBuilder(
-      future: Future.wait([ApiService.getButtonVisibility(), _getUserData()]),
+      future: Future.wait(
+          [_viewModel.getButtonVisibility(), _viewModel.getUserData()]),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -122,11 +43,11 @@ class MainMenu extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 60),
                     crossAxisCount: 2,
                     children: IterableZip([
-                      _getButtonTextsForUserRole(
+                      _viewModel.getButtonTextsForUserRole(
                           snapshot.data![0] as List<bool>),
-                      _getButtonIconsForUserRole(
+                      _viewModel.getButtonIconsForUserRole(
                           snapshot.data![0] as List<bool>),
-                      _getButtonActionsForUserRole(
+                      _viewModel.getButtonActionsForUserRole(
                           snapshot.data![0] as List<bool>),
                     ]).map((btnData) {
                       return MenuIcon(
@@ -166,7 +87,7 @@ class MainMenu extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushNamed(context, '/Profil',
                             arguments: ProfileScreenArguments(
-                                context: context, user: user));
+                                context: context, user: _viewModel.user));
                       },
                     )),
                   ),
