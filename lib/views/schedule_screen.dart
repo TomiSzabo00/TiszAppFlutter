@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/models/schedule_data.dart';
+import 'package:tiszapp_flutter/viewmodels/schedule_viewmodel.dart';
 import 'package:tiszapp_flutter/views/schedule_info_screen.dart';
-import 'package:tiszapp_flutter/services/api_service.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -15,18 +13,7 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tcontroller;
-  final List<String> titleList = [
-    "Hétfő",
-    "Kedd",
-    "Szerda",
-    "Csütörtök",
-    "Péntek",
-    "Szombat",
-    "Vasárnap"
-  ];
-  String currentTitle = "";
-  DatabaseReference ref = FirebaseDatabase.instance.ref();
-  var firstDay = "Csütörtök";
+  final ScheduleViewModel _viewModel = ScheduleViewModel();
 
   @override
   void initState() {
@@ -35,40 +22,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     super.initState();
   }
 
-  Future<void> getFirstDay() async {
-    final snapshot = await ref.child('debug/firstDayOfWeek').get();
-    if (snapshot.exists) {
-      firstDay = snapshot.value as String;
-      if (currentTitle.isEmpty) {
-        currentTitle = firstDay;
-      }
-    } else {
-      print('Couldnt get first day data');
-    }
-  }
-
-  Future<List<ScheduleData>> getScheduleData() async {
-    getFirstDay();
-    initTitleList();
-    return ApiService.getSchedule();
-  }
-
-  void initTitleList() {
-    final int firstDayIndex = titleList.indexOf(firstDay);
-    final List<String> temp = [];
-    for (int i = firstDayIndex; i < titleList.length; i++) {
-      temp.add(titleList[i]);
-    }
-    for (int i = 0; i < firstDayIndex; i++) {
-      temp.add(titleList[i]);
-    }
-    titleList.clear();
-    titleList.addAll(temp);
-  }
-
   void changeTitle() {
     setState(() {
-      currentTitle = titleList[_tcontroller.index];
+      _viewModel.currentTitle = _viewModel.titleList[_tcontroller.index];
     });
   }
 
@@ -76,43 +32,39 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return FutureBuilder(
-      future: getScheduleData(),
+      future: _viewModel.getScheduleData(),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("Hiba történt: ${snapshot.error}"),
-          );
-        } else if (snapshot.hasData) {
+        if (snapshot.hasData) {
           return Scaffold(
               extendBodyBehindAppBar: true,
               appBar: AppBar(
                 backgroundColor: CustomColor.semiTransparentWhite,
-                title: Text(currentTitle),
+                title: Text(_viewModel.currentTitle),
                 bottom: TabBar(
                   indicatorColor: CustomColor.btnFaceDay,
                   isScrollable: true,
                   controller: _tcontroller,
                   tabs: [
                     Tab(
-                      text: titleList[0],
+                      text: _viewModel.titleList[0],
                     ),
                     Tab(
-                      text: titleList[1],
+                      text: _viewModel.titleList[1],
                     ),
                     Tab(
-                      text: titleList[2],
+                      text: _viewModel.titleList[2],
                     ),
                     Tab(
-                      text: titleList[3],
+                      text: _viewModel.titleList[3],
                     ),
                     Tab(
-                      text: titleList[4],
+                      text: _viewModel.titleList[4],
                     ),
                     Tab(
-                      text: titleList[5],
+                      text: _viewModel.titleList[5],
                     ),
                     Tab(
-                      text: titleList[6],
+                      text: _viewModel.titleList[6],
                     ),
                   ],
                 ),
