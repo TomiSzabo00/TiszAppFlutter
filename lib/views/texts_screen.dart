@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/text_item.dart';
 
@@ -10,17 +11,10 @@ class TextsScreen extends StatefulWidget {
 }
 
 class _TextsScreenState extends State<TextsScreen> {
-  final TextsViewModel _viewModel = TextsViewModel();
-
-  @override
-  void initState() {
-    _viewModel.getTexts().then((_) => setState(() {}));
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final viewModel = context.watch<TextsViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Szövegek'),
@@ -38,7 +32,7 @@ class _TextsScreenState extends State<TextsScreen> {
           crossAxisCount: 1,
           childAspectRatio: 3,
           children: [
-            for (var text in _viewModel.texts)
+            for (var text in viewModel.texts)
               TextItem(
                 text: text,
               ),

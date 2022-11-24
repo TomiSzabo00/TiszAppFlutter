@@ -8,14 +8,16 @@ import 'package:tiszapp_flutter/widgets/menu_icon.dart';
 import 'package:collection/collection.dart';
 
 class MainMenu extends StatelessWidget {
-  const MainMenu({super.key, required this.context});
+  MainMenu({super.key, required this.context}) {
+    _viewModel = MainMenuViewModel(context);
+  }
 
   final BuildContext context;
+  late final MainMenuViewModel _viewModel;
 
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    final _viewModel = MainMenuViewModel(context);
     return Scaffold(
         body: FutureBuilder(
       future: Future.wait(

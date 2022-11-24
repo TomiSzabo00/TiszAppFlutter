@@ -5,13 +5,15 @@ import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../viewmodels/profile_viewmodel.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key, required this.args}) : super(key: key);
+  ProfileScreen({Key? key, required this.args}) : super(key: key) {
+    _viewModel = ProfileViewModel(args);
+  }
   final ProfileScreenArguments args;
+  late final ProfileViewModel _viewModel;
 
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    final _viewModel = ProfileViewModel(args);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Profilom'),

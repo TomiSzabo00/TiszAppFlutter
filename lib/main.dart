@@ -1,9 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
+import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/views/profile_screen.dart';
 import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
 import 'firebase_options.dart';
@@ -23,7 +26,12 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => ScoresViewModel()),
+      ChangeNotifierProvider(create: (_) => TextsViewModel()),
+    ], child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {

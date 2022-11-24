@@ -3,6 +3,7 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/score_data.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/score_item.dart';
+import 'package:provider/provider.dart';
 
 class ScoresScreen extends StatefulWidget {
   const ScoresScreen({super.key});
@@ -12,17 +13,10 @@ class ScoresScreen extends StatefulWidget {
 }
 
 class _ScoresScreenState extends State<ScoresScreen> {
-  final ScoresViewModel _viewModel = ScoresViewModel();
-
-  @override
-  void initState() {
-    _viewModel.getScores().then((_) => setState(() {}));
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final viewModel = context.watch<ScoresViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pontállás'),
@@ -76,12 +70,14 @@ class _ScoresScreenState extends State<ScoresScreen> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: _viewModel.scores.length,
+                itemCount: viewModel.scores.length,
                 itemBuilder: (context, index) {
-                  return ScoreItem(scoreData: _viewModel.scores[index]);
+                  return ScoreItem(
+                    scoreData: viewModel.scores[index],
+                  );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

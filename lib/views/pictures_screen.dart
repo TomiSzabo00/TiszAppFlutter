@@ -9,10 +9,11 @@ class PicturesScreen extends StatefulWidget {
 }
 
 class _PicturesScreenState extends State<PicturesScreen> {
+  final PicturesViewModel _viewModel = PicturesViewModel();
+
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    final _viewModel = PicturesViewModel();
     return Scaffold(
         appBar: AppBar(
           title: const Text('Képek'),
