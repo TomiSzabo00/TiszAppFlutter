@@ -16,41 +16,52 @@ class _PicturesScreenState extends State<PicturesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Képek'),
-      ),
-      body: StreamBuilder(
-        stream: picsRef.onValue,
-        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-          if (snapshot.hasData) {
-            final Map<dynamic, dynamic> values =
-                snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
-            final List<Widget> children = [];
-            final List<Picture> pics = [];
-            values.forEach((key, value) {
-              final pic = Picture.fromSnapshot(key, value);
-              pics.add(pic);
-            });
-            pics.sort((a, b) => b.key.compareTo(a.key));
-            for (var pic in pics) {
-              children.add(PictureItem(pic: pic));
-            }
-            return GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              padding: const EdgeInsets.all(10),
-              childAspectRatio: 1.2,
-              children: children,
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Képek'),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: isDarkTheme
+                  ? const AssetImage('images/bg2_night.png')
+                  : const AssetImage('images/bg2_day.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: StreamBuilder(
+            stream: picsRef.onValue,
+            builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+              if (snapshot.hasData) {
+                final Map<dynamic, dynamic> values =
+                    snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ??
+                        {};
+                final List<Widget> children = [];
+                final List<Picture> pics = [];
+                values.forEach((key, value) {
+                  final pic = Picture.fromSnapshot(key, value);
+                  pics.add(pic);
+                });
+                pics.sort((a, b) => b.key.compareTo(a.key));
+                for (var pic in pics) {
+                  children.add(PictureItem(pic: pic));
+                }
+                return GridView.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  padding: const EdgeInsets.all(10),
+                  childAspectRatio: 1.2,
+                  children: children,
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+        ));
   }
 }
