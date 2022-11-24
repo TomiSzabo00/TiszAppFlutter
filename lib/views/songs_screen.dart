@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/song_data.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
-import 'package:tiszapp_flutter/widgets/songs_summary_screen.dart';
+import 'package:tiszapp_flutter/views/songs_summary_screen.dart';
 
 class SongsScreen extends StatefulWidget {
   const SongsScreen({Key? key}) : super(key: key);
@@ -40,7 +39,7 @@ class SongsScreenState extends State<SongsScreen>
                     length: _viewModel.songs.length + 1, vsync: this),
                 children: [
                   SongsSummaryScreen(songs: _viewModel.songs),
-                  for (Song song in _viewModel.songs)
+                  for (var song in _viewModel.songs)
                     SongsDetailScreen(
                       song: song,
                       tab: true,
