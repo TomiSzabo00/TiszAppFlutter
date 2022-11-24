@@ -21,7 +21,7 @@ class _WidgetTreeState extends State<WidgetTree> {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if (user == null) {
-            return const LoginScreen();
+            return LoginScreen(context: context);
           }
           return MainMenu(context: context);
         }

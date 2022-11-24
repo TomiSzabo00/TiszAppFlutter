@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/screens/register_screen.dart';
+import 'package:tiszapp_flutter/viewmodels/authentication_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../widgets/input_field.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, required this.context});
+  final BuildContext context;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -18,57 +20,22 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  String? errorMessage = "";
-  bool isLogin = true;
+  AuthenticationViewModel _authenticationViewModel = AuthenticationViewModel();
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  String _getErrorMessage(String errorCode) {
-    switch (errorCode) {
-      case "invalid-email":
-        return "A felhasználónév nem megfelelő formátumú.";
-      case "user-not-found":
-        return "Nincs ilyen nevű felhasználó.";
-      case "wrong-password":
-        return "Hibás jelszó.";
-      case "user-disabled":
-        return "Túl sok sikertelen bejelentkezési kísérlet miatt a felhasználó letiltva. Próbáld újra pár perc múlva.";
-      default:
-        return "Ismeretlen hiba történt.";
-    }
-  }
-
-  Future<void> _login() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: "${_emailController.text}@tiszap.hu",
-        password: _passwordController.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      showCupertinoDialog(
-          context: context,
-          builder: (context) => CupertinoAlertDialog(
-                title: const Text("Hiba"),
-                content: Text(_getErrorMessage(e.code)),
-                actions: [
-                  CupertinoDialogAction(
-                    child: const Text("OK"),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ));
-    }
+  void initState() {
+    super.initState();
+    AuthenticationViewModel.init(widget.context).then((value) {
+      setState(() {
+        _authenticationViewModel = value;
+      });
+    });
   }
 
   void _showRegisterScreen() {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) {
-          return const RegisterScreen();
+          return RegisterScreen(context: context);
         },
         fullscreenDialog: true));
   }
@@ -131,6 +98,27 @@ class _LoginScreenState extends State<LoginScreen> {
       icon: const Icon(CupertinoIcons.lock_fill),
       obscureText: true,
     );
+  }
+
+  void _login() {
+    _authenticationViewModel
+        .loginToFirebase(_emailController.text, _passwordController.text)
+        .then((value) {
+      if (_authenticationViewModel.errorMessage.isNotEmpty) {
+        showCupertinoDialog(
+            context: context,
+            builder: (context) => CupertinoAlertDialog(
+                  title: const Text("Hiba"),
+                  content: Text(_authenticationViewModel.getErrorMessage()),
+                  actions: [
+                    CupertinoDialogAction(
+                      child: const Text("OK"),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ));
+      }
+    });
   }
 
   Widget _loginButton3d() {
