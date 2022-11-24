@@ -10,7 +10,7 @@ class UploadPicturesScreen extends StatefulWidget {
   const UploadPicturesScreen({super.key});
 
   @override
-  _UploadPicturesScreenState createState() => _UploadPicturesScreenState();
+  State<UploadPicturesScreen> createState() => _UploadPicturesScreenState();
 }
 
 class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
