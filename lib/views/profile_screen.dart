@@ -1,46 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+import '../viewmodels/profile_viewmodel.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key, required this.args}) : super(key: key);
   final ProfileScreenArguments args;
 
-  String _getTeamNum() {
-    if (args.user.teamNum == 0) {
-      return "Szervező";
-    } else {
-      return args.user.teamNum.toString();
-    }
-  }
-
-  Future<List<String>> _getTeammates() async {
-    List<String> teammates = [];
-    FirebaseDatabase.instance.ref().child("users").get().then((snapshot) {
-      snapshot.children.forEach((value) {
-        var currentUser = UserData.fromSnapshot(value);
-        if (currentUser.teamNum == args.user.teamNum &&
-            currentUser.uid != args.user.uid) {
-          teammates.add(currentUser.name);
-        }
-      });
-    });
-    return teammates;
-  }
-
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-    // ignore: use_build_context_synchronously
-    Navigator.of(args.context).pop();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final _viewModel = ProfileViewModel(args);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Profilom'),
@@ -62,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
                   Text('Név: ${args.user.name}',
                       style: Theme.of(context).textTheme.headline6),
                   const SizedBox(height: 20),
-                  Text('Csapat: ${_getTeamNum()}',
+                  Text('Csapat: ${_viewModel.getTeamNum()}',
                       style: Theme.of(context).textTheme.headline6),
                 ]),
               ),
@@ -71,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
                 width: double.infinity,
                 alignment: Alignment.topLeft,
                 child: FutureBuilder(
-                    future: _getTeammates(),
+                    future: _viewModel.getTeammates(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return ExpansionTile(
@@ -113,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Button3D(
                   width: 160,
-                  onPressed: signOut,
+                  onPressed: _viewModel.signOut,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
