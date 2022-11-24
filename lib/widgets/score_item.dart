@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/data/score_data.dart';
+import 'package:tiszapp_flutter/models/score_data.dart';
 
 class ScoreItem extends StatelessWidget {
   final Score scoreData;

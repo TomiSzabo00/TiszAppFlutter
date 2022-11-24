@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/data/picture_data.dart';
+import 'package:tiszapp_flutter/models/picture_data.dart';
 
 class PictureItem extends StatelessWidget {
   const PictureItem({super.key, required this.pic});

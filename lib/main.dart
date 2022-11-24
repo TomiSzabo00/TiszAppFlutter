@@ -1,21 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/data/song_data.dart';
-import 'package:tiszapp_flutter/data/user_data.dart';
+import 'package:tiszapp_flutter/models/song_data.dart';
+import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
-import 'package:tiszapp_flutter/screens/profile_screen.dart';
-import 'package:tiszapp_flutter/screens/songs_detail_screen.dart';
+import 'package:tiszapp_flutter/views/profile_screen.dart';
+import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
 import 'firebase_options.dart';
 import 'widget_tree.dart';
-import 'package:tiszapp_flutter/screens/schedule_screen.dart';
-import 'package:tiszapp_flutter/screens/scores_screen.dart';
-import 'package:tiszapp_flutter/screens/songs_screen.dart';
-import 'package:tiszapp_flutter/screens/upload_score_screen.dart';
-import 'package:tiszapp_flutter/screens/upload_pictures_screen.dart';
-import 'package:tiszapp_flutter/screens/upload_texts_screen.dart';
-import 'package:tiszapp_flutter/screens/pictures_screen.dart';
-import 'package:tiszapp_flutter/screens/texts_screen.dart';
+import 'package:tiszapp_flutter/views/schedule_screen.dart';
+import 'package:tiszapp_flutter/views/scores_screen.dart';
+import 'package:tiszapp_flutter/views/songs_screen.dart';
+import 'package:tiszapp_flutter/views/upload_score_screen.dart';
+import 'package:tiszapp_flutter/views/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
+import 'package:tiszapp_flutter/views/pictures_screen.dart';
+import 'package:tiszapp_flutter/views/texts_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

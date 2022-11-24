@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/data/schedule_data.dart';
+import 'package:tiszapp_flutter/models/schedule_data.dart';
 import 'package:tiszapp_flutter/widgets/schedule_field.dart';
 
 class ScheduleInfoScreen extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/data/song_data.dart';
-import 'package:tiszapp_flutter/screens/songs_detail_screen.dart';
+import 'package:tiszapp_flutter/models/song_data.dart';
+import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
 import 'package:tiszapp_flutter/widgets/song_list_item.dart';
 import 'package:tiszapp_flutter/widgets/songs_list.dart';
 import 'package:tiszapp_flutter/widgets/songs_summary_screen.dart';

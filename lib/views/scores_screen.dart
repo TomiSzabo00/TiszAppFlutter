@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/data/score_data.dart';
+import 'package:tiszapp_flutter/models/score_data.dart';
 import 'package:tiszapp_flutter/widgets/score_item.dart';
 
 class ScoresScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/data/schedule_data.dart';
-import 'package:tiszapp_flutter/screens/schedule_info_screen.dart';
+import 'package:tiszapp_flutter/models/schedule_data.dart';
+import 'package:tiszapp_flutter/views/schedule_info_screen.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 

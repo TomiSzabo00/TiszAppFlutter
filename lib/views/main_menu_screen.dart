@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/data/user_data.dart';
+import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';

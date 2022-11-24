@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/data/song_data.dart';
+import 'package:tiszapp_flutter/models/song_data.dart';
 
 class SongsDetailScreen extends StatelessWidget {
   const SongsDetailScreen({Key? key, required this.song, this.tab = false})

@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/screens/register_screen.dart';
+import 'package:tiszapp_flutter/views/register_screen.dart';
 import 'package:tiszapp_flutter/viewmodels/authentication_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../widgets/input_field.dart';

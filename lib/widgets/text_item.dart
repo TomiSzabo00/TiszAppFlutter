@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/data/text_data.dart';
+import 'package:tiszapp_flutter/models/text_data.dart';
 
 class TextItem extends StatelessWidget {
   final TextData text;

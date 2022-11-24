@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:tiszapp_flutter/data/picture_data.dart';
+import 'package:tiszapp_flutter/models/picture_data.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
 class PicturesScreen extends StatefulWidget {

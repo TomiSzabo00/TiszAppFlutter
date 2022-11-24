@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:tiszapp_flutter/data/admin_api_data.dart';
-import 'package:tiszapp_flutter/data/schedule_data.dart';
-import 'package:tiszapp_flutter/data/user_api_data.dart';
-import 'package:tiszapp_flutter/data/user_buttons.dart';
-import 'package:tiszapp_flutter/data/user_data.dart';
+import 'package:tiszapp_flutter/models/admin_api_data.dart';
+import 'package:tiszapp_flutter/models/schedule_data.dart';
+import 'package:tiszapp_flutter/models/user_api_data.dart';
+import 'package:tiszapp_flutter/models/user_buttons.dart';
+import 'package:tiszapp_flutter/models/user_data.dart';
 
 class ApiService {
   static const String apiURL =

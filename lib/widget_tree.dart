@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
-import 'screens/main_menu_screen.dart';
+import 'views/login_screen.dart';
+import 'views/main_menu_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class WidgetTree extends StatefulWidget {
