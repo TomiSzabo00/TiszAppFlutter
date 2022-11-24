@@ -1,6 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/text_data.dart';
+import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/text_item.dart';
 
 class TextsScreen extends StatefulWidget {
@@ -11,22 +10,11 @@ class TextsScreen extends StatefulWidget {
 }
 
 class _TextsScreenState extends State<TextsScreen> {
-  List<TextData> texts = [];
+  final TextsViewModel _viewModel = TextsViewModel();
 
   @override
   void initState() {
-    FirebaseDatabase.instance
-        .ref()
-        .child("debug/texts")
-        .onChildAdded
-        .listen((event) {
-      setState(() {
-        texts.insert(
-            0,
-            TextData.fromSnapshot(
-                event.snapshot.key ?? "unknown", event.snapshot));
-      });
-    });
+    _viewModel.getTexts().then((_) => setState(() {}));
     super.initState();
   }
 
@@ -50,7 +38,7 @@ class _TextsScreenState extends State<TextsScreen> {
           crossAxisCount: 1,
           childAspectRatio: 3,
           children: [
-            for (final text in texts)
+            for (var text in _viewModel.texts)
               TextItem(
                 text: text,
               ),
