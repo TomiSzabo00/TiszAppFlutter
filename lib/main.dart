@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         '/Képek feltöltése': (context) =>
             UploadPicturesScreen(context: context),
         '/Szövegek': (context) => const TextsScreen(),
-        '/Szövegek feltöltése': (context) => const UploadTextsScreen(),
+        '/Szövegek feltöltése': (context) => UploadTextsScreen(),
         '/Daloskönyv': (context) => const SongsScreen(),
         '/Daloskönyv/Részlet': (context) => SongsDetailScreen(
             song: ModalRoute.of(context)!.settings.arguments as Song),

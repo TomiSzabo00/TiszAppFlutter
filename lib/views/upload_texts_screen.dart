@@ -1,28 +1,26 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/text_data.dart';
+import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class UploadTextsScreen extends StatelessWidget {
-  const UploadTextsScreen({super.key});
+  UploadTextsScreen({super.key});
+
+  final titleController = TextEditingController();
+  final textController = TextEditingController();
+  final TextsViewModel _viewModel = TextsViewModel();
 
   @override
   Widget build(BuildContext context) {
-    final _titleController = TextEditingController();
-    final _textController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Szövegek feltöltése"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
             TextField(
-              controller: _titleController,
+              controller: titleController,
               maxLines: 1,
               decoration: InputDecoration(
                 labelText: "Cím",
@@ -35,7 +33,7 @@ class UploadTextsScreen extends StatelessWidget {
               height: 10,
             ),
             TextField(
-              controller: _textController,
+              controller: textController,
               minLines: 3,
               maxLines: null,
               autocorrect: false,
@@ -55,27 +53,43 @@ class UploadTextsScreen extends StatelessWidget {
               children: [
                 Button3D(
                   onPressed: () {
-                    var now = DateTime.now();
-                    var formatter = DateFormat('yyyyMMddHHmmssSSS');
-                    var key = formatter.format(now);
-                    final text = TextData(
-                        key: key,
-                        title: _titleController.text,
-                        text: _textController.text,
-                        author: FirebaseAuth.instance.currentUser!.uid);
-                    FirebaseDatabase.instance
-                        .ref()
-                        .child("debug/texts")
-                        .child(text.key)
-                        .set(text.toJson());
+                    _viewModel.uploadText(
+                        titleController.text, textController.text);
+                    _clearFields();
+                    _showDialog(context);
                   },
-                  child: Text("Feltöltés"),
+                  child: const Text("Feltöltés"),
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _clearFields() {
+    titleController.clear();
+    textController.clear();
+  }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Sikeres feltöltés"),
+          content: const Text("A szöveg sikeresen feltöltésre került."),
+          actions: [
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
