@@ -26,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    AuthenticationViewModel.init(widget.context).then((value) {
+    AuthenticationViewModel.init().then((value) {
       setState(() {
         _authenticationViewModel = value;
       });

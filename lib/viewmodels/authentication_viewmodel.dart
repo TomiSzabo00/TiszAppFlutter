@@ -6,13 +6,11 @@ import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 
 class AuthenticationViewModel {
-  late BuildContext _context;
   List<AdminApiData> _availableUsers = [];
   List<UserData> _userInfos = [];
   String errorMessage = "";
 
-  AuthenticationViewModel._init(BuildContext context) {
-    _context = context;
+  AuthenticationViewModel._init() {
     ApiService.getAvailableUsers().then((value) {
       _availableUsers = value;
     });
@@ -23,8 +21,8 @@ class AuthenticationViewModel {
 
   AuthenticationViewModel();
 
-  static Future<AuthenticationViewModel> init(BuildContext context) async {
-    return AuthenticationViewModel._init(context);
+  static Future<AuthenticationViewModel> init() async {
+    return AuthenticationViewModel._init();
   }
 
   bool isUsernameAndIDMatching(String name, String id) {
@@ -39,7 +37,7 @@ class AuthenticationViewModel {
   Future<void> registerToFirebase(String username, String password) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: "${username}@tiszap.hu", password: password);
+          email: "$username@tiszap.hu", password: password);
     } on FirebaseAuthException catch (e) {
       errorMessage = e.code;
     }
