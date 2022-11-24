@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/picture_data.dart';
-import 'package:tiszapp_flutter/widgets/picture_item.dart';
 import '../viewmodels/pictures_viewmodel.dart';
 
 class PicturesScreen extends StatefulWidget {

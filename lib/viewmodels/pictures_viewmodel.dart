@@ -1,12 +1,27 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
 import '../models/picture_data.dart';
 
 class PicturesViewModel {
+  PicturesViewModel();
+
+  PicturesViewModel._fromContext(BuildContext context) {
+    _context = context;
+  }
+
+  static Future<PicturesViewModel> init(BuildContext context) async {
+    return PicturesViewModel._fromContext(context);
+  }
+
+  late BuildContext? _context;
   final DatabaseReference picsRef =
       FirebaseDatabase.instance.ref().child("debug/pics");
+
+  XFile? image;
 
   List<Widget> handlePics(AsyncSnapshot snapshot) {
     final Map<dynamic, dynamic> values =
@@ -22,5 +37,28 @@ class PicturesViewModel {
       children.add(PictureItem(pic: pic));
     }
     return children;
+  }
+
+  void uploadPicture(String title) async {
+    if (image != null) {
+      await StorageService.uploadImage(image!, title);
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(_context!).showSnackBar(
+        const SnackBar(
+          content: Text("Kép feltöltve"),
+        ),
+      );
+      Navigator.pop(_context!);
+    } else {
+      ScaffoldMessenger.of(_context!).showSnackBar(
+        const SnackBar(
+          content: Text("Nincs kép kiválasztva"),
+        ),
+      );
+    }
+  }
+
+  void pickImage(XFile image) {
+    this.image = image;
   }
 }

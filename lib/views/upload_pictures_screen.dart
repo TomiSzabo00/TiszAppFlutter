@@ -1,22 +1,33 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tiszapp_flutter/services/storage_service.dart';
+import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
 
 class UploadPicturesScreen extends StatefulWidget {
-  const UploadPicturesScreen({super.key});
+  const UploadPicturesScreen({super.key, required this.context});
+  final BuildContext context;
 
   @override
   State<UploadPicturesScreen> createState() => _UploadPicturesScreenState();
 }
 
 class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
-  bool isSelected = false;
-  XFile? image;
+  PicturesViewModel _viewModel = PicturesViewModel();
   final _titleController = TextEditingController();
+  XFile? image;
+
+  @override
+  void initState() {
+    super.initState();
+    PicturesViewModel.init(widget.context).then((value) {
+      setState(() {
+        _viewModel = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,10 +37,10 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
       body: Center(
           child: Column(
         children: [
-          Container(
+          SizedBox(
             width: 300,
             height: 300,
-            child: isSelected
+            child: image != null
                 ? Image.file(File(image!.path))
                 : const Center(
                     child: Text("Nincs kép kiválasztva"),
@@ -46,23 +57,7 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
             children: [
               Button3D(
                 onPressed: () async {
-                  if (image != null) {
-                    await StorageService.uploadImage(
-                        image!, _titleController.text);
-                    // show alert that image is uplodaded
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Kép feltöltve"),
-                      ),
-                    );
-                  } else {
-                    // show alert that no image is selected
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Nincs kép kiválasztva"),
-                      ),
-                    );
-                  }
+                  _viewModel.uploadPicture(_titleController.text);
                 },
                 child: const Text("Kép feltöltése"),
               ),
@@ -73,9 +68,9 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                     source: ImageSource.gallery,
                   );
                   if (image != null) {
+                    _viewModel.pickImage(image);
                     setState(() {
-                      this.image = image;
-                      isSelected = true;
+                      this.image = _viewModel.image!;
                     });
                   }
                 },

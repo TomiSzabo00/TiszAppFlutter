@@ -47,7 +47,8 @@ class MyApp extends StatelessWidget {
         '/Pontállás': (context) => const ScoresScreen(),
         '/Pontok feltöltése': (context) => UploadScoreScreen(),
         '/Képek': (context) => const PicturesScreen(),
-        '/Képek feltöltése': (context) => const UploadPicturesScreen(),
+        '/Képek feltöltése': (context) =>
+            UploadPicturesScreen(context: context),
         '/Szövegek': (context) => const TextsScreen(),
         '/Szövegek feltöltése': (context) => const UploadTextsScreen(),
         '/Daloskönyv': (context) => const SongsScreen(),
