@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 
 class MainMenuViewModel {
   MainMenuViewModel(BuildContext context) {
@@ -33,7 +35,7 @@ class MainMenuViewModel {
     Icons.music_note,
   ];
 
-  List<String> getButtonTextsForUserRole(List<bool> buttonVisible) {
+  List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
     List<String> texts = [];
     for (var i = 0; i < buttonTexts.length; i++) {
       if (buttonVisible[i]) {
@@ -43,7 +45,7 @@ class MainMenuViewModel {
     return texts;
   }
 
-  List<IconData> getButtonIconsForUserRole(List<bool> buttonVisible) {
+  List<IconData> _getButtonIconsForUserRole(List<bool> buttonVisible) {
     List<IconData> icons = [];
     for (var i = 0; i < buttonIcons.length; i++) {
       if (buttonVisible[i]) {
@@ -53,9 +55,9 @@ class MainMenuViewModel {
     return icons;
   }
 
-  List<Function> getButtonActionsForUserRole(List<bool> buttonVisible) {
+  List<Function> _getButtonActionsForUserRole(List<bool> buttonVisible) {
     List<Function> actions = [];
-    getButtonTextsForUserRole(buttonVisible).forEach((element) {
+    _getButtonTextsForUserRole(buttonVisible).forEach((element) {
       if (element == "Kijelentkezés") {
         actions.add(_signOut);
       } else {}
@@ -74,7 +76,7 @@ class MainMenuViewModel {
     await FirebaseAuth.instance.signOut();
   }
 
-  Future<String?> getUserData() async {
+  Future<void> _getUserData() async {
     return await FirebaseDatabase.instance
         .ref()
         .child('users/${FirebaseAuth.instance.currentUser?.uid}')
@@ -82,14 +84,23 @@ class MainMenuViewModel {
         .then((snapshot) {
       if (snapshot.value != null) {
         user = UserData.fromSnapshot(snapshot);
-        return user.name;
-      } else {
-        return null;
       }
     });
   }
 
-  Future<List<bool>> getButtonVisibility() async {
-    return ApiService.getButtonVisibility();
+  Future<IterableZip<Object>> getButtons() async {
+    List<bool> visibility = [];
+    final apiResponse = await ApiService.getButtonVisibility();
+    await _getUserData();
+    if (user.isAdmin) {
+      visibility = apiResponse.map((e) => true).toList();
+    } else {
+      visibility = apiResponse;
+    }
+    return IterableZip([
+      _getButtonTextsForUserRole(visibility),
+      _getButtonIconsForUserRole(visibility),
+      _getButtonActionsForUserRole(visibility),
+    ]);
   }
 }
