@@ -3,10 +3,10 @@ import 'package:firebase_database/firebase_database.dart';
 class Score {
   final String author;
   final String name;
-  final int score1;
-  final int score2;
-  final int score3;
-  final int score4;
+  int score1;
+  int score2;
+  int score3;
+  int score4;
 
   Score({
     required this.author,

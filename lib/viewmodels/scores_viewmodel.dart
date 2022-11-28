@@ -9,16 +9,41 @@ import 'package:intl/date_symbol_data_local.dart';
 
 class ScoresViewModel with ChangeNotifier {
   List<Score> scores = [];
+  Score totalScore = Score(
+    author: '',
+    name: 'Összesen',
+    score1: 0,
+    score2: 0,
+    score3: 0,
+    score4: 0,
+  );
 
   ScoresViewModel() {
     initializeDateFormatting();
-    _getScores();
   }
 
-  void _getScores() {
+  void _addScoreToSum(Score score) {
+    totalScore.score1 += score.score1;
+    totalScore.score2 += score.score2;
+    totalScore.score3 += score.score3;
+    totalScore.score4 += score.score4;
+  }
+
+  void _resetSum() {
+    totalScore.score1 = 0;
+    totalScore.score2 = 0;
+    totalScore.score3 = 0;
+    totalScore.score4 = 0;
+  }
+
+  void getScores() {
+    scores.clear();
+    _resetSum();
     final scoresRef = FirebaseDatabase.instance.ref().child("debug/scores");
     scoresRef.onChildAdded.listen((event) {
-      scores.insert(0, Score.fromSnapshot(event.snapshot));
+      final score = Score.fromSnapshot(event.snapshot);
+      scores.insert(0, score);
+      _addScoreToSum(score);
       notifyListeners();
     });
   }

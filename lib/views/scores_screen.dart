@@ -14,6 +14,12 @@ class ScoresScreen extends StatefulWidget {
 
 class _ScoresScreenState extends State<ScoresScreen> {
   @override
+  void initState() {
+    super.initState();
+    Provider.of<ScoresViewModel>(context, listen: false).getScores();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<ScoresViewModel>();
@@ -77,6 +83,15 @@ class _ScoresScreenState extends State<ScoresScreen> {
                   );
                 },
               ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ScoreItem(
+              scoreData: viewModel.totalScore,
+            ),
+            const SizedBox(
+              height: 30,
             ),
           ],
         ),
