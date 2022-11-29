@@ -14,7 +14,7 @@ class ScheduleViewModel {
   ];
 
   DatabaseReference ref = FirebaseDatabase.instance.ref();
-  var firstDay = "Csütörtök";
+  var firstDay = "";
   String currentTitle = "";
 
   Future<void> getFirstDay() async {
@@ -28,7 +28,7 @@ class ScheduleViewModel {
   }
 
   Future<List<ScheduleData>> getScheduleData() async {
-    getFirstDay();
+    await getFirstDay();
     initTitleList();
     return ApiService.getSchedule();
   }
