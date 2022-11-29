@@ -38,7 +38,11 @@ class ScoreItem extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.only(left: 10),
-                  width: (MediaQuery.of(context).size.width - 120 - 50) / 4,
+                  width: (MediaQuery.of(context).size.width -
+                          120 -
+                          10 -
+                          scoreData.scores.length * 10) /
+                      scoreData.scores.length,
                   padding: const EdgeInsets.all(8),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
