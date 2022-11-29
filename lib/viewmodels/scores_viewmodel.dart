@@ -12,10 +12,7 @@ class ScoresViewModel with ChangeNotifier {
   Score totalScore = Score(
     author: '',
     name: 'Összesen',
-    score1: 0,
-    score2: 0,
-    score3: 0,
-    score4: 0,
+    scores: List.generate(4, (_) => 0),
   );
 
   ScoresViewModel() {
@@ -23,17 +20,13 @@ class ScoresViewModel with ChangeNotifier {
   }
 
   void _addScoreToSum(Score score) {
-    totalScore.score1 += score.score1;
-    totalScore.score2 += score.score2;
-    totalScore.score3 += score.score3;
-    totalScore.score4 += score.score4;
+    for (int i = 0; i < score.scores.length; i++) {
+      totalScore.scores[i] += score.scores[i];
+    }
   }
 
   void _resetSum() {
-    totalScore.score1 = 0;
-    totalScore.score2 = 0;
-    totalScore.score3 = 0;
-    totalScore.score4 = 0;
+    totalScore.scores = List.generate(4, (_) => 0);
   }
 
   void getScores() {
@@ -53,10 +46,7 @@ class ScoresViewModel with ChangeNotifier {
     var score = Score(
       author: FirebaseAuth.instance.currentUser!.uid,
       name: name,
-      score1: _scoreTextToInt(score1),
-      score2: _scoreTextToInt(score2),
-      score3: _scoreTextToInt(score3),
-      score4: _scoreTextToInt(score4),
+      scores: _scoresTextToInt([score1, score2, score3, score4]),
     );
 
     var ref = FirebaseDatabase.instance.ref().child("debug/scores");
@@ -66,11 +56,13 @@ class ScoresViewModel with ChangeNotifier {
     ref.child(key).set(score.toJson());
   }
 
-  int _scoreTextToInt(String text) {
-    if (text == "") {
-      return 0;
-    } else {
-      return int.tryParse(text) ?? 0;
-    }
+  List<int> _scoresTextToInt(List<String> scores) {
+    return scores.map((e) {
+      if (e.isEmpty) {
+        return 0;
+      } else {
+        return int.parse(e);
+      }
+    }).toList();
   }
 }

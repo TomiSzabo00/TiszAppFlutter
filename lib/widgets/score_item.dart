@@ -10,84 +10,50 @@ class ScoreItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 50,
       padding: const EdgeInsets.all(5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             width: 120,
+            height: 50,
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: CustomColor.semiTransparentWhite,
               borderRadius: BorderRadius.circular(15.0),
             ),
-            child: Text(
-              scoreData.name,
-              style: const TextStyle(
-                fontSize: 20,
-              ),
-            ),
+            child: FittedBox(
+                fit: BoxFit.contain,
+                child: Text(
+                  scoreData.name,
+                )),
           ),
-          Container(
-            width: (MediaQuery.of(context).size.width - 120 - 20 - 20) / 4,
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: CustomColor.semiTransparentWhite,
-              borderRadius: BorderRadius.circular(15.0),
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: scoreData.scores.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(left: 10),
+                  width: (MediaQuery.of(context).size.width - 120 - 50) / 4,
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: CustomColor.semiTransparentWhite,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        scoreData.scores[index].toString(),
+                      )),
+                );
+              },
             ),
-            child: Text(
-              scoreData.score1.toString(),
-              style: const TextStyle(
-                fontSize: 20,
-              ),
-            ),
-          ),
-          Container(
-            width: (MediaQuery.of(context).size.width - 120 - 20 - 20) / 4,
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: CustomColor.semiTransparentWhite,
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            child: Text(
-              scoreData.score2.toString(),
-              style: const TextStyle(
-                fontSize: 20,
-              ),
-            ),
-          ),
-          Container(
-            width: (MediaQuery.of(context).size.width - 120 - 20 - 20) / 4,
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: CustomColor.semiTransparentWhite,
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            child: Text(
-              scoreData.score3.toString(),
-              style: const TextStyle(
-                fontSize: 20,
-              ),
-            ),
-          ),
-          Container(
-            width: (MediaQuery.of(context).size.width - 120 - 20 - 20) / 4,
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: CustomColor.semiTransparentWhite,
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            child: Text(
-              scoreData.score4.toString(),
-              style: const TextStyle(
-                fontSize: 20,
-              ),
-            ),
-          ),
+          )
         ],
       ),
     );

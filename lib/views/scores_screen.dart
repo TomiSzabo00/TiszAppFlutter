@@ -28,6 +28,7 @@ class _ScoresScreenState extends State<ScoresScreen> {
         title: const Text('Pontállás'),
       ),
       body: Container(
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
@@ -63,13 +64,8 @@ class _ScoresScreenState extends State<ScoresScreen> {
               ),
             ),
             ScoreItem(
-              scoreData: Score(
-                  author: "",
-                  name: 'Program neve',
-                  score1: 1,
-                  score2: 2,
-                  score3: 3,
-                  score4: 4),
+              scoreData:
+                  Score(author: "", name: 'Program neve', scores: [1, 2, 3, 4]),
             ),
             const SizedBox(
               height: 20,

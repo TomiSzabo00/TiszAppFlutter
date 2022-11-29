@@ -70,7 +70,6 @@ class MainMenu extends StatelessWidget {
                                 color: isDarkTheme
                                     ? CustomColor.btnTextNight
                                     : CustomColor.btnTextDay,
-                                //fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
