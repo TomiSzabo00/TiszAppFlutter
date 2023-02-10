@@ -35,7 +35,7 @@ class ScoresViewModel with ChangeNotifier {
     final scoresRef = FirebaseDatabase.instance.ref().child("debug/scores");
     scoresRef.onChildAdded.listen((event) {
       final score = Score.fromSnapshot(event.snapshot);
-      scores.insert(0, score);
+      scores.add(score);
       _addScoreToSum(score);
       notifyListeners();
     });

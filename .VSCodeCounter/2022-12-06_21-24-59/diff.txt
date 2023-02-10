@@ -1,0 +1,113 @@
+Date : 2022-12-06 21:24:59
+Directory : /Users/szabotamas/tiszapp_flutter/lib
+Total : 47 files,  -1542 codes, -273 comments, -264 blanks, all -2079 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Properties |          2 |         -8 |          0 |         -2 |        -10 |
+| Markdown   |          2 |        -13 |          0 |         -9 |        -22 |
+| Dart       |          1 |        -14 |        -10 |         -7 |        -31 |
+| YAML       |          2 |        -32 |        -80 |        -20 |       -132 |
+| HTML       |          1 |        -37 |        -16 |         -6 |        -59 |
+| Swift      |          4 |        -44 |         -3 |        -12 |        -59 |
+| Groovy     |          3 |        -91 |         -9 |        -22 |       -122 |
+| JSON       |          6 |       -338 |          0 |         -4 |       -342 |
+| XML        |         10 |       -466 |        -48 |        -12 |       -526 |
+| C++        |         16 |       -499 |       -107 |       -170 |       -776 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                            | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                               |         47 |     -1,542 |       -273 |       -264 |     -2,079 |
+| ..                                                                                              |         47 |     -1,542 |       -273 |       -264 |     -2,079 |
+| ../android                                                                                      |         13 |       -244 |        -55 |        -33 |       -332 |
+| ../android/app                                                                                  |          9 |       -200 |        -53 |        -22 |       -275 |
+| ../android/app/src                                                                              |          7 |        -62 |        -46 |         -9 |       -117 |
+| ../android/app/src/debug                                                                        |          1 |         -4 |         -4 |         -1 |         -9 |
+| ../android/app/src/main                                                                         |          5 |        -54 |        -38 |         -7 |        -99 |
+| ../android/app/src/main/res                                                                     |          4 |        -26 |        -32 |         -6 |        -64 |
+| ../android/app/src/main/res/drawable                                                            |          1 |         -4 |         -7 |         -2 |        -13 |
+| ../android/app/src/main/res/drawable-v21                                                        |          1 |         -4 |         -7 |         -2 |        -13 |
+| ../android/app/src/main/res/values                                                              |          1 |         -9 |         -9 |         -1 |        -19 |
+| ../android/app/src/main/res/values-night                                                        |          1 |         -9 |         -9 |         -1 |        -19 |
+| ../android/app/src/profile                                                                      |          1 |         -4 |         -4 |         -1 |         -9 |
+| ../android/gradle                                                                               |          1 |         -5 |          0 |         -1 |         -6 |
+| ../android/gradle/wrapper                                                                       |          1 |         -5 |          0 |         -1 |         -6 |
+| ../ios                                                                                          |          8 |       -229 |         -2 |         -9 |       -240 |
+| ../ios/Runner                                                                                   |          7 |       -222 |         -2 |         -9 |       -233 |
+| ../ios/Runner/Assets.xcassets                                                                   |          3 |       -148 |          0 |         -4 |       -152 |
+| ../ios/Runner/Assets.xcassets/AppIcon.appiconset                                                |          1 |       -122 |          0 |         -1 |       -123 |
+| ../ios/Runner/Assets.xcassets/LaunchImage.imageset                                              |          2 |        -26 |          0 |         -3 |        -29 |
+| ../ios/Runner/Base.lproj                                                                        |          2 |        -61 |         -2 |         -2 |        -65 |
+| ../linux                                                                                        |          5 |        -94 |        -27 |        -38 |       -159 |
+| ../linux/flutter                                                                                |          2 |         -8 |         -9 |        -11 |        -28 |
+| ../macos                                                                                        |          5 |       -443 |         -3 |        -12 |       -458 |
+| ../macos/Flutter                                                                                |          1 |        -12 |         -3 |         -4 |        -19 |
+| ../macos/Runner                                                                                 |          4 |       -431 |          0 |         -8 |       -439 |
+| ../macos/Runner/Assets.xcassets                                                                 |          1 |        -68 |          0 |         -1 |        -69 |
+| ../macos/Runner/Assets.xcassets/AppIcon.appiconset                                              |          1 |        -68 |          0 |         -1 |        -69 |
+| ../macos/Runner/Base.lproj                                                                      |          1 |       -343 |          0 |         -1 |       -344 |
+| ../test                                                                                         |          1 |        -14 |        -10 |         -7 |        -31 |
+| ../web                                                                                          |          2 |        -72 |        -16 |         -7 |        -95 |
+| ../windows                                                                                      |         10 |       -404 |        -80 |       -131 |       -615 |
+| ../windows/flutter                                                                              |          2 |         -8 |         -9 |        -11 |        -28 |
+| ../windows/runner                                                                               |          8 |       -396 |        -71 |       -120 |       -587 |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                        | language   | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /Users/szabotamas/tiszapp_flutter/README.md                                                     | Markdown   |        -10 |          0 |         -7 |        -17 |
+| /Users/szabotamas/tiszapp_flutter/analysis_options.yaml                                         | YAML       |         -3 |        -23 |         -4 |        -30 |
+| /Users/szabotamas/tiszapp_flutter/android/app/build.gradle                                      | Groovy     |        -55 |         -7 |        -13 |        -75 |
+| /Users/szabotamas/tiszapp_flutter/android/app/google-services.json                              | JSON       |        -83 |          0 |          0 |        -83 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/debug/AndroidManifest.xml                     | XML        |         -4 |         -4 |         -1 |         -9 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/main/AndroidManifest.xml                      | XML        |        -28 |         -6 |         -1 |        -35 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/main/res/drawable-v21/launch_background.xml   | XML        |         -4 |         -7 |         -2 |        -13 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/main/res/drawable/launch_background.xml       | XML        |         -4 |         -7 |         -2 |        -13 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/main/res/values-night/styles.xml              | XML        |         -9 |         -9 |         -1 |        -19 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/main/res/values/styles.xml                    | XML        |         -9 |         -9 |         -1 |        -19 |
+| /Users/szabotamas/tiszapp_flutter/android/app/src/profile/AndroidManifest.xml                   | XML        |         -4 |         -4 |         -1 |         -9 |
+| /Users/szabotamas/tiszapp_flutter/android/build.gradle                                          | Groovy     |        -28 |         -2 |         -5 |        -35 |
+| /Users/szabotamas/tiszapp_flutter/android/gradle.properties                                     | Properties |         -3 |          0 |         -1 |         -4 |
+| /Users/szabotamas/tiszapp_flutter/android/gradle/wrapper/gradle-wrapper.properties              | Properties |         -5 |          0 |         -1 |         -6 |
+| /Users/szabotamas/tiszapp_flutter/android/settings.gradle                                       | Groovy     |         -8 |          0 |         -4 |        -12 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/AppDelegate.swift                                  | Swift      |        -12 |          0 |         -2 |        -14 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json   | JSON       |       -122 |          0 |         -1 |       -123 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json | JSON       |        -23 |          0 |         -1 |        -24 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md     | Markdown   |         -3 |          0 |         -2 |         -5 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/Base.lproj/LaunchScreen.storyboard                 | XML        |        -36 |         -1 |         -1 |        -38 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/Base.lproj/Main.storyboard                         | XML        |        -25 |         -1 |         -1 |        -27 |
+| /Users/szabotamas/tiszapp_flutter/ios/Runner/Runner-Bridging-Header.h                           | C++        |         -1 |          0 |         -1 |         -2 |
+| /Users/szabotamas/tiszapp_flutter/ios/firebase_app_id_file.json                                 | JSON       |         -7 |          0 |          0 |         -7 |
+| /Users/szabotamas/tiszapp_flutter/linux/flutter/generated_plugin_registrant.cc                  | C++        |         -3 |         -4 |         -5 |        -12 |
+| /Users/szabotamas/tiszapp_flutter/linux/flutter/generated_plugin_registrant.h                   | C++        |         -5 |         -5 |         -6 |        -16 |
+| /Users/szabotamas/tiszapp_flutter/linux/main.cc                                                 | C++        |         -5 |          0 |         -2 |         -7 |
+| /Users/szabotamas/tiszapp_flutter/linux/my_application.cc                                       | C++        |        -74 |        -11 |        -20 |       -105 |
+| /Users/szabotamas/tiszapp_flutter/linux/my_application.h                                        | C++        |         -7 |         -7 |         -5 |        -19 |
+| /Users/szabotamas/tiszapp_flutter/macos/Flutter/GeneratedPluginRegistrant.swift                 | Swift      |        -12 |         -3 |         -4 |        -19 |
+| /Users/szabotamas/tiszapp_flutter/macos/Runner/AppDelegate.swift                                | Swift      |         -8 |          0 |         -2 |        -10 |
+| /Users/szabotamas/tiszapp_flutter/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json | JSON       |        -68 |          0 |         -1 |        -69 |
+| /Users/szabotamas/tiszapp_flutter/macos/Runner/Base.lproj/MainMenu.xib                          | XML        |       -343 |          0 |         -1 |       -344 |
+| /Users/szabotamas/tiszapp_flutter/macos/Runner/MainFlutterWindow.swift                          | Swift      |        -12 |          0 |         -4 |        -16 |
+| /Users/szabotamas/tiszapp_flutter/pubspec.yaml                                                  | YAML       |        -29 |        -57 |        -16 |       -102 |
+| /Users/szabotamas/tiszapp_flutter/test/widget_test.dart                                         | Dart       |        -14 |        -10 |         -7 |        -31 |
+| /Users/szabotamas/tiszapp_flutter/web/index.html                                                | HTML       |        -37 |        -16 |         -6 |        -59 |
+| /Users/szabotamas/tiszapp_flutter/web/manifest.json                                             | JSON       |        -35 |          0 |         -1 |        -36 |
+| /Users/szabotamas/tiszapp_flutter/windows/flutter/generated_plugin_registrant.cc                | C++        |         -3 |         -4 |         -5 |        -12 |
+| /Users/szabotamas/tiszapp_flutter/windows/flutter/generated_plugin_registrant.h                 | C++        |         -5 |         -5 |         -6 |        -16 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/flutter_window.cpp                             | C++        |        -45 |         -4 |        -13 |        -62 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/flutter_window.h                               | C++        |        -20 |         -5 |         -9 |        -34 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/main.cpp                                       | C++        |        -30 |         -4 |        -10 |        -44 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/resource.h                                     | C++        |         -9 |         -6 |         -2 |        -17 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/utils.cpp                                      | C++        |        -53 |         -2 |        -10 |        -65 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/utils.h                                        | C++        |         -8 |         -6 |         -6 |        -20 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/win32_window.cpp                               | C++        |       -183 |        -15 |        -48 |       -246 |
+| /Users/szabotamas/tiszapp_flutter/windows/runner/win32_window.h                                 | C++        |        -48 |        -29 |        -22 |        -99 |
+| Total                                                                                           |            |     -1,542 |       -273 |       -264 |     -2,079 |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

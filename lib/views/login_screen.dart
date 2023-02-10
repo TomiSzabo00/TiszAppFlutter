@@ -126,12 +126,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Button3D(
       width: 150,
       onPressed: _login,
-      child: Text('Bejelentkezés',
-          style: TextStyle(
-              color: isDarkTheme
-                  ? CustomColor.btnTextNight
-                  : CustomColor.btnTextDay,
-              fontSize: 18)),
+      child: Text(
+        'Bejelentkezés',
+        style: TextStyle(
+          color:
+              isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+          fontSize: 18,
+        ),
+      ),
     );
   }
 

@@ -1,0 +1,79 @@
+Date : 2022-12-06 21:24:59
+Directory : /Users/szabotamas/tiszapp_flutter/lib
+Total : 49 files,  2834 codes, 21 comments, 305 blanks, all 3160 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         49 |      2,834 |         21 |        305 |      3,160 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                           | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                              |         49 |      2,834 |         21 |        305 |      3,160 |
+| helpers                                                                        |          1 |          7 |          0 |          3 |         10 |
+| models                                                                         |          9 |        168 |          0 |         34 |        202 |
+| services                                                                       |          2 |        159 |          1 |         39 |        199 |
+| viewmodels                                                                     |          8 |        456 |          5 |         68 |        529 |
+| views                                                                          |         15 |      1,303 |          0 |         91 |      1,394 |
+| widgets                                                                        |         10 |        560 |          1 |         51 |        612 |
++--------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                       | language | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/szabotamas/tiszapp_flutter/lib/colors.dart                              | Dart     |         26 |          0 |          4 |         30 |
+| /Users/szabotamas/tiszapp_flutter/lib/firebase_options.dart                    | Dart     |         56 |         12 |          4 |         72 |
+| /Users/szabotamas/tiszapp_flutter/lib/helpers/profile_screen_arguments.dart    | Dart     |          7 |          0 |          3 |         10 |
+| /Users/szabotamas/tiszapp_flutter/lib/main.dart                                | Dart     |         67 |          2 |          6 |         75 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/admin_api_data.dart               | Dart     |         14 |          0 |          3 |         17 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/picture_data.dart                 | Dart     |         20 |          0 |          4 |         24 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/schedule_data.dart                | Dart     |         29 |          0 |          3 |         32 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/score_data.dart                   | Dart     |         27 |          0 |          6 |         33 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/song_data.dart                    | Dart     |          5 |          0 |          2 |          7 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/text_data.dart                    | Dart     |         23 |          0 |          5 |         28 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/user_api_data.dart                | Dart     |         17 |          0 |          3 |         20 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/user_buttons.dart                 | Dart     |          8 |          0 |          3 |         11 |
+| /Users/szabotamas/tiszapp_flutter/lib/models/user_data.dart                    | Dart     |         25 |          0 |          5 |         30 |
+| /Users/szabotamas/tiszapp_flutter/lib/services/api_service.dart                | Dart     |        132 |          0 |         36 |        168 |
+| /Users/szabotamas/tiszapp_flutter/lib/services/storage_service.dart            | Dart     |         27 |          1 |          3 |         31 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/authentication_viewmodel.dart | Dart     |        112 |          0 |         14 |        126 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/main_menu_viewmodel.dart      | Dart     |         95 |          1 |         11 |        107 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/pictures_viewmodel.dart       | Dart     |         54 |          1 |         10 |         65 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/profile_viewmodel.dart        | Dart     |         33 |          1 |          6 |         40 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/schedule_viewmodel.dart       | Dart     |         43 |          0 |          6 |         49 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/scores_viewmodel.dart         | Dart     |         58 |          1 |         10 |         69 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/songs_viewmodel.dart          | Dart     |         23 |          0 |          5 |         28 |
+| /Users/szabotamas/tiszapp_flutter/lib/viewmodels/texts_viewmodel.dart          | Dart     |         38 |          1 |          6 |         45 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/login_screen.dart                  | Dart     |        161 |          0 |         16 |        177 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/main_menu_screen.dart              | Dart     |         95 |          0 |          4 |         99 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/pictures_screen.dart               | Dart     |         47 |          0 |          5 |         52 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/profile_screen.dart                | Dart     |        111 |          0 |          3 |        114 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/register_screen.dart               | Dart     |        160 |          0 |         10 |        170 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/schedule_info_screen.dart          | Dart     |         25 |          0 |          4 |         29 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/schedule_screen.dart               | Dart     |         93 |          0 |          7 |        100 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/scores_screen.dart                 | Dart     |         93 |          0 |          5 |         98 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/songs_detail_screen.dart           | Dart     |         52 |          0 |          2 |         54 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/songs_screen.dart                  | Dart     |         53 |          0 |          5 |         58 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/songs_summary_screen.dart          | Dart     |         54 |          0 |          7 |         61 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/texts_screen.dart                  | Dart     |         41 |          0 |          4 |         45 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/upload_pictures_screen.dart        | Dart     |         80 |          0 |          6 |         86 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/upload_score_screen.dart           | Dart     |        148 |          0 |          7 |        155 |
+| /Users/szabotamas/tiszapp_flutter/lib/views/upload_texts_screen.dart           | Dart     |         90 |          0 |          6 |         96 |
+| /Users/szabotamas/tiszapp_flutter/lib/widget_tree.dart                         | Dart     |         32 |          0 |          5 |         37 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/3d_button.dart                   | Dart     |        122 |          1 |         10 |        133 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/autocomplete_textfield.dart      | Dart     |         94 |          0 |          7 |        101 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/input_field.dart                 | Dart     |         82 |          0 |          8 |         90 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/menu_icon.dart                   | Dart     |         50 |          0 |          4 |         54 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/picture_item.dart                | Dart     |         33 |          0 |          4 |         37 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/schedule_field.dart              | Dart     |         42 |          0 |          4 |         46 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/score_item.dart                  | Dart     |         62 |          0 |          4 |         66 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/song_list_item.dart              | Dart     |         19 |          0 |          3 |         22 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/songs_list.dart                  | Dart     |         16 |          0 |          3 |         19 |
+| /Users/szabotamas/tiszapp_flutter/lib/widgets/text_item.dart                   | Dart     |         40 |          0 |          4 |         44 |
+| Total                                                                          |          |      2,834 |         21 |        305 |      3,160 |
++--------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

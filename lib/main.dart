@@ -20,6 +20,8 @@ import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 
+// Hello Szakdolgozat!
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

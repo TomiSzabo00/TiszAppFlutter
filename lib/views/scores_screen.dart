@@ -85,6 +85,7 @@ class _ScoresScreenState extends State<ScoresScreen> {
             ),
             ScoreItem(
               scoreData: viewModel.totalScore,
+              isSum: true,
             ),
             const SizedBox(
               height: 30,
