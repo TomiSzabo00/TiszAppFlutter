@@ -125,7 +125,7 @@ class _VotingScreenState extends State<VotingScreen> {
           const SizedBox(height: 40),
           Button3D(
             onPressed: () {
-              showAlertDialog(context);
+              showSendVoteConfirmationDialog(context);
             },
             width: 150,
             child: Padding(
@@ -150,14 +150,127 @@ class _VotingScreenState extends State<VotingScreen> {
   }
 
   Widget votingSentScreen() {
-    return Container();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('A szavazatod sikeresen beküldésre került!'),
+        const SizedBox(height: 40),
+        Button3D(
+          onPressed: () {
+            Provider.of<VotingViewmodel>(context, listen: false).resetVote();
+          },
+          width: 150,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                "Új szavazat beküldése",
+                style: TextStyle(
+                  color: widget.isDarkTheme
+                      ? CustomColor.btnTextNight
+                      : CustomColor.btnTextDay,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Button3D(
+          onPressed: () {
+            showEndVotingConfirmationDialog(context);
+          },
+          width: 150,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                "Szavazás lezárása",
+                style: TextStyle(
+                  color: widget.isDarkTheme
+                      ? CustomColor.btnTextNight
+                      : CustomColor.btnTextDay,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget finishedScreen() {
-    return Container();
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
+    final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                Text('A szavazás lezárult!\nÍme az összesített sorrend:'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          Expanded(
+            child: FutureBuilder(
+              future: Provider.of<VotingViewmodel>(context, listen: false)
+                  .getVotingResults(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title:
+                            Text('${snapshot.data![index]}'),
+                        tileColor: index.isEven ? evenItemColor : oddItemColor,
+                      );
+                    },
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 40),
+          Button3D(
+            onPressed: () {
+              showCloseVoteConfirmationDialog(context);
+            },
+            width: 150,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: Text(
+                  "Szavazás törlése",
+                  style: TextStyle(
+                    color: widget.isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  showAlertDialog(BuildContext context) {
+  showSendVoteConfirmationDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Mégse"),
       onPressed: () {
@@ -176,6 +289,72 @@ class _VotingScreenState extends State<VotingScreen> {
       title: const Text("Beküldöd a szavazatod?"),
       content: const Text(
           "Biztos vagy benne, hogy ezt a sorrendet szeretnéd beküldeni?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showEndVotingConfirmationDialog(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: const Text("Mégse"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Igen"),
+      onPressed: () {
+        Provider.of<VotingViewmodel>(context, listen: false).endVote();
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Lezárod a szavazást?"),
+      content:
+          const Text("Biztos vagy benne, hogy le akarod zárni a szavazást?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showCloseVoteConfirmationDialog(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: const Text("Mégse"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Igen"),
+      onPressed: () {
+        Provider.of<VotingViewmodel>(context, listen: false).closeVote();
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Törlöd a szavazást?"),
+      content:
+          const Text("Biztos vagy benne, hogy törölni akarod a szavazást?"),
       actions: [
         cancelButton,
         continueButton,
