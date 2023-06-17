@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
         '/Profil': (context) => ProfileScreen(
             args: ModalRoute.of(context)!.settings.arguments
                 as ProfileScreenArguments),
-        '/Szavazás': (context) => const VotingScreen(),
+        '/Szavazás': (context) => VotingScreen(),
       },
       home: const WidgetTree(),
     );
