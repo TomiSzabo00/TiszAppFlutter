@@ -14,6 +14,12 @@ class _VotingScreenState extends State<VotingScreen> {
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<VotingViewmodel>();
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Szavazás'),
+      ),
+      body: Container(
+        ),
+    );
   }
 }
