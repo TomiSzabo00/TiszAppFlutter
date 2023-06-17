@@ -23,6 +23,7 @@ class MainMenuViewModel {
     "Szövegek",
     "Szövegek feltöltése",
     "Daloskönyv",
+    "Szavazás",
   ];
   final buttonIcons = [
     Icons.calendar_today,
@@ -33,6 +34,7 @@ class MainMenuViewModel {
     Icons.text_fields,
     Icons.add,
     Icons.music_note,
+    Icons.how_to_vote,
   ];
 
   List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
