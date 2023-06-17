@@ -1,5 +1,7 @@
 import 'package:firebase_database/firebase_database.dart' as database;
 
+// Insert globally used database getters here. E.x.: getNumberOfTeams() or getFirstDay()
+
 class DatabaseService {
   static database.DatabaseReference ref =
       database.FirebaseDatabase.instance.ref();
