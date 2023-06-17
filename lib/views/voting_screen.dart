@@ -18,7 +18,7 @@ class _VotingScreenState extends State<VotingScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<VotingViewmodel>(context, listen: false).getVotingState();
+    Provider.of<VotingViewmodel>(context, listen: false).listenToVotingState();
   }
 
   @override
@@ -38,7 +38,7 @@ class _VotingScreenState extends State<VotingScreen> {
             if (viewModel.isVoteSent) {
               return votingSentScreen();
             } else {
-              return votingScreen();
+              return votingScreen(viewModel);
             }
           } else {
             return finishedScreen();
@@ -55,7 +55,9 @@ class _VotingScreenState extends State<VotingScreen> {
         const Text('Jelenleg nincs aktív szavazás.'),
         const SizedBox(height: 40),
         Button3D(
-          onPressed: () {},
+          onPressed: () {
+            Provider.of<VotingViewmodel>(context, listen: false).startVoting();
+          },
           width: 150,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -77,8 +79,74 @@ class _VotingScreenState extends State<VotingScreen> {
     );
   }
 
-  Widget votingScreen() {
-    return Container();
+  Widget votingScreen(VotingViewmodel viewModel) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
+    final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+              'Rendezd át a csapatokat teljesítményük alapján!\nElőre a legjobbakat, hátra a leggyengébbeket!'),
+          const SizedBox(height: 40),
+          Expanded(
+            child: FutureBuilder(
+              future: viewModel.getTeams(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return ReorderableListView(
+                    children: <Widget>[
+                      for (int i = 0; i < viewModel.teams.length; i++)
+                        ListTile(
+                          key: Key(i.toString()),
+                          tileColor: i.isEven ? evenItemColor : oddItemColor,
+                          title: Text('${viewModel.teams[i]}. csapat'),
+                          trailing: const Icon(Icons.drag_handle),
+                        )
+                    ],
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final int item = viewModel.teams.removeAt(oldIndex);
+                        viewModel.teams.insert(newIndex, item);
+                      });
+                    },
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 40),
+          Button3D(
+            onPressed: () {
+              showAlertDialog(context);
+            },
+            width: 150,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: Text(
+                  "Sorrend beküldése",
+                  style: TextStyle(
+                    color: widget.isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget votingSentScreen() {
@@ -87,5 +155,38 @@ class _VotingScreenState extends State<VotingScreen> {
 
   Widget finishedScreen() {
     return Container();
+  }
+
+  showAlertDialog(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: const Text("Mégse"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Igen"),
+      onPressed: () {
+        Provider.of<VotingViewmodel>(context, listen: false).sendVote();
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Beküldöd a szavazatod?"),
+      content: const Text(
+          "Biztos vagy benne, hogy ezt a sorrendet szeretnéd beküldeni?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
