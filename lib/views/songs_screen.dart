@@ -32,24 +32,27 @@ class SongsScreenState extends State<SongsScreen>
                       ? const AssetImage("images/bg2_night.png")
                       : const AssetImage("images/bg2_day.png"),
                   fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.5), BlendMode.dstATop),
                 ),
               ),
-              child: TabBarView(
-                controller: TabController(
-                    length: _viewModel.songs.length + 1, vsync: this),
-                children: [
-                  SongsSummaryScreen(songs: _viewModel.songs),
-                  for (var song in _viewModel.songs)
-                    SongsDetailScreen(
-                      song: song,
-                      tab: true,
-                    ),
-                ],
-              ),
+              child: SongsSummaryScreen(songs: _viewModel.songs),
             ),
           );
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: isDarkTheme
+                    ? const AssetImage("images/bg2_night.png")
+                    : const AssetImage("images/bg2_day.png"),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.5), BlendMode.dstATop),
+              ),
+            ),
+            child: const Center(child: CircularProgressIndicator()),
+          );
         }
       },
     );

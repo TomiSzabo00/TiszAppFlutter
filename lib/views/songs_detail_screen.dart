@@ -23,6 +23,7 @@ class SongsDetailScreen extends StatelessWidget {
                 ? const AssetImage("images/bg2_night.png")
                 : const AssetImage("images/bg2_day.png"),
             fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.dstATop),
           ),
         ),
         child: SingleChildScrollView(
@@ -41,8 +42,8 @@ class SongsDetailScreen extends StatelessWidget {
                 thickness: 1,
               ),
               Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(song.lyrics, style: const TextStyle(fontSize: 16)),
+                padding: const EdgeInsets.only(left: 20, top: 20, bottom: 40),
+                child: Text(song.lyrics, style: const TextStyle(fontSize: 18, height: 2)),
               ),
             ],
           ),

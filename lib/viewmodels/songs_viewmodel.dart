@@ -1,10 +1,12 @@
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:tiszapp_flutter/models/song_data.dart';
+import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class SongsViewModel {
   final List<Song> songs = [];
 
   Future<void> loadSongs() async {
+    StorageService.getSongs();
     final data = await rootBundle.loadString('assets/metadata/names.txt');
     List<String> lines = data.split('\n');
     for (String line in lines) {
@@ -15,6 +17,8 @@ class SongsViewModel {
       );
       songs.add(currSong);
     }
+    final onlineSongs = await StorageService.getSongs();
+    songs.addAll(onlineSongs);
   }
 
   String _getNameFromLine(String line) {
