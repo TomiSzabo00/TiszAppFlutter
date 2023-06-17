@@ -9,7 +9,7 @@ class VotingScreen extends StatefulWidget {
   VotingScreen({Key? key}) : super(key: key);
 
   bool isDarkTheme = false;
-  
+
   @override
   _VotingScreenState createState() => _VotingScreenState();
 }
@@ -35,9 +35,13 @@ class _VotingScreenState extends State<VotingScreen> {
           if (viewModel.votingState == VotingState.notStarted) {
             return notStartedScreen();
           } else if (viewModel.votingState == VotingState.inProgress) {
-            //return inProgressScreen(); // TODO
+            if (viewModel.isVoteSent) {
+              return votingSentScreen();
+            } else {
+              return votingScreen();
+            }
           } else {
-            //return finishedScreen(); // TODO
+            return finishedScreen();
           }
         }()),
       ),
@@ -50,25 +54,38 @@ class _VotingScreenState extends State<VotingScreen> {
       children: [
         const Text('Jelenleg nincs aktív szavazás.'),
         const SizedBox(height: 40),
-        Button3D(onPressed: () {},
-        width: 150,
-        child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: Text(
-                      "Szavazás indítása",
-                      style: TextStyle(
-                        color: widget.isDarkTheme
-                            ? CustomColor.btnTextNight
-                            : CustomColor.btnTextDay,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    ),
+        Button3D(
+          onPressed: () {},
+          width: 150,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                "Szavazás indítása",
+                style: TextStyle(
+                  color: widget.isDarkTheme
+                      ? CustomColor.btnTextNight
+                      : CustomColor.btnTextDay,
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+            ),
+          ),
         ),
       ],
     );
+  }
+
+  Widget votingScreen() {
+    return Container();
+  }
+
+  Widget votingSentScreen() {
+    return Container();
+  }
+
+  Widget finishedScreen() {
+    return Container();
   }
 }

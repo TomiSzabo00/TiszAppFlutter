@@ -4,6 +4,8 @@ import 'package:tiszapp_flutter/models/voting_state.dart';
 
 class VotingViewmodel with ChangeNotifier {
   VotingState votingState = VotingState.notStarted;
+  bool isVoteSent = false;
+
   VotingViewmodel();
 
   DatabaseReference ref = FirebaseDatabase.instance.ref();
