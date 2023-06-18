@@ -33,7 +33,7 @@ class SongsScreenState extends State<SongsScreen>
                       : const AssetImage("images/bg2_day.png"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.5), BlendMode.dstATop),
+                      Colors.black.withOpacity(0.7), BlendMode.dstATop),
                 ),
               ),
               child: SongsSummaryScreen(songs: _viewModel.songs),
@@ -47,8 +47,6 @@ class SongsScreenState extends State<SongsScreen>
                     ? const AssetImage("images/bg2_night.png")
                     : const AssetImage("images/bg2_day.png"),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.5), BlendMode.dstATop),
               ),
             ),
             child: const Center(child: CircularProgressIndicator()),
