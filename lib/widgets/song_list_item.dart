@@ -7,14 +7,15 @@ class SongListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
       title: Text(song.name),
       onTap: () {
         Navigator.pushNamed(context, '/Daloskönyv/Részlet', arguments: song);
       },
-      trailing: const Icon(
+      trailing: Icon(
         Icons.chevron_right,
-        color: Colors.white,
+        color: isDarkTheme ? Colors.white : Colors.black,
       ),
     );
   }

@@ -8,11 +8,18 @@ class SongsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: songs.length,
       itemBuilder: (context, index) {
         return SongListItem(song: songs[index]);
       },
+      separatorBuilder: (context, index) {
+        return const Divider(
+          height: 1,
+          thickness: 1,
+        );
+      },
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
     );
   }
 }

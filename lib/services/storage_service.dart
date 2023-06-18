@@ -1,9 +1,12 @@
+import 'package:http/http.dart' as http;
 import 'package:firebase_database/firebase_database.dart' as database;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tiszapp_flutter/models/song_data.dart';
+import 'dart:convert' show utf8;
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
@@ -25,6 +28,32 @@ class StorageService {
       'fileName': url,
       'author': FirebaseAuth.instance.currentUser!.uid,
       'title': title.isEmpty ? key : title,
+    });
+  }
+
+  static Future<List<Song>> getSongs() async {
+    final data =
+        await storage.FirebaseStorage.instance.ref().child('songs').listAll();
+    final songs = <Song>[];
+    for (var item in data.items) {
+      final lyricsLink = await storage.FirebaseStorage.instance
+          .ref()
+          .child('songs/${item.name}')
+          .getDownloadURL();
+      final lyrics = await readTextFromURL(lyricsLink);
+      final song = Song(
+        name: item.name.substring(0, item.name.length - 4).toUpperCase(),
+        lyrics: lyrics,
+      );
+      songs.add(song);
+    }
+    return songs;
+  }
+
+  static Future<String> readTextFromURL(String url) async {
+    final uri = Uri.parse(url);
+    return await http.get(uri).then((content) {
+      return utf8.decode(content.bodyBytes);
     });
   }
 }
