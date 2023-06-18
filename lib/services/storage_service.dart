@@ -40,7 +40,7 @@ class StorageService {
           .ref()
           .child('songs/${item.name}')
           .getDownloadURL();
-      final lyrics = await http.read(Uri.parse(lyricsLink));
+      final lyrics = await readTextFromURL(lyricsLink);
       final song = Song(
         name: item.name.substring(0, item.name.length - 4).toUpperCase(),
         lyrics: lyrics,
@@ -50,10 +50,10 @@ class StorageService {
     return songs;
   }
 
-  static readTextFromURL(String url) async {
+  static Future<String> readTextFromURL(String url) async {
     final uri = Uri.parse(url);
-    http.get(uri).then((content) {
-      return content;
+    return await http.get(uri).then((content) {
+      return utf8.decode(content.bodyBytes);
     });
   }
 }
