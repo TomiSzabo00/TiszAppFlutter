@@ -73,7 +73,7 @@ flutter:
     - images/bg2_day.png
     - images/bg2_night.png
     - images/logo2_outline.png
-    - assets/
+    - assets/songs/
     - assets/metadata/names.txt
     - assets/wordle/
 

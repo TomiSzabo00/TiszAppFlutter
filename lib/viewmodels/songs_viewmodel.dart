@@ -11,7 +11,6 @@ class SongsViewModel with ChangeNotifier {
   SongsViewModel();
 
   Future<void> loadSongs() async {
-    StorageService.getSongs();
     final data = await rootBundle.loadString('assets/metadata/names.txt');
     List<String> lines = data.split('\n');
     for (String line in lines) {
