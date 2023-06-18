@@ -5,6 +5,7 @@ import 'package:tiszapp_flutter/models/wordle/word.dart';
 import 'package:tiszapp_flutter/models/wordle/wordle_game_status.dart';
 import '../models/wordle/letter.dart';
 import '../models/wordle/letter_status.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class WordleViewModel with ChangeNotifier {
   WordleGameStatus gameStatus = WordleGameStatus.inProgress;
@@ -19,6 +20,9 @@ class WordleViewModel with ChangeNotifier {
 
   Word solution = Word.fromStr("TISZA");
   Word solutionCopy = Word.fromStr("");
+
+  List<String> possibleWords = [];
+  bool isLoading = true;
 
   final Set<Letter> keyboardLetters = {};
 
@@ -35,6 +39,8 @@ class WordleViewModel with ChangeNotifier {
   void init() async {
     solution = Word.fromStr(await _getSolution());
     solutionCopy = Word.fromStr(solution.wordString);
+    possibleWords = await _getWords();
+    isLoading = false;
     notifyListeners();
   }
 
@@ -45,6 +51,12 @@ class WordleViewModel with ChangeNotifier {
       return snapshot.value as String;
     }
     return "error"; // fallback solution if no solution is found in firebase
+  }
+
+  Future<List<String>> _getWords() async {
+    final data = await rootBundle.loadString('assets/wordle/magyar_szavak.txt');
+    List<String> words = data.split('\n');
+    return words.map((e) => e.toLowerCase()).toList();
   }
 
   void onLetterTap(String letter) {
@@ -65,15 +77,22 @@ class WordleViewModel with ChangeNotifier {
     if (gameStatus == WordleGameStatus.inProgress &&
         currentWord != null &&
         !currentWord!.letters.contains(Letter.empty())) {
+      // check if typed word is in words list
+      final word = currentWord!.wordString;
+      if (!possibleWords.contains(word.toLowerCase())) {
+        // TODO: show error message
+        return;
+      }
       gameStatus = WordleGameStatus.submitting;
       solutionCopy = Word.fromStr(solution.wordString);
 
       for (var i = 0; i < currentWord!.letters.length; i++) {
         final currLetter = currentWord!.letters[i];
 
-        if (currLetter.letter.toLowerCase() == solution.letters[i].letter.toLowerCase()) {
-          final copyIndex = solutionCopy.letters
-              .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (currLetter.letter.toLowerCase() ==
+            solution.letters[i].letter.toLowerCase()) {
+          final copyIndex = solutionCopy.letters.indexWhere((element) =>
+              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           if (copyIndex != -1) {
             solutionCopy.letters.removeAt(copyIndex);
           }
@@ -88,9 +107,11 @@ class WordleViewModel with ChangeNotifier {
           continue;
         }
 
-        if (solutionCopy.letters.map((e) => e.letter.toLowerCase()).contains(currLetter.letter.toLowerCase())) {
-          final copyIndex = solutionCopy.letters
-              .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (solutionCopy.letters
+            .map((e) => e.letter.toLowerCase())
+            .contains(currLetter.letter.toLowerCase())) {
+          final copyIndex = solutionCopy.letters.indexWhere((element) =>
+              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           if (copyIndex != -1) {
             solutionCopy.letters.removeAt(copyIndex);
           }
@@ -113,12 +134,15 @@ class WordleViewModel with ChangeNotifier {
 
             // add state to keyboard
             final letter = keyboardLetters.firstWhere(
-              (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
+              (element) =>
+                  element.letter.toLowerCase() ==
+                  currLetter.letter.toLowerCase(),
               orElse: () => Letter.empty(),
             );
             if (letter.status != LetterStatus.correct) {
-              keyboardLetters.removeWhere(
-                  (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+              keyboardLetters.removeWhere((element) =>
+                  element.letter.toLowerCase() ==
+                  currLetter.letter.toLowerCase());
               keyboardLetters.add(currentWord!.letters[i]);
             }
 
@@ -132,7 +156,8 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void checkForGameEnd() {
-    if (currentWord!.wordString.toLowerCase() == solution.wordString.toLowerCase()) {
+    if (currentWord!.wordString.toLowerCase() ==
+        solution.wordString.toLowerCase()) {
       gameStatus = WordleGameStatus.won;
     } else if (currentWordIndex == board.length - 1) {
       gameStatus = WordleGameStatus.lost;
