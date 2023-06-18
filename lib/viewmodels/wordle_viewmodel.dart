@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/wordle/word.dart';
@@ -31,9 +32,19 @@ class WordleViewModel with ChangeNotifier {
 
   WordleViewModel();
 
-  void init() {
-    // TODO: get solution from firebase
+  void init() async {
+    solution = Word.fromStr(await _getSolution());
     solutionCopy = Word.fromStr(solution.wordString);
+    notifyListeners();
+  }
+
+  Future<String> _getSolution() async {
+    DatabaseReference ref = FirebaseDatabase.instance.ref();
+    DataSnapshot snapshot = await ref.child('wordle/solution').get();
+    if (snapshot.value != null) {
+      return snapshot.value as String;
+    }
+    return "error"; // fallback solution if no solution is found in firebase
   }
 
   void onLetterTap(String letter) {
@@ -99,7 +110,7 @@ class WordleViewModel with ChangeNotifier {
           () {
             // flip cards
             flipCardKeys[currentWordIndex][i].currentState?.toggleCard();
-            
+
             // add state to keyboard
             final letter = keyboardLetters.firstWhere(
               (element) => element.letter == currLetter.letter,
@@ -110,7 +121,7 @@ class WordleViewModel with ChangeNotifier {
                   (element) => element.letter == currLetter.letter);
               keyboardLetters.add(currentWord!.letters[i]);
             }
-            
+
             notifyListeners();
           },
         );
