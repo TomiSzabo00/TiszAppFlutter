@@ -27,3 +27,9 @@ class CustomColor extends Color {
     },
   );
 }
+
+extension WordleColors on CustomColor {
+  static const correctColor = Color(0xFF538D4E);
+  static const inWordColor = Color(0xFFB49F3A);
+  static const notInWordColor = Color(0xFF3A3A3C);
+}
