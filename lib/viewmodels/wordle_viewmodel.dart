@@ -71,9 +71,9 @@ class WordleViewModel with ChangeNotifier {
       for (var i = 0; i < currentWord!.letters.length; i++) {
         final currLetter = currentWord!.letters[i];
 
-        if (currLetter.letter == solution.letters[i].letter) {
+        if (currLetter.letter.toLowerCase() == solution.letters[i].letter.toLowerCase()) {
           final copyIndex = solutionCopy.letters
-              .indexWhere((element) => element.letter == currLetter.letter);
+              .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           if (copyIndex != -1) {
             solutionCopy.letters.removeAt(copyIndex);
           }
@@ -88,9 +88,9 @@ class WordleViewModel with ChangeNotifier {
           continue;
         }
 
-        if (solutionCopy.letters.contains(currLetter)) {
+        if (solutionCopy.letters.map((e) => e.letter.toLowerCase()).contains(currLetter.letter.toLowerCase())) {
           final copyIndex = solutionCopy.letters
-              .indexWhere((element) => element.letter == currLetter.letter);
+              .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           if (copyIndex != -1) {
             solutionCopy.letters.removeAt(copyIndex);
           }
@@ -113,12 +113,12 @@ class WordleViewModel with ChangeNotifier {
 
             // add state to keyboard
             final letter = keyboardLetters.firstWhere(
-              (element) => element.letter == currLetter.letter,
+              (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
               orElse: () => Letter.empty(),
             );
             if (letter.status != LetterStatus.correct) {
               keyboardLetters.removeWhere(
-                  (element) => element.letter == currLetter.letter);
+                  (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
               keyboardLetters.add(currentWord!.letters[i]);
             }
 
@@ -132,7 +132,7 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void checkForGameEnd() {
-    if (currentWord!.wordString == solution.wordString) {
+    if (currentWord!.wordString.toLowerCase() == solution.wordString.toLowerCase()) {
       gameStatus = WordleGameStatus.won;
     } else if (currentWordIndex == board.length - 1) {
       gameStatus = WordleGameStatus.lost;
