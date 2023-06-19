@@ -34,9 +34,9 @@ class Keyboard extends StatelessWidget {
               children: row.map(
                 (letter) {
                   if (letter == "DEL") {
-                    return _KeyboardButton.delete(onTap: onDeletePressed);
+                    return _KeyboardButton.delete(onTap: onDeletePressed, isDarkTheme: isDarkTheme);
                   } else if (letter == "ENTER") {
-                    return _KeyboardButton.enter(onTap: onEnterPressed);
+                    return _KeyboardButton.enter(onTap: onEnterPressed, isDarkTheme: isDarkTheme);
                   } else {
                     final letterKey = letters.firstWhere(
                       (element) => element.letter == letter,
@@ -63,7 +63,6 @@ class Keyboard extends StatelessWidget {
 class _KeyboardButton extends StatelessWidget {
   const _KeyboardButton({
     Key? key,
-    this.height = 48,
     this.width = 48,
     this.flex = 1,
     required this.onTap,
@@ -71,7 +70,7 @@ class _KeyboardButton extends StatelessWidget {
     required this.backgroundColor,
   }) : super(key: key);
 
-  final double height;
+  final double height = 48;
   final double width;
   final int flex;
   final VoidCallback onTap;
@@ -80,25 +79,27 @@ class _KeyboardButton extends StatelessWidget {
 
   factory _KeyboardButton.delete({
     required VoidCallback onTap,
+    required bool isDarkTheme,
   }) {
     return _KeyboardButton(
       width: 56,
       flex: 0,
       onTap: onTap,
       letter: "DEL",
-      backgroundColor: Colors.grey,
+      backgroundColor: isDarkTheme ? Colors.grey : Colors.white,
     );
   }
 
   factory _KeyboardButton.enter({
     required VoidCallback onTap,
+    required bool isDarkTheme,
   }) {
     return _KeyboardButton(
       width: 56,
       flex: 0,
       onTap: onTap,
       letter: "ENTER",
-      backgroundColor: Colors.grey,
+      backgroundColor: isDarkTheme ? Colors.grey : Colors.white,
     );
   }
 

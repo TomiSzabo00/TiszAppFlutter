@@ -76,7 +76,7 @@ class WordleScreenState extends State<WordleScreen> {
                   if (viewModel.shouldShowNoWordError) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       showTopSnackBar(
-                        Overlay.of(context)!,
+                        Overlay.of(context),
                         const CustomSnackBar.error(
                           message: "Nincs ilyen magyar szó!",
                         ),
