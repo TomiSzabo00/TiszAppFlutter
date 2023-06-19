@@ -24,6 +24,7 @@ class Keyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: keys
@@ -46,8 +47,8 @@ class Keyboard extends StatelessWidget {
                       onTap: () => onLetterPressed(letter),
                       letter: letter,
                       backgroundColor: letterKey != Letter.empty()
-                          ? letterKey.backgroundColor
-                          : Colors.grey,
+                          ? letterKey.getBackgroundColor(isDarkTheme)
+                          : isDarkTheme ? Colors.grey : Colors.white,
                     );
                   }
                 },

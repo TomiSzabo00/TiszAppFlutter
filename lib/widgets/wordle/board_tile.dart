@@ -9,14 +9,15 @@ class BoardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 48,
       height: 48,
       margin: const EdgeInsets.all(4),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: letter.backgroundColor,
-        border: Border.all(color: letter.borderColor),
+        color: letter.getBackgroundColor(isDarkTheme),
+        border: Border.all(color: letter.getBorderColor(isDarkTheme)),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

@@ -29,7 +29,11 @@ class CustomColor extends Color {
 }
 
 extension WordleColors on CustomColor {
-  static const correctColor = Color(0xFF538D4E);
-  static const inWordColor = Color(0xFFB49F3A);
-  static const notInWordColor = Color(0xFF3A3A3C);
+  static const correctColorDark = Color(0xFF538D4E);
+  static const inWordColorDark = Color(0xFFB49F3A);
+  static const notInWordColorDark = Color(0xFF3A3A3C);
+
+  static const correctColorLight = Color.fromARGB(255, 125, 194, 119);
+  static const inWordColorLight = Color.fromARGB(255, 241, 210, 54);
+  static const notInWordColorLight = Color.fromARGB(255, 193, 193, 193);
 }

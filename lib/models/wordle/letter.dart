@@ -13,23 +13,23 @@ class Letter extends Equatable {
     return const Letter(letter: "");
   }
 
-  Color get backgroundColor {
+  Color getBackgroundColor(bool isDarkTheme) {
     switch (status) {
       case LetterStatus.initial:
         return Colors.transparent;
       case LetterStatus.inWord:
-        return WordleColors.inWordColor;
+        return isDarkTheme ? WordleColors.inWordColorDark : WordleColors.inWordColorLight;
       case LetterStatus.notInWord:
-        return WordleColors.notInWordColor;
+        return isDarkTheme ? WordleColors.notInWordColorDark : WordleColors.notInWordColorLight;
       case LetterStatus.correct:
-        return WordleColors.correctColor;
+        return isDarkTheme ? WordleColors.correctColorDark : WordleColors.correctColorLight;
     }
   }
 
-  Color get borderColor {
+  Color getBorderColor(bool isDarkTheme) {
     switch (status) {
       case LetterStatus.initial:
-        return Colors.grey;
+        return isDarkTheme ? Colors.grey : Colors.black;
       default:
         return Colors.transparent;
     }
