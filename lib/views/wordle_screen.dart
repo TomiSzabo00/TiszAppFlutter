@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tiszapp_flutter/models/wordle/wordle_game_status.dart';
 import 'package:tiszapp_flutter/widgets/wordle/keyboard.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -83,6 +84,39 @@ class WordleScreenState extends State<WordleScreen> {
                         onAnimationControllerInit: (controller) =>
                             localAnimationController = controller,
                         displayDuration: const Duration(seconds: 2),
+                      );
+                    });
+                  } else if (viewModel.gameStatus == WordleGameStatus.won) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.success(
+                          message: "Gratulálok, nyertél!",
+                          textScaleFactor: 1.3,
+                        ),
+                        onAnimationControllerInit: (controller) =>
+                            localAnimationController = controller,
+                        displayDuration: const Duration(hours: 1),
+                        dismissType: DismissType.onSwipe,
+                      );
+                    });
+                  } else if (viewModel.gameStatus == WordleGameStatus.lost) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.error(
+                          icon: Icon(
+                            Icons.sentiment_very_dissatisfied,
+                            color: Color(0x15000000),
+                            size: 120,
+                          ),
+                          message: "Sajnos vesztettél!",
+                          textScaleFactor: 1.3,
+                        ),
+                        onAnimationControllerInit: (controller) =>
+                            localAnimationController = controller,
+                        displayDuration: const Duration(hours: 1),
+                        dismissType: DismissType.onSwipe,
                       );
                     });
                   }
