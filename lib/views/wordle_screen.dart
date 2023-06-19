@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/widgets/wordle/keyboard.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../models/wordle/letter.dart';
 import '../models/wordle/word.dart';
 import '../viewmodels/wordle_viewmodel.dart';
@@ -23,6 +25,7 @@ class WordleScreenState extends State<WordleScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<WordleViewModel>();
+    AnimationController localAnimationController;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Wordle'),
@@ -41,7 +44,26 @@ class WordleScreenState extends State<WordleScreen> {
                 onDeletePressed: viewModel.onBackspaceTap,
                 letters: viewModel.keyboardLetters,
               ),
-            )
+            ),
+            // Consumer to listen to shouldShowError in the viewmodel
+            Consumer<WordleViewModel>(
+              builder: (context, viewModel, child) {
+                if (viewModel.shouldShowNoWordError) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showTopSnackBar(
+                      Overlay.of(context)!,
+                      const CustomSnackBar.error(
+                        message: "Nincs ilyen magyar szó!",
+                      ),
+                      onAnimationControllerInit: (controller) =>
+                          localAnimationController = controller,
+                      displayDuration: const Duration(seconds: 2),
+                    );
+                  });
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ],
         ),
       ),

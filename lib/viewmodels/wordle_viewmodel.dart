@@ -23,6 +23,7 @@ class WordleViewModel with ChangeNotifier {
 
   List<String> possibleWords = [];
   bool isLoading = true;
+  bool shouldShowNoWordError = false;
 
   final Set<Letter> keyboardLetters = {};
 
@@ -56,7 +57,9 @@ class WordleViewModel with ChangeNotifier {
   Future<List<String>> _getWords() async {
     final data = await rootBundle.loadString('assets/wordle/magyar_szavak.txt');
     List<String> words = data.split('\n');
-    return words.map((e) => e.toLowerCase()).toList();
+    // modify all words to lowercase
+    words = words.map((e) => e.trim().toLowerCase()).toList();
+    return words;
   }
 
   void onLetterTap(String letter) {
@@ -78,9 +81,14 @@ class WordleViewModel with ChangeNotifier {
         currentWord != null &&
         !currentWord!.letters.contains(Letter.empty())) {
       // check if typed word is in words list
-      final word = currentWord!.wordString;
-      if (!possibleWords.contains(word.toLowerCase())) {
-        // TODO: show error message
+      final word = currentWord!.wordString.toLowerCase();
+      if (!possibleWords.contains(word)) {
+        shouldShowNoWordError = true;
+        notifyListeners();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          shouldShowNoWordError = false;
+          notifyListeners();
+        });
         return;
       }
       gameStatus = WordleGameStatus.submitting;
@@ -125,33 +133,34 @@ class WordleViewModel with ChangeNotifier {
 
       // flip the cards and reveal their state
       for (var i = 0; i < currentWord!.letters.length; i++) {
-        final currLetter = currentWord!.letters[i];
         await Future.delayed(
           const Duration(milliseconds: 150),
           () {
             // flip cards
             flipCardKeys[currentWordIndex][i].currentState?.toggleCard();
-
-            // add state to keyboard
-            final letter = keyboardLetters.firstWhere(
-              (element) =>
-                  element.letter.toLowerCase() ==
-                  currLetter.letter.toLowerCase(),
-              orElse: () => Letter.empty(),
-            );
-            if (letter.status != LetterStatus.correct) {
-              keyboardLetters.removeWhere((element) =>
-                  element.letter.toLowerCase() ==
-                  currLetter.letter.toLowerCase());
-              keyboardLetters.add(currentWord!.letters[i]);
-            }
-
             notifyListeners();
           },
         );
       }
 
-      checkForGameEnd();
+      Future.delayed(const Duration(milliseconds: 150 * 5), () {
+        for (var i = 0; i < currentWord!.letters.length; i++) {
+          final currLetter = currentWord!.letters[i];
+          final letter = keyboardLetters.firstWhere(
+            (element) =>
+                element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
+            orElse: () => Letter.empty(),
+          );
+          if (letter.status != LetterStatus.correct) {
+            keyboardLetters.removeWhere((element) =>
+                element.letter.toLowerCase() ==
+                currLetter.letter.toLowerCase());
+            keyboardLetters.add(currentWord!.letters[i]);
+          }
+        }
+
+        checkForGameEnd();
+      });
     }
   }
 
