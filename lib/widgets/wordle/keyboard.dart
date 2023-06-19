@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/wordle/letter.dart';
 
-const _qwerty = [
-  ["Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P"],
+const keys = [
+  ["Í", "Ö", "Ü", "Ó", "Ő", "Ú", "É", "Á", "Ű"], // ö ü ó ő ú é á ű í
+  ["Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P"], // 12
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
   ["ENTER", "Y", "X", "C", "V", "B", "N", "M", "DEL"],
 ];
@@ -25,7 +26,7 @@ class Keyboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: _qwerty
+      children: keys
           .map(
             (row) => Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +122,7 @@ class _KeyboardButton extends StatelessWidget {
                 child: Text(
                   letter,
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

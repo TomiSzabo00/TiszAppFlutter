@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/widgets/wordle/keyboard.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
-import '../models/wordle/letter.dart';
-import '../models/wordle/word.dart';
 import '../viewmodels/wordle_viewmodel.dart';
 import '../widgets/wordle/board.dart';
 
@@ -25,6 +23,7 @@ class WordleScreenState extends State<WordleScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<WordleViewModel>();
+    // ignore: unused_local_variable
     AnimationController localAnimationController;
     return Scaffold(
       appBar: AppBar(
@@ -34,10 +33,24 @@ class WordleScreenState extends State<WordleScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Board(board: viewModel.board, flipCardKeys: viewModel.flipCardKeys),
-            const SizedBox(height: 80),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  thickness: 8.0,
+                  radius: const Radius.circular(20.0),
+                  child: SingleChildScrollView(
+                    child: Board(
+                        board: viewModel.board,
+                        flipCardKeys: viewModel.flipCardKeys),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(32.0),
               child: Keyboard(
                 onLetterPressed: viewModel.onLetterTap,
                 onEnterPressed: viewModel.onEnterTap,
