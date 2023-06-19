@@ -63,6 +63,9 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void onLetterTap(String letter) {
+    if (isLoading) {
+      return;
+    }
     if (gameStatus == WordleGameStatus.inProgress) {
       currentWord?.addLetter(letter);
       notifyListeners();

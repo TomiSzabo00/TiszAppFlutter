@@ -49,16 +49,35 @@ class WordleScreenState extends State<WordleScreen> {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 12.0),
-                  child: Scrollbar(
-                    thumbVisibility: true,
-                    thickness: 8.0,
-                    radius: const Radius.circular(20.0),
-                    child: SingleChildScrollView(
-                      child: Board(
-                          board: viewModel.board,
-                          flipCardKeys: viewModel.flipCardKeys),
-                    ),
-                  ),
+                  child: (() {
+                    if (viewModel.isLoading) {
+                      return const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 20),
+                          Text(
+                            "Betöltés...",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Scrollbar(
+                        thumbVisibility: true,
+                        thickness: 8.0,
+                        radius: const Radius.circular(20.0),
+                        child: SingleChildScrollView(
+                          child: Board(
+                              board: viewModel.board,
+                              flipCardKeys: viewModel.flipCardKeys),
+                        ),
+                      );
+                    }
+                  })(),
                 ),
               ),
               const SizedBox(height: 30),
