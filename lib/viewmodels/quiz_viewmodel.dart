@@ -149,7 +149,7 @@ class QuizViewModel extends ChangeNotifier {
       final senderUid = event.snapshot.value as String;
       DatabaseService.getUserData(senderUid).then((senderData) {
         // check if this team already sent a signal
-        if (signals.contains(senderData.teamNum) || signals.length >= 6) {
+        if (signals.contains(senderData.teamNum) || signals.length >= numberOfTeams) {
           return;
         }
         signals.add(senderData.teamNum);
