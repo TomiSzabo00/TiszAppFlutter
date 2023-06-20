@@ -22,6 +22,12 @@ class WordleScreenState extends State<WordleScreen> {
   }
 
   @override
+  void activate() {
+    super.activate();
+    Provider.of<WordleViewModel>(context, listen: false).init();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<WordleViewModel>();
@@ -112,12 +118,12 @@ class WordleScreenState extends State<WordleScreen> {
                       showTopSnackBar(
                         Overlay.of(context),
                         const CustomSnackBar.success(
-                          message: "Gratulálok, nyertél!",
+                          message: "Gratulálok, nyertél! Nézz vissza holnap!",
                           textScaleFactor: 1.3,
                         ),
                         onAnimationControllerInit: (controller) =>
                             localAnimationController = controller,
-                        displayDuration: const Duration(seconds: 3),
+                        displayDuration: const Duration(hours: 3),
                         dismissType: DismissType.onSwipe,
                       );
                     });
@@ -125,18 +131,19 @@ class WordleScreenState extends State<WordleScreen> {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       showTopSnackBar(
                         Overlay.of(context),
-                        const CustomSnackBar.error(
-                          icon: Icon(
+                        CustomSnackBar.error(
+                          icon: const Icon(
                             Icons.sentiment_very_dissatisfied,
                             color: Color(0x15000000),
                             size: 120,
                           ),
-                          message: "Sajnos vesztettél!",
-                          textScaleFactor: 1.3,
+                          message:
+                              "Sajnos vesztettél! A megoldás a ${viewModel.solution.wordString.toUpperCase()} volt.",
+                          textScaleFactor: 1.2,
                         ),
                         onAnimationControllerInit: (controller) =>
                             localAnimationController = controller,
-                        displayDuration: const Duration(seconds: 3),
+                        displayDuration: const Duration(hours: 3),
                         dismissType: DismissType.onSwipe,
                       );
                     });

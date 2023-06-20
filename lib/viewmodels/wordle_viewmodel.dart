@@ -49,6 +49,7 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void init() async {
+    gameStatus = WordleGameStatus.submitting;
     isLoading = true;
     solution = Word.fromStr(await _getSolution());
     board = await _getStateFromFirebase();
@@ -56,9 +57,7 @@ class WordleViewModel with ChangeNotifier {
     _updateKeyboardTiles();
     _updateCurrentWordIndex();
     checkForGameEnd();
-    currentWordIndex++;
     if (gameStatus == WordleGameStatus.inProgress) {
-      solutionCopy = Word.fromStr(solution.wordString);
       possibleWords = await _getWords();
       isLoading = false;
     } else {
@@ -93,9 +92,7 @@ class WordleViewModel with ChangeNotifier {
   // update currentWordIndex to the first empty word
   void _updateCurrentWordIndex() {
     currentWordIndex = board.indexWhere((element) =>
-            element.letters.indexWhere((element) => element.letter.isEmpty) !=
-            -1) -
-        1;
+        element.letters.indexWhere((element) => element.letter.isEmpty) != -1);
   }
 
   void _saveGameState() {
@@ -228,18 +225,25 @@ class WordleViewModel with ChangeNotifier {
           }
         }
 
-        checkForGameEnd();
         currentWordIndex++;
+        checkForGameEnd();
         _saveGameState();
       });
     }
   }
 
   void checkForGameEnd() {
-    if (currentWord.wordString.toLowerCase() ==
+    if (currentWordIndex < 0) {
+      gameStatus = WordleGameStatus.lost;
+      notifyListeners();
+      return;
+    }
+    final lastWord =
+        currentWordIndex == 0 ? board.first : board[currentWordIndex - 1];
+    if (lastWord.wordString.toLowerCase() ==
         solution.wordString.toLowerCase()) {
       gameStatus = WordleGameStatus.won;
-    } else if (currentWordIndex == board.length - 1) {
+    } else if (currentWordIndex == board.length) {
       gameStatus = WordleGameStatus.lost;
     } else {
       gameStatus = WordleGameStatus.inProgress;
@@ -248,11 +252,14 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void _updateBoardTileStates() {
-    solutionCopy = Word.fromStr(solution.wordString);
     // determine index of last row of board with letters
-    final lastRow = board.indexWhere((element) => element.wordString.isEmpty);
+    var lastRow = board.indexWhere((element) => element.wordString.isEmpty);
+    if (lastRow == -1) {
+      lastRow = board.length;
+    }
 
     for (var j = 0; j < lastRow; j++) {
+      solutionCopy = Word.fromStr(solution.wordString);
       for (var i = 0; i < board[j].letters.length; i++) {
         final currLetter = board[j].letters[i];
 
@@ -267,7 +274,7 @@ class WordleViewModel with ChangeNotifier {
               currLetter.copyWith(status: LetterStatus.correct);
         }
       }
-    
+
       for (var i = 0; i < board[j].letters.length; i++) {
         final currLetter = board[j].letters[i];
         if (currLetter.status == LetterStatus.correct) {
@@ -298,7 +305,11 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void _updateKeyboardTiles() {
-    final lastRow = board.indexWhere((element) => element.wordString.isEmpty);
+    keyboardLetters.clear();
+    var lastRow = board.indexWhere((element) => element.wordString.isEmpty);
+    if (lastRow == -1) {
+      lastRow = board.length;
+    }
 
     for (var j = 0; j < lastRow; j++) {
       for (var i = 0; i < board[j].letters.length; i++) {
