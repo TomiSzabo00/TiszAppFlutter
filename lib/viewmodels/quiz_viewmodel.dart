@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/models/quiz/quiz_state.dart';
 
 class QuizViewModel extends ChangeNotifier {
-  int _currentIndex = 0;
-  int get currentIndex => _currentIndex;
+  var state = QuizState.disabled;
 
-  void incrementIndex() {
-    _currentIndex++;
+  bool get canSend => state == QuizState.enabled;
+
+  void _updateState(QuizState newState) {
+    state = newState;
     notifyListeners();
+  }
+
+  void send() {
+    // TODO: implement send
+    print('sent');
   }
 }
