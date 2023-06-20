@@ -79,7 +79,9 @@ class MyApp extends StatelessWidget {
                 as ProfileScreenArguments),
         '/Szavazás': (context) => VotingScreen(),
         '/Wordle': (context) => const WordleScreen(),
-        '/AV Kvíz': (context) => const QuizScreen(),
+        '/AV Kvíz': (context) => QuizScreen(
+          isAdmin: ModalRoute.of(context)!.settings.arguments as bool,
+        ),
       },
       home: const WidgetTree(),
     );
