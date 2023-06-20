@@ -57,7 +57,7 @@ class _QuizScreenState extends State<QuizScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Ajjaj...'),
-        content: const Text('Ne tarts az ujjad a gombon! Az csalás :)'),
+        content: const Text('Ne tartsd az ujjad a gombon! Az csalás :)'),
         actions: [
           TextButton(
             onPressed: () {
