@@ -1,4 +1,5 @@
 import 'package:flip_card/flip_card.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/wordle/letter_status.dart';
 import '../../models/wordle/letter.dart';
@@ -9,12 +10,14 @@ class Board extends StatelessWidget {
   const Board({
     Key? key,
     required this.board,
-    required this.flipCardKeys,
+    required this.flipCardControllers,
+    required this.flipped,
   }) : super(key: key);
 
   final List<Word> board;
 
-  final List<List<GlobalKey<FlipCardState>>> flipCardKeys;
+  final List<List<FlipCardController>> flipCardControllers;
+  final List<List<bool>> flipped;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,8 @@ class Board extends StatelessWidget {
                       (j, letter) => MapEntry(
                         j,
                         FlipCard(
-                          key: flipCardKeys[i][j],
+                          controller: flipCardControllers[i][j],
+                          side: flipped[i][j] ? CardSide.BACK : CardSide.FRONT,
                           flipOnTouch: false,
                           direction: FlipDirection.VERTICAL,
                           front: BoardTile(

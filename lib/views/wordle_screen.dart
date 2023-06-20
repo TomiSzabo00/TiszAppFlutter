@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/wordle/wordle_game_status.dart';
+import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
+import 'package:tiszapp_flutter/widgets/wordle/board.dart';
 import 'package:tiszapp_flutter/widgets/wordle/keyboard.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
-import '../viewmodels/wordle_viewmodel.dart';
-import '../widgets/wordle/board.dart';
 
 class WordleScreen extends StatefulWidget {
   const WordleScreen({Key? key}) : super(key: key);
@@ -72,8 +72,10 @@ class WordleScreenState extends State<WordleScreen> {
                         radius: const Radius.circular(20.0),
                         child: SingleChildScrollView(
                           child: Board(
-                              board: viewModel.board,
-                              flipCardKeys: viewModel.flipCardKeys),
+                            board: viewModel.board,
+                            flipCardControllers: viewModel.flipCardControllers,
+                            flipped: viewModel.shouldCardBeFlipped,
+                          ),
                         ),
                       );
                     }
@@ -115,7 +117,7 @@ class WordleScreenState extends State<WordleScreen> {
                         ),
                         onAnimationControllerInit: (controller) =>
                             localAnimationController = controller,
-                        displayDuration: const Duration(hours: 1),
+                        displayDuration: const Duration(seconds: 3),
                         dismissType: DismissType.onSwipe,
                       );
                     });
@@ -134,7 +136,7 @@ class WordleScreenState extends State<WordleScreen> {
                         ),
                         onAnimationControllerInit: (controller) =>
                             localAnimationController = controller,
-                        displayDuration: const Duration(hours: 1),
+                        displayDuration: const Duration(seconds: 3),
                         dismissType: DismissType.onSwipe,
                       );
                     });

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flip_card/flip_card.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/models/wordle/letter.dart';
+import 'package:tiszapp_flutter/models/wordle/letter_status.dart';
 import 'package:tiszapp_flutter/models/wordle/word.dart';
 import 'package:tiszapp_flutter/models/wordle/wordle_game_status.dart';
-import '../models/wordle/letter.dart';
-import '../models/wordle/letter_status.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class WordleViewModel with ChangeNotifier {
@@ -28,11 +28,19 @@ class WordleViewModel with ChangeNotifier {
 
   final Set<Letter> keyboardLetters = {};
 
-  List<List<GlobalKey<FlipCardState>>> flipCardKeys = List.generate(
+  final List<List<FlipCardController>> flipCardControllers = List.generate(
     6,
     (_) => List.generate(
       5,
-      (_) => GlobalKey<FlipCardState>(),
+      (_) => FlipCardController(),
+    ),
+  );
+
+  final List<List<bool>> shouldCardBeFlipped = List.generate(
+    6,
+    (_) => List.generate(
+      5,
+      (_) => false,
     ),
   );
 
@@ -80,16 +88,6 @@ class WordleViewModel with ChangeNotifier {
     }
 
     return board;
-  }
-
-  List<List<GlobalKey<FlipCardState>>> _initCardKeys() {
-    return flipCardKeys = List.generate(
-      6,
-      (_) => List.generate(
-        5,
-        (_) => GlobalKey<FlipCardState>(),
-      ),
-    );
   }
 
   // update currentWordIndex to the first empty word
@@ -208,7 +206,7 @@ class WordleViewModel with ChangeNotifier {
           const Duration(milliseconds: 150),
           () {
             // flip cards
-            flipCardKeys[currentWordIndex][i].currentState?.toggleCard();
+            flipCardControllers[currentWordIndex][i].toggleCard();
             notifyListeners();
           },
         );
@@ -250,7 +248,6 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void _updateBoardTileStates() {
-    flipCardKeys = _initCardKeys();
     solutionCopy = Word.fromStr(solution.wordString);
     // determine index of last row of board with letters
     final lastRow = board.indexWhere((element) => element.wordString.isEmpty);
@@ -298,7 +295,7 @@ class WordleViewModel with ChangeNotifier {
 
     for (var j = 0; j < lastRow; j++) {
       for (var i = 0; i < board[j].letters.length; i++) {
-        flipCardKeys[j][i].currentState?.toggleCard();
+        shouldCardBeFlipped[j][i] = true;
         notifyListeners();
       }
     }
