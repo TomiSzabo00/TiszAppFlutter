@@ -8,9 +8,11 @@ import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
 import 'package:tiszapp_flutter/views/profile_screen.dart';
 import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
+import 'package:tiszapp_flutter/views/wordle_screen.dart';
 import 'firebase_options.dart';
 import 'widget_tree.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
@@ -36,6 +38,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => TextsViewModel()),
       ChangeNotifierProvider(create: (_) => VotingViewmodel()),
       ChangeNotifierProvider(create: (_) => SongsViewModel()),
+      ChangeNotifierProvider(create: (_) => WordleViewModel()),
     ], child: const MyApp()),
   );
 }
@@ -72,6 +75,7 @@ class MyApp extends StatelessWidget {
             args: ModalRoute.of(context)!.settings.arguments
                 as ProfileScreenArguments),
         '/Szavazás': (context) => VotingScreen(),
+        '/Wordle': (context) => const WordleScreen(),
       },
       home: const WidgetTree(),
     );
