@@ -16,7 +16,7 @@ class Letter extends Equatable {
   Color getBackgroundColor(bool isDarkTheme) {
     switch (status) {
       case LetterStatus.initial:
-        return Colors.transparent;
+        return isDarkTheme ? Colors.grey.withOpacity(0.5) : Colors.black.withOpacity(0.3);
       case LetterStatus.inWord:
         return isDarkTheme ? WordleColors.inWordColorDark : WordleColors.inWordColorLight;
       case LetterStatus.notInWord:

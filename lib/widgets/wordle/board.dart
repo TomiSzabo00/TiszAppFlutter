@@ -34,18 +34,23 @@ class Board extends StatelessWidget {
                     .map(
                       (j, letter) => MapEntry(
                         j,
-                        FlipCard(
-                          controller: flipCardControllers[i][j],
-                          side: flipped[i][j] ? CardSide.BACK : CardSide.FRONT,
-                          flipOnTouch: false,
-                          direction: FlipDirection.VERTICAL,
-                          front: BoardTile(
-                            letter: Letter(
-                              letter: letter.letter,
-                              status: LetterStatus.initial,
+                        Expanded(
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: FlipCard(
+                              controller: flipCardControllers[i][j],
+                              side: flipped[i][j] ? CardSide.BACK : CardSide.FRONT,
+                              flipOnTouch: false,
+                              direction: FlipDirection.VERTICAL,
+                              front: BoardTile(
+                                letter: Letter(
+                                  letter: letter.letter,
+                                  status: LetterStatus.initial,
+                                ),
+                              ),
+                              back: BoardTile(letter: letter),
                             ),
                           ),
-                          back: BoardTile(letter: letter),
                         ),
                       ),
                     )

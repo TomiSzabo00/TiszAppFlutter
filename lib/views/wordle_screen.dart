@@ -50,11 +50,11 @@ class WordleScreenState extends State<WordleScreen> {
         ),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Flexible(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: (() {
                     if (viewModel.isLoading) {
                       return const Column(
@@ -88,9 +88,9 @@ class WordleScreenState extends State<WordleScreen> {
                   })(),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.all(32.0),
+                padding: const EdgeInsets.only(bottom: 30.0, left: 12, right: 12, top: 10),
                 child: Keyboard(
                   onLetterPressed: viewModel.onLetterTap,
                   onEnterPressed: viewModel.onEnterTap,
