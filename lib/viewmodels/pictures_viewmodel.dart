@@ -23,6 +23,9 @@ class PicturesViewModel {
 
   XFile? image;
 
+  bool notEmpty = false;
+  dynamic dropdownValue;
+
   List<Widget> handlePics(AsyncSnapshot snapshot) {
     final Map<dynamic, dynamic> values =
         snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
@@ -39,9 +42,9 @@ class PicturesViewModel {
     return children;
   }
 
-  void uploadPicture(String title) async {
-    if (image != null) {
-      await StorageService.uploadImage(image!, title);
+  void uploadPicture(String title, bool notEmpty, String category) async {
+    if (image != null && notEmpty == true && category.isNotEmpty) {
+      await StorageService.uploadImage(image!, title, category);
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(_context!).showSnackBar(
         const SnackBar(
@@ -49,6 +52,18 @@ class PicturesViewModel {
         ),
       );
       Navigator.pop(_context!);
+    } else if (notEmpty == false) {
+      ScaffoldMessenger.of(_context!).showSnackBar(
+        const SnackBar(
+          content: Text("Nem adtál meg címet"),
+        ),
+      );
+    } else if (category.isEmpty) {
+      ScaffoldMessenger.of(_context!).showSnackBar(
+        const SnackBar(
+          content: Text("Nem választottál kategóriát!"),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(_context!).showSnackBar(
         const SnackBar(

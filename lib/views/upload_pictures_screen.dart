@@ -16,7 +16,8 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   PicturesViewModel _viewModel = PicturesViewModel();
   final _titleController = TextEditingController();
   XFile? image;
-
+  bool notEmpty = false;
+  dynamic dropdownValue = null;
   @override
   void initState() {
     super.initState();
@@ -27,6 +28,23 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
     });
   }
 
+  String? isValid(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  void dropdownCallback(dynamic selectedValue) {
+    if (selectedValue is String) {
+      setState(() {
+        dropdownValue = selectedValue;
+      });
+    }
+  }
+
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,17 +64,28 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                   ),
           ),
           Padding(
-              padding: const EdgeInsets.all(20),
-              child: InputField(
-                controller: _titleController,
-                placeholder: "Cím",
-              )),
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                      border: InputBorder.none, hintText: "Cím"),
+                  validator: isValid),
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Button3D(
                 onPressed: () async {
-                  _viewModel.uploadPicture(_titleController.text);
+                  if (_formKey.currentState!.validate()) {
+                    _viewModel.uploadPicture(
+                        _titleController.text, true, dropdownValue);
+                  } else {
+                    _viewModel.uploadPicture(
+                        _titleController.text, false, dropdownValue);
+                  }
                 },
                 child: const Text("Kép feltöltése"),
               ),
@@ -76,6 +105,19 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                 child: const Text("Kép kiválasztása"),
               ),
             ],
+          ),
+          SizedBox(
+            height: 50,
+            child: DropdownButton(
+                hint: const Text("Válassz egy értéket!"),
+                items: ['yellow', 'brown', 'silver'].map((String value) {
+                  return DropdownMenuItem(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                value: dropdownValue,
+                onChanged: dropdownCallback),
           ),
         ],
       )),

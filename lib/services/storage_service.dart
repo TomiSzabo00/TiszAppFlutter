@@ -9,14 +9,15 @@ import 'dart:convert' show json, utf8;
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
-  static uploadImage(XFile file, String title) async {
+  static uploadImage(XFile file, String title, String category) async {
     var now = DateTime.now();
     var formatter = DateFormat('yyyyMMddHHmmssSSS');
     var key = formatter.format(now);
     final images = ref.child('debug/$key.jpg');
     final storage.UploadTask uploadTask = images.putData(
         await file.readAsBytes(),
-        storage.SettableMetadata(contentType: 'image/jpeg'));
+        storage.SettableMetadata(
+            contentType: 'image/jpeg', customMetadata: {'category': category}));
     final storage.TaskSnapshot downloadUrl = (await uploadTask);
     final String url = (await downloadUrl.ref.getDownloadURL());
     //return url;
@@ -26,7 +27,7 @@ class StorageService {
     picsRef.child(key).set({
       'fileName': url,
       'author': FirebaseAuth.instance.currentUser!.uid,
-      'title': title.isEmpty ? key : title,
+      'title': title.isEmpty ? key : title
     });
   }
 
