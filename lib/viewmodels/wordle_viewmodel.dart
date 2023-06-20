@@ -267,9 +267,7 @@ class WordleViewModel with ChangeNotifier {
               currLetter.copyWith(status: LetterStatus.correct);
         }
       }
-    }
-
-    for (var j = 0; j < lastRow; j++) {
+    
       for (var i = 0; i < board[j].letters.length; i++) {
         final currLetter = board[j].letters[i];
         if (currLetter.status == LetterStatus.correct) {
@@ -291,9 +289,7 @@ class WordleViewModel with ChangeNotifier {
               currLetter.copyWith(status: LetterStatus.notInWord);
         }
       }
-    }
 
-    for (var j = 0; j < lastRow; j++) {
       for (var i = 0; i < board[j].letters.length; i++) {
         shouldCardBeFlipped[j][i] = true;
         notifyListeners();
