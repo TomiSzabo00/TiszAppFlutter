@@ -25,6 +25,7 @@ class MainMenuViewModel {
     "Daloskönyv",
     "Szavazás",
     "Wordle",
+    "AV Kvíz"
   ];
   final buttonIcons = [
     Icons.calendar_today,
@@ -37,6 +38,7 @@ class MainMenuViewModel {
     Icons.music_note,
     Icons.how_to_vote,
     Icons.type_specimen,
+    Icons.front_hand,
   ];
 
   List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {

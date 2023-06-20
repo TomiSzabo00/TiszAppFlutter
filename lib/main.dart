@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
+import 'package:tiszapp_flutter/viewmodels/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
 import 'package:tiszapp_flutter/views/profile_screen.dart';
+import 'package:tiszapp_flutter/views/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
@@ -39,6 +41,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => VotingViewmodel()),
       ChangeNotifierProvider(create: (_) => SongsViewModel()),
       ChangeNotifierProvider(create: (_) => WordleViewModel()),
+      ChangeNotifierProvider(create: (_) => QuizViewModel()),
     ], child: const MyApp()),
   );
 }
@@ -76,6 +79,7 @@ class MyApp extends StatelessWidget {
                 as ProfileScreenArguments),
         '/Szavazás': (context) => VotingScreen(),
         '/Wordle': (context) => const WordleScreen(),
+        '/AV Kvíz': (context) => const QuizScreen(),
       },
       home: const WidgetTree(),
     );
