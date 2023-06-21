@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/score_data.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/score_item.dart';
@@ -45,13 +44,21 @@ class _ScoresScreenState extends State<ScoresScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   const SizedBox(
-                    width: 120,
+                    width: 100,
                   ),
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: CustomColor.semiTransparentWhite,
+                      color: (isDarkTheme ? Colors.black : Colors.white),
                       borderRadius: BorderRadius.circular(15.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
                     child: const Text(
                       'Csapatok pontjai',
@@ -64,8 +71,11 @@ class _ScoresScreenState extends State<ScoresScreen> {
               ),
             ),
             ScoreItem(
-              scoreData:
-                  Score(author: "", name: 'Program neve', scores: [1, 2, 3, 4]),
+              scoreData: Score(
+                  author: "",
+                  name: 'Program neve',
+                  scores: List.generate(
+                      viewModel.numberOfTeams, (index) => index + 1)),
             ),
             const SizedBox(
               height: 20,

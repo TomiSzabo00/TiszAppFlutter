@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/score_data.dart';
@@ -26,50 +27,61 @@ class ScoreItem extends StatelessWidget {
                   ? (isDarkTheme
                       ? CustomColor.btnFaceNight
                       : CustomColor.btnFaceDay)
-                  : CustomColor.semiTransparentWhite,
+                  : (isDarkTheme ? Colors.black : Colors.white),
               borderRadius: BorderRadius.circular(15.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-            child: FittedBox(
-                fit: BoxFit.contain,
-                child: Text(
-                  scoreData.name,
-                  style: TextStyle(
-                    color: isSum
-                        ? (isDarkTheme
-                            ? CustomColor.btnTextNight
-                            : CustomColor.btnTextDay)
-                        : null,
-                  ),
-                )),
+            child: Center(
+              child: AutoSizeText(
+                scoreData.name,
+                maxLines: 2,
+                minFontSize: 8,
+                style: TextStyle(
+                  color: isSum
+                      ? (isDarkTheme
+                          ? CustomColor.btnTextNight
+                          : CustomColor.btnTextDay)
+                      : null,
+                ),
+              ),
+            ),
           ),
           Flexible(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: scoreData.scores.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  width: (MediaQuery.of(context).size.width -
-                          120 -
-                          10 -
-                          scoreData.scores.length * 10) /
-                      scoreData.scores.length,
-                  padding: const EdgeInsets.all(8),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isSum
-                        ? (isDarkTheme
-                            ? CustomColor.btnFaceNight
-                            : CustomColor.btnFaceDay)
-                        : CustomColor.semiTransparentWhite,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
+            child: Row(
+              children: List.generate(
+                scoreData.scores.length,
+                (index) => Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 5),
+                    padding: const EdgeInsets.all(8),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSum
+                          ? (isDarkTheme
+                              ? CustomColor.btnFaceNight
+                              : CustomColor.btnFaceDay)
+                          : (isDarkTheme ? Colors.black : Colors.white),
+                      borderRadius: BorderRadius.circular(15.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: AutoSizeText(
                       scoreData.scores[index].toString(),
+                      maxLines: 1,
+                      minFontSize: 4,
                       style: TextStyle(
                         color: isSum
                             ? (isDarkTheme
@@ -79,8 +91,8 @@ class ScoreItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
           )
         ],

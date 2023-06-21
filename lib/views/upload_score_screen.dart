@@ -8,11 +8,6 @@ import '../viewmodels/scores_viewmodel.dart';
 class UploadScoreScreen extends StatelessWidget {
   UploadScoreScreen({super.key});
 
-  final _nameController = TextEditingController();
-  final _score1Controller = TextEditingController();
-  final _score2Controller = TextEditingController();
-  final _score3Controller = TextEditingController();
-  final _score4Controller = TextEditingController();
   final _viewModel = ScoresViewModel();
 
   @override
@@ -20,116 +15,81 @@ class UploadScoreScreen extends StatelessWidget {
     final isDarkTheme =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Pontok feltöltése"),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Mire adod a pontot?"),
-              const SizedBox(height: 10),
-              InputField(
-                controller: _nameController,
-                placeholder: "Program neve",
-                icon: const Icon(Icons.edit),
-              ),
-              const SizedBox(height: 30),
-              const Text("Hány pontot adsz a csatoknak?"),
-              const SizedBox(height: 10),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+      appBar: AppBar(
+        title: const Text("Pontok feltöltése"),
+      ),
+      body: FutureBuilder(
+        future: _viewModel.getNumberOfTeams(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("1."),
-                  Text("2."),
-                  Text("3."),
-                  Text("4."),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width - 70) / 4,
-                    child: InputField(
-                      controller: _score1Controller,
-                      placeholder: "0",
-                      isNumber: true,
-                      maxChar: 3,
-                    ),
+                  const Text("Mire adod a pontot?"),
+                  const SizedBox(height: 10),
+                  InputField(
+                    controller: _viewModel.nameController,
+                    placeholder: "Program neve",
+                    icon: const Icon(Icons.edit),
                   ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width - 70) / 4,
-                    child: InputField(
-                      controller: _score2Controller,
-                      placeholder: "0",
-                      isNumber: true,
-                      maxChar: 3,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width - 70) / 4,
-                    child: InputField(
-                      controller: _score3Controller,
-                      placeholder: "0",
-                      isNumber: true,
-                      maxChar: 3,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width - 70) / 4,
-                    child: InputField(
-                      controller: _score4Controller,
-                      placeholder: "0",
-                      isNumber: true,
-                      maxChar: 3,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Button3D(
-                    onPressed: () {
-                      _viewModel.uploadScore(
-                          _nameController.text,
-                          _score1Controller.text,
-                          _score2Controller.text,
-                          _score3Controller.text,
-                          _score4Controller.text);
-                      _clearFields();
-                      _showDialog(context);
-                    },
-                    child: Text(
-                      "Feltöltés",
-                      style: TextStyle(
-                        color: isDarkTheme
-                            ? CustomColor.btnTextNight
-                            : CustomColor.btnTextDay,
-                        fontSize: 18,
+                  const SizedBox(height: 30),
+                  const Text("Hány pontot adsz a csatoknak?"),
+                  const SizedBox(height: 10),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(
+                          snapshot.data!, (index) => Text('${index + 1}.'))),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      snapshot.data!,
+                      (index) => SizedBox(
+                        width:
+                            MediaQuery.of(context).size.width / snapshot.data! -
+                                10,
+                        child: InputField(
+                          controller: _viewModel.scoreControllers[index],
+                          placeholder: "0",
+                          isNumber: true,
+                          maxChar: 3,
+                        ),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Button3D(
+                        onPressed: () {
+                          _viewModel.uploadScore();
+                          _showDialog(context);
+                        },
+                        child: Text(
+                          "Feltöltés",
+                          style: TextStyle(
+                            color: isDarkTheme
+                                ? CustomColor.btnTextNight
+                                : CustomColor.btnTextDay,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
-        ));
-  }
-
-  void _clearFields() {
-    _nameController.clear();
-    _score1Controller.clear();
-    _score2Controller.clear();
-    _score3Controller.clear();
-    _score4Controller.clear();
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
   }
 
   void _showDialog(BuildContext context) {
