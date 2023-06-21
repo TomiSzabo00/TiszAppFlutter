@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
+import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
+import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/profile_screen.dart';
 import 'package:tiszapp_flutter/views/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
@@ -42,6 +44,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => SongsViewModel()),
       ChangeNotifierProvider(create: (_) => WordleViewModel()),
       ChangeNotifierProvider(create: (_) => QuizViewModel()),
+      ChangeNotifierProvider(create: (_) => KaraokeBasicViewModel()),
     ], child: const MyApp()),
   );
 }
@@ -82,6 +85,7 @@ class MyApp extends StatelessWidget {
         '/AV Kvíz': (context) => QuizScreen(
           isAdmin: ModalRoute.of(context)!.settings.arguments as bool,
         ),
+        '/Karaoke': (context) => KaraokeBasicScreen(),
       },
       home: const WidgetTree(),
     );

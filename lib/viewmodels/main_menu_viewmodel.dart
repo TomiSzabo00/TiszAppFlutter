@@ -28,6 +28,7 @@ class MainMenuViewModel {
     "Wordle",
     "AV Kvíz",
     "Nappali portya",
+    "Karaoke",
   ];
   final buttonIcons = [
     Icons.calendar_today,
@@ -42,6 +43,7 @@ class MainMenuViewModel {
     Icons.type_specimen,
     Icons.front_hand,
     Icons.holiday_village_outlined,
+    Icons.mic,
   ];
 
   List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
