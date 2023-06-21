@@ -28,7 +28,7 @@ class Score {
             "",
         scores = (tryCast<List<Object?>>(
                     (tryCast<Map<Object?, Object?>>(snapshot.value) ??
-                        {})['author']) ??
+                        {})['scores']) ??
                 [])
             .map((e) => tryCast<int>(e) ?? 0)
             .toList();
