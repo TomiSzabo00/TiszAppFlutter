@@ -93,9 +93,11 @@ class _QuizScreenState extends State<QuizScreen> {
               itemBuilder: (context, index) => QuizTile(
                 teamNUm: viewModel.getTeamNum(index),
                 index: index + 1,
+                timeStamp: viewModel.timeDiffernceFromPrevious(index: index),
               ),
             ),
           ),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

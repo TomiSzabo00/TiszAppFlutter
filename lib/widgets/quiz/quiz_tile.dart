@@ -6,10 +6,12 @@ class QuizTile extends StatelessWidget {
     Key? key,
     required this.teamNUm,
     required this.index,
+    required this.timeStamp,
   }) : super(key: key);
 
   final int? teamNUm;
   final int index;
+  final String? timeStamp;
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +23,55 @@ class QuizTile extends StatelessWidget {
         color: _getColor(context: context, isDarkTheme: isDarkTheme),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Center(
-        child: Text(
-            teamNUm == null
-                ? 'Még nics $index. jelentkező'
-                : '$teamNUm. csapat',
+      child: () {
+        if (teamNUm == null) {
+          return _noSignal(index);
+        } else {
+          return _signal(teamNUm!, timeStamp, isDarkTheme);
+        }
+      }(),
+    );
+  }
+
+  Widget _noSignal(int index) {
+    return Center(
+      child: Text(
+        'Még nincs $index. jelentkező',
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  Widget _signal(int teamNum, String? timeStamp, bool isDarkTheme) {
+    return Column(
+      children: [
+        Text('$teamNUm. csapat',
             style: TextStyle(
               fontSize: 20,
-              fontWeight: teamNUm == null ? FontWeight.normal : FontWeight.bold,
+              fontWeight: FontWeight.bold,
               color: _getTextColor(isDarkTheme: isDarkTheme),
             )),
-      ),
+        () {
+          if (timeStamp != null) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                timeStamp,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
+                  color: _getTextColor(isDarkTheme: isDarkTheme),
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox();
+          }
+        }(),
+      ],
     );
   }
 
