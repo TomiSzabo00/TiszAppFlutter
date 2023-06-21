@@ -23,4 +23,11 @@ class DatabaseService {
       return UserData(uid: "", name: "Error", isAdmin: false, teamNum: -1);
     });
   }
+
+  static Future<String> getDriveURL({required int teamNum}) {
+    return ref
+        .child('porty_drive_links/$teamNum')
+        .get()
+        .then((snapshot) => snapshot.value as String);
+  }
 }
