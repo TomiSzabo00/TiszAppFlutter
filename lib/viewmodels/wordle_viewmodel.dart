@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/wordle/letter.dart';
 import 'package:tiszapp_flutter/models/wordle/letter_status.dart';
 import 'package:tiszapp_flutter/models/wordle/word.dart';
@@ -77,7 +78,7 @@ class WordleViewModel with ChangeNotifier {
     }
 
     final List<String> words =
-        List<String>.from(snapshot.value as List<dynamic>);
+        List<String>.from(tryCast<List<String>>(snapshot.value) ?? []);
     for (var i = 0; i < words.length; i++) {
       final word = words[i];
       for (var j = 0; j < word.length; j++) {
@@ -113,7 +114,7 @@ class WordleViewModel with ChangeNotifier {
     DatabaseReference ref = FirebaseDatabase.instance.ref();
     DataSnapshot snapshot = await ref.child('wordle/solution').get();
     if (snapshot.value != null) {
-      return snapshot.value as String;
+      return tryCast<String>(snapshot.value) ?? '';
     }
     return "error"; // fallback solution if no solution is found in firebase
   }

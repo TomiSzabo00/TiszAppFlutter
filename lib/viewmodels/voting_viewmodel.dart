@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/voting_state.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 // ignore: depend_on_referenced_packages
@@ -60,7 +61,7 @@ class VotingViewmodel with ChangeNotifier {
       final snapshot = event.snapshot;
       if (snapshot.exists) {
         teams.clear();
-        votingState = _getVotingStateValue(from: snapshot.value as String);
+        votingState = _getVotingStateValue(from: tryCast<String>(snapshot.value) ?? '');
         notifyListeners();
       }
     });
@@ -113,7 +114,7 @@ class VotingViewmodel with ChangeNotifier {
     await ref.child('voting/votes').get().then((snapshot) {
       if (snapshot.exists) {
         Map<dynamic, dynamic> votesWithTimeStamps =
-            snapshot.value as Map<dynamic, dynamic>;
+            tryCast<Map<dynamic, dynamic>>(snapshot.value) ?? {};
         votesWithTimeStamps.forEach((timestamp, list) {
           List<int> votes = list.whereType<int>().toList();
           for (var i = 0; i < numOfTeams; i++) {

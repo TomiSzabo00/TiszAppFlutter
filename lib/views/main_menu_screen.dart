@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/menu_icon.dart';
@@ -37,17 +38,25 @@ class MainMenu extends StatelessWidget {
             child: Column(
               children: [
                 Expanded(
-                  flex: 12,
-                  child: GridView.count(
-                    padding: const EdgeInsets.only(top: 60),
-                    crossAxisCount: 2,
-                    children: snapshot.data!.map((btnData) {
-                      return MenuIcon(
-                        text: btnData[0] as String,
-                        icon: btnData[1] as IconData,
-                        onPressed: btnData[2] as Function(),
-                      );
-                    }).toList(),
+                  flex: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      padding: const EdgeInsets.only(top: 60),
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      children: snapshot.data!.map((btnData) {
+                        return Flexible(
+                          child: MenuIcon(
+                            text: tryCast<String>(btnData[0]) ?? '',
+                            icon: tryCast<IconData>(btnData[1]) ??
+                                Icons.question_mark,
+                            onPressed: tryCast<Function()>(btnData[2]) ?? () {},
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -84,6 +93,7 @@ class MainMenu extends StatelessWidget {
                     },
                   )),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           );

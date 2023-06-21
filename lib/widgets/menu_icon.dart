@@ -18,35 +18,43 @@ class MenuIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return Button3D(
-      width: 150,
-      height: 150,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 50,
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              text,
-              style: TextStyle(
-                color: isDarkTheme
-                    ? CustomColor.btnTextNight
-                    : CustomColor.btnTextDay,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Button3D(
+          width: constraints.maxWidth - 20,
+          height: constraints.maxHeight - 20,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: constraints.maxWidth / 3,
               ),
-              textAlign: TextAlign.center,
-            ),
-          )
-        ],
-      ),
-      onPressed: () {
-        onPressed();
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                // child: FittedBox(
+                //   fit: BoxFit.cover,
+                child: Text(
+                  text,
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                // ),
+              )
+            ],
+          ),
+          onPressed: () {
+            onPressed();
+          },
+        );
       },
     );
   }
