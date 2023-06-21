@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainMenuViewModel {
   MainMenuViewModel(BuildContext context) {
@@ -25,6 +26,8 @@ class MainMenuViewModel {
     "Daloskönyv",
     "Szavazás",
     "Wordle",
+    "AV Kvíz",
+    "Nappali portya",
   ];
   final buttonIcons = [
     Icons.calendar_today,
@@ -37,6 +40,8 @@ class MainMenuViewModel {
     Icons.music_note,
     Icons.how_to_vote,
     Icons.type_specimen,
+    Icons.front_hand,
+    Icons.holiday_village_outlined,
   ];
 
   List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
@@ -62,40 +67,32 @@ class MainMenuViewModel {
   List<Function> _getButtonActionsForUserRole(List<bool> buttonVisible) {
     List<Function> actions = [];
     _getButtonTextsForUserRole(buttonVisible).forEach((element) {
-      if (element == "Kijelentkezés") {
-        actions.add(_signOut);
-      } else {}
-      actions.add(() {
-        _navigateToScreen(element);
-      });
+      if (element == "AV Kvíz") {
+        actions.add(() {
+          _navigateToScreen(element, arguments: user.isAdmin);
+        });
+      } else if (element == "Nappali portya") {
+        actions.add(() {
+          _launchURL();
+        });
+      } else {
+        actions.add(() {
+          _navigateToScreen(element);
+        });
+      }
     });
     return actions;
   }
 
-  void _navigateToScreen(String screenName) {
-    Navigator.pushNamed(_context, '/$screenName');
-  }
-
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  Future<void> _getUserData() async {
-    return await FirebaseDatabase.instance
-        .ref()
-        .child('users/${FirebaseAuth.instance.currentUser?.uid}')
-        .get()
-        .then((snapshot) {
-      if (snapshot.value != null) {
-        user = UserData.fromSnapshot(snapshot);
-      }
-    });
+  void _navigateToScreen(String screenName, {Object? arguments}) {
+    Navigator.pushNamed(_context, '/$screenName', arguments: arguments);
   }
 
   Future<IterableZip<Object>> getButtons() async {
     List<bool> visibility = [];
     final apiResponse = await ApiService.getButtonVisibility();
-    await _getUserData();
+    user = await DatabaseService.getUserData(
+        FirebaseAuth.instance.currentUser!.uid);
     if (user.isAdmin) {
       visibility = apiResponse.map((e) => true).toList();
     } else {
@@ -106,5 +103,16 @@ class MainMenuViewModel {
       _getButtonIconsForUserRole(visibility),
       _getButtonActionsForUserRole(visibility),
     ]);
+  }
+
+  _launchURL() async {
+    final Uri url = Uri.parse(await _getDriveURL());
+    if (await canLaunchUrl(url)) {
+      launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<String> _getDriveURL() async {
+    return await DatabaseService.getDriveURL(teamNum: user.teamNum);
   }
 }

@@ -22,9 +22,9 @@ class SongsSummaryScreenState extends State<SongsSummaryScreen> {
     final viewModel = context.watch<SongsViewModel>();
     return () {
       if (viewModel.isLoading) {
-        return Column(
+        return const Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Center(
               child: CircularProgressIndicator(),
             ),

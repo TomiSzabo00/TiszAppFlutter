@@ -5,16 +5,17 @@ import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
+// ignore: must_be_immutable
 class VotingScreen extends StatefulWidget {
   VotingScreen({Key? key}) : super(key: key);
 
   bool isDarkTheme = false;
 
   @override
-  _VotingScreenState createState() => _VotingScreenState();
+  VotingScreenState createState() => VotingScreenState();
 }
 
-class _VotingScreenState extends State<VotingScreen> {
+class VotingScreenState extends State<VotingScreen> {
   @override
   void initState() {
     super.initState();
@@ -211,11 +212,11 @@ class _VotingScreenState extends State<VotingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
+              children: [
                 Text('A szavazás lezárult!\nÍme az összesített sorrend:'),
               ],
             ),
