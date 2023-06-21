@@ -39,9 +39,9 @@ class UploadScoreScreen extends StatelessWidget {
               const SizedBox(height: 30),
               const Text("Hány pontot adsz a csatoknak?"),
               const SizedBox(height: 10),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const [
+                children: [
                   Text("1."),
                   Text("2."),
                   Text("3."),

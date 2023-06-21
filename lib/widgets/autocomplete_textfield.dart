@@ -13,8 +13,6 @@ class AutocompleteTextField extends StatefulWidget {
   final TextEditingController controller;
   final List<String> options;
 
-  final _padding = 15.0;
-
   @override
   State<AutocompleteTextField> createState() => _AutocompleteTextFieldState();
 }

@@ -33,10 +33,10 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Wrap(direction: Axis.vertical, children: [
                   Text('Név: ${args.user.name}',
-                      style: Theme.of(context).textTheme.headline6),
+                      style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 20),
                   Text('Csapat: ${_viewModel.getTeamNum()}',
-                      style: Theme.of(context).textTheme.headline6),
+                      style: Theme.of(context).textTheme.titleLarge),
                 ]),
               ),
               Container(
@@ -53,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                             backgroundColor:
                                 isDarkTheme ? Colors.black : Colors.white,
                             title: Text("Regisztrált csapattagok",
-                                style: Theme.of(context).textTheme.headline6),
+                                style: Theme.of(context).textTheme.titleLarge),
                             children: [
                               SizedBox(
                                   height: MediaQuery.of(context).size.height *
@@ -76,7 +76,7 @@ class ProfileScreen extends StatelessWidget {
                             ]);
                       } else {
                         return Text('Csapattársak: Betöltés...',
-                            style: Theme.of(context).textTheme.headline6);
+                            style: Theme.of(context).textTheme.titleLarge);
                       }
                     }),
               ),

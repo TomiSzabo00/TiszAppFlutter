@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:tiszapp_flutter/models/admin_api_data.dart';
@@ -123,13 +122,13 @@ class ApiService {
 
   static Future<List<UserData>> getUserInfos() async {
     final responseUser = await http.Client().get(Uri.parse('$apiURL/users'));
-    Map encodedUserData = Map();
+    Map encodedUserData = {};
     encodedUserData['data'] =
         const Utf8Decoder().convert(responseUser.bodyBytes);
     encodedUserData['isAdmin'] = false;
 
     final responseAdmin = await http.Client().get(Uri.parse('$apiURL/admins'));
-    Map encodedAdminData = Map();
+    Map encodedAdminData = {};
     encodedAdminData['data'] =
         const Utf8Decoder().convert(responseAdmin.bodyBytes);
     encodedAdminData['isAdmin'] = true;

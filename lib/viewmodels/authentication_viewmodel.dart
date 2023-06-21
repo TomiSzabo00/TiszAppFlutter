@@ -115,7 +115,7 @@ class AuthenticationViewModel {
     errorMessage = "";
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: "${username}@tiszap.hu",
+        email: "$username@tiszap.hu",
         password: password,
       );
     } on FirebaseAuthException catch (e) {
