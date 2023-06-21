@@ -106,10 +106,9 @@ class MainMenuViewModel {
   }
 
   _launchURL() async {
-    final _url = 'https://flutter.dev';
     final Uri url = Uri.parse(await _getDriveURL());
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $_url');
+    if (await canLaunchUrl(url)) {
+      launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
