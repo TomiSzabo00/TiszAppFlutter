@@ -77,8 +77,8 @@ class WordleViewModel with ChangeNotifier {
       return board;
     }
 
-    final List<String> words =
-        List<String>.from(tryCast<List<String>>(snapshot.value) ?? []);
+    var words = tryCast<List>(snapshot.value) ?? [];
+    words = words.map((e) => tryCast<String>(e) ?? '').toList();
     for (var i = 0; i < words.length; i++) {
       final word = words[i];
       for (var j = 0; j < word.length; j++) {
