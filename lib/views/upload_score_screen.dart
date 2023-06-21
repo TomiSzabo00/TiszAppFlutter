@@ -47,15 +47,18 @@ class UploadScoreScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(
                       snapshot.data!,
-                      (index) => SizedBox(
-                        width:
-                            MediaQuery.of(context).size.width / snapshot.data! -
-                                10,
-                        child: InputField(
-                          controller: _viewModel.scoreControllers[index],
-                          placeholder: "0",
-                          isNumber: true,
-                          maxChar: 3,
+                      (index) => Expanded(
+                        // width:
+                        //     MediaQuery.of(context).size.width / snapshot.data! -
+                        //         10,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: InputField(
+                            controller: _viewModel.scoreControllers[index],
+                            placeholder: "0",
+                            isNumber: true,
+                            maxChar: 3,
+                          ),
                         ),
                       ),
                     ),
