@@ -47,6 +47,7 @@ dependencies:
   flip_card: ^0.7.0
   top_snackbar_flutter: ^3.0.0+1
   intl: ^0.18.1
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:

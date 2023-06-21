@@ -5,6 +5,7 @@ import 'package:tiszapp_flutter/services/api_service.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainMenuViewModel {
   MainMenuViewModel(BuildContext context) {
@@ -25,7 +26,8 @@ class MainMenuViewModel {
     "Daloskönyv",
     "Szavazás",
     "Wordle",
-    "AV Kvíz"
+    "AV Kvíz",
+    "Nappali portya",
   ];
   final buttonIcons = [
     Icons.calendar_today,
@@ -39,6 +41,7 @@ class MainMenuViewModel {
     Icons.how_to_vote,
     Icons.type_specimen,
     Icons.front_hand,
+    Icons.holiday_village_outlined,
   ];
 
   List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
@@ -68,6 +71,10 @@ class MainMenuViewModel {
         actions.add(() {
           _navigateToScreen(element, arguments: user.isAdmin);
         });
+      } else if (element == "Nappali portya") {
+        actions.add(() {
+          _launchURL();
+        });
       } else {
         actions.add(() {
           _navigateToScreen(element);
@@ -96,5 +103,17 @@ class MainMenuViewModel {
       _getButtonIconsForUserRole(visibility),
       _getButtonActionsForUserRole(visibility),
     ]);
+  }
+
+  _launchURL() async {
+    final _url = 'https://flutter.dev';
+    final Uri url = Uri.parse(await _getDriveURL());
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+
+  Future<String> _getDriveURL() async {
+    return await DatabaseService.getDriveURL(teamNum: user.teamNum);
   }
 }
