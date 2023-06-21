@@ -68,10 +68,11 @@ class MainMenuViewModel {
         actions.add(() {
           _navigateToScreen(element, arguments: user.isAdmin);
         });
-      } else {}
-      actions.add(() {
-        _navigateToScreen(element);
-      });
+      } else {
+        actions.add(() {
+          _navigateToScreen(element);
+        });
+      }
     });
     return actions;
   }
