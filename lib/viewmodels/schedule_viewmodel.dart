@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/schedule_data.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
 
@@ -20,7 +21,7 @@ class ScheduleViewModel {
   Future<void> getFirstDay() async {
     final snapshot = await ref.child('debug/firstDayOfWeek').get();
     if (snapshot.exists) {
-      firstDay = snapshot.value as String;
+      firstDay = tryCast<String>(snapshot.value) ?? '';
       if (currentTitle.isEmpty) {
         currentTitle = firstDay;
       }

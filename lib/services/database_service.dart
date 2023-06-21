@@ -29,6 +29,6 @@ class DatabaseService {
     return ref
         .child('porty_drive_links/$teamNum')
         .get()
-        .then((snapshot) => snapshot.value as String);
+        .then((snapshot) => tryCast<String>(snapshot.value) ?? "");
   }
 }

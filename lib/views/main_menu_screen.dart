@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/menu_icon.dart';
@@ -48,9 +49,10 @@ class MainMenu extends StatelessWidget {
                       children: snapshot.data!.map((btnData) {
                         return Flexible(
                           child: MenuIcon(
-                            text: btnData[0] as String,
-                            icon: btnData[1] as IconData,
-                            onPressed: btnData[2] as Function(),
+                            text: tryCast<String>(btnData[0]) ?? '',
+                            icon: tryCast<IconData>(btnData[1]) ??
+                                Icons.question_mark,
+                            onPressed: tryCast<Function()>(btnData[2]) ?? () {},
                           ),
                         );
                       }).toList(),

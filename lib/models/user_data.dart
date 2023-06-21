@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 
 class UserData {
   String uid;
@@ -14,10 +15,10 @@ class UserData {
 
   factory UserData.fromSnapshot(DataSnapshot snapshot) {
     return UserData(
-        uid: (snapshot.value as Map)['uid'],
-        name: (snapshot.value as Map)['userName'],
-        isAdmin: (snapshot.value as Map)['admin'],
-        teamNum: (snapshot.value as Map)['groupNumber']);
+        uid: (tryCast<Map>(snapshot.value) ?? {})['uid'],
+        name: (tryCast<Map>(snapshot.value) ?? {})['userName'],
+        isAdmin: (tryCast<Map>(snapshot.value) ?? {})['admin'],
+        teamNum: (tryCast<Map>(snapshot.value) ?? {})['groupNumber']);
   }
 
   Map<String, dynamic> toJson() => {

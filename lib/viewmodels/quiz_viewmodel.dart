@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_state.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +33,7 @@ class QuizViewModel extends ChangeNotifier {
         return;
       }
       // decode data
-      final data = event.snapshot.value as String;
+      final data = tryCast<String>(event.snapshot.value) ?? '';
       final newState = _decodeQuizState(data);
       // update state
       _updateState(newState);
@@ -46,7 +47,7 @@ class QuizViewModel extends ChangeNotifier {
         return;
       }
       // decode data
-      final senderUid = event.snapshot.value as String;
+      final senderUid = tryCast<String>(event.snapshot.value) ?? '';
       final uid = FirebaseAuth.instance.currentUser!.uid;
 
       if (senderUid == uid) {
@@ -72,7 +73,7 @@ class QuizViewModel extends ChangeNotifier {
         return;
       }
       // decode data
-      final senderUid = event.snapshot.value as String;
+      final senderUid = tryCast<String>(event.snapshot.value) ?? '';
       final uid = FirebaseAuth.instance.currentUser!.uid;
 
       if (senderUid == uid) {
@@ -146,7 +147,7 @@ class QuizViewModel extends ChangeNotifier {
         return;
       }
       // decode data
-      final senderUid = event.snapshot.value as String;
+      final senderUid = tryCast<String>(event.snapshot.value) ?? '';
       DatabaseService.getUserData(senderUid).then((senderData) {
         // check if this team already sent a signal
         if (signals
@@ -161,7 +162,7 @@ class QuizViewModel extends ChangeNotifier {
 
     database.child('quiz/signals').onChildRemoved.listen((event) {
       // decode data
-      final senderUid = event.snapshot.value as String;
+      final senderUid = tryCast<String>(event.snapshot.value) ?? '';
       DatabaseService.getUserData(senderUid).then((senderData) {
         // check if this team already sent a signal
         final index = signals
@@ -180,7 +181,7 @@ class QuizViewModel extends ChangeNotifier {
         return;
       }
       // decode data
-      final data = event.snapshot.value as int;
+      final data = tryCast<int>(event.snapshot.value) ?? 4;
       numberOfTeams = data;
       notifyListeners();
     });
