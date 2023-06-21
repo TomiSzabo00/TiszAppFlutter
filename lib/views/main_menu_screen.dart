@@ -37,17 +37,24 @@ class MainMenu extends StatelessWidget {
             child: Column(
               children: [
                 Expanded(
-                  flex: 12,
-                  child: GridView.count(
-                    padding: const EdgeInsets.only(top: 60),
-                    crossAxisCount: 2,
-                    children: snapshot.data!.map((btnData) {
-                      return MenuIcon(
-                        text: btnData[0] as String,
-                        icon: btnData[1] as IconData,
-                        onPressed: btnData[2] as Function(),
-                      );
-                    }).toList(),
+                  flex: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      padding: const EdgeInsets.only(top: 60),
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      children: snapshot.data!.map((btnData) {
+                        return Flexible(
+                          child: MenuIcon(
+                            text: btnData[0] as String,
+                            icon: btnData[1] as IconData,
+                            onPressed: btnData[2] as Function(),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -84,6 +91,7 @@ class MainMenu extends StatelessWidget {
                     },
                   )),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           );
