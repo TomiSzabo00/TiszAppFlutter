@@ -6,8 +6,9 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 class KaraokeData {
   final UserData user;
   final String music;
+  bool didPlay = false;
 
-  KaraokeData({required this.user, required this.music});
+  KaraokeData({required this.user, required this.music, this.didPlay = false});
 
   static Future<KaraokeData> fromSnapshot(DataSnapshot snapshot) async {
     final uid =
@@ -15,14 +16,18 @@ class KaraokeData {
     final user = await DatabaseService.getUserData(uid);
     final music =
         tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['music']) ?? "";
+    final didPlay =
+        tryCast<bool>((tryCast<Map>(snapshot.value) ?? {})['didPlay']) ?? false;
     return KaraokeData(
       user: user,
       music: music,
+      didPlay: didPlay,
     );
   }
 
-  Map<String, String> toJson() => {
+  Map<String, dynamic> toJson() => {
         'user': user.uid,
         'music': music,
+        'didPlay': didPlay
       };
 }

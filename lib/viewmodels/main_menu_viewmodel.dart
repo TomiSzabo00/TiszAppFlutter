@@ -69,7 +69,7 @@ class MainMenuViewModel {
   List<Function> _getButtonActionsForUserRole(List<bool> buttonVisible) {
     List<Function> actions = [];
     _getButtonTextsForUserRole(buttonVisible).forEach((element) {
-      if (element == "AV Kvíz") {
+      if (element == "AV Kvíz" || element == "Karaoke") {
         actions.add(() {
           _navigateToScreen(element, arguments: user.isAdmin);
         });
