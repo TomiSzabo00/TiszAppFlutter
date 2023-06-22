@@ -49,6 +49,7 @@ dependencies:
   intl: ^0.18.1
   url_launcher: ^6.1.11
   auto_size_text: ^3.0.0
+  flutter_slidable: ^3.0.0
 
 dev_dependencies:
   flutter_test:
