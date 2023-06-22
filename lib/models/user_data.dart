@@ -15,10 +15,15 @@ class UserData {
 
   factory UserData.fromSnapshot(DataSnapshot snapshot) {
     return UserData(
-        uid: (tryCast<Map>(snapshot.value) ?? {})['uid'],
-        name: (tryCast<Map>(snapshot.value) ?? {})['userName'],
-        isAdmin: (tryCast<Map>(snapshot.value) ?? {})['admin'],
-        teamNum: (tryCast<Map>(snapshot.value) ?? {})['groupNumber']);
+      uid: tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['uid']) ?? "",
+      name: tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['userName']) ??
+          "",
+      isAdmin:
+          tryCast<bool>((tryCast<Map>(snapshot.value) ?? {})['admin']) ?? false,
+      teamNum:
+          tryCast<int>((tryCast<Map>(snapshot.value) ?? {})['groupNumber']) ??
+              -1,
+    );
   }
 
   Map<String, dynamic> toJson() => {
