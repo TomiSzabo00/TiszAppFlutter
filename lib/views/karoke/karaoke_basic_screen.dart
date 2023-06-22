@@ -19,7 +19,8 @@ class KaraokeBasicScreenState extends State<KaraokeBasicScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<KaraokeBasicViewModel>().subscribeToUserChanges();
+    Provider.of<KaraokeBasicViewModel>(context, listen: false)
+        .subscribeToUserChanges();
   }
 
   @override
@@ -134,7 +135,7 @@ class KaraokeBasicScreenState extends State<KaraokeBasicScreen> {
             ),
             const SizedBox(height: 20),
             Button3D(
-              onPressed: () => _showSignUpModalSheet(isDarkTheme),
+              onPressed: () => _showSignUpModalSheet(viewModel, isDarkTheme),
               child: Text(
                 'Jelentkezés',
                 style: TextStyle(
@@ -152,7 +153,9 @@ class KaraokeBasicScreenState extends State<KaraokeBasicScreen> {
     );
   }
 
-  void _showSignUpModalSheet(bool isDarkTheme) {
+  void _showSignUpModalSheet(
+      KaraokeBasicViewModel viewModel, bool isDarkTheme) {
+    bool showError = false;
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -160,66 +163,83 @@ class KaraokeBasicScreenState extends State<KaraokeBasicScreen> {
       ),
       isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              top: 20,
-              left: 20,
-              right: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Jelentkezés',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Add meg a választott szám címét, és be is állhatsz a sorba!',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller:
-                      context.read<KaraokeBasicViewModel>().musicController,
-                  decoration: const InputDecoration(
-                    labelText: 'Szám címe (és előadója)',
-                    border: OutlineInputBorder(),
+        return StatefulBuilder(builder: (context, setState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 20,
+                left: 20,
+                right: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Jelentkezés',
+                    style: TextStyle(fontSize: 16),
                   ),
-                  onSubmitted: (value) => FocusManager.instance.primaryFocus
-                      ?.unfocus(), // hide keyboard
-                  maxLength: 30,
-                  autocorrect: false,
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  '''Kérlek csak olyan számot válassz, ami illik a tábor szabályaihoz! Ha ez mégsem sikerülne, a szervezők törölni fogják a jelentkezésedet.
-Ez érvényes arra az esetre is, ha ez már a sokadik jelentkezésed lenne.''',
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                Button3D(
-                  width: 140,
-                  onPressed: () {
-                    context.read<KaraokeBasicViewModel>().signUpForKaraoke();
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Beállok a sorba',
-                    style: TextStyle(
-                      color: isDarkTheme
-                          ? CustomColor.btnTextNight
-                          : CustomColor.btnTextDay,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Add meg a választott szám címét, és be is állhatsz a sorba!',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: viewModel.musicController,
+                    //autofocus: true,
+                    decoration: InputDecoration(
+                      labelText: 'Szám címe (és előadója)',
+                      errorText: showError
+                          ? 'Ezzel a számmal már jelentkeztél!'
+                          : null,
+                      border: const OutlineInputBorder(),
+                    ),
+                    onSubmitted: (value) => FocusManager.instance.primaryFocus
+                        ?.unfocus(), // hide keyboard
+                    onChanged: (_) {
+                      setState(() {
+                        showError = false;
+                      });
+                    },
+                    maxLength: 30,
+                    autocorrect: false,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '''Kérlek csak olyan számot válassz, ami illik a tábor szabályaihoz! Ha ez mégsem sikerülne, a szervezők törölni fogják a jelentkezésedet.
+        Ez érvényes arra az esetre is, ha ez már a sokadik jelentkezésed lenne.''',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  Button3D(
+                    width: 140,
+                    onPressed: () async {
+                      final shouldShowError =
+                          await viewModel.signUpForKaraoke();
+                      setState(() {
+                        showError = shouldShowError;
+                      });
+                      if (!showError) {
+                        // ignore: use_build_context_synchronously
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text(
+                      'Beállok a sorba',
+                      style: TextStyle(
+                        color: isDarkTheme
+                            ? CustomColor.btnTextNight
+                            : CustomColor.btnTextDay,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }

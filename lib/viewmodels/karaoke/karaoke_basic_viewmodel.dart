@@ -46,14 +46,22 @@ class KaraokeBasicViewModel extends ChangeNotifier {
     });
   }
 
-  void signUpForKaraoke() async {
+  Future<bool> signUpForKaraoke() async {
     final key = DateService.dateInMillisAsString();
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final userData = await DatabaseService.getUserData(uid);
     final data =
         KaraokeData(user: userData, music: musicController.text).toJson();
+    final index = signedUpUsers.indexWhere((element) =>
+        (element.user.uid == userData.uid &&
+            element.music == musicController.text));
+    if (index != -1) {
+      notifyListeners();
+      return true;
+    }
     database.child('karaoke/signed_up/$key').set(data);
     musicController.clear();
+    return false;
   }
 
   void removeFromKaraoke(KaraokeData data) {
