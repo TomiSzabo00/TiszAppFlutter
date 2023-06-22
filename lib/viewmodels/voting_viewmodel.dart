@@ -4,20 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/voting_state.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
-// ignore: depend_on_referenced_packages
-import 'package:intl/date_symbol_data_local.dart';
-// ignore: depend_on_referenced_packages
-import 'package:intl/intl.dart';
+import 'package:tiszapp_flutter/services/date_service.dart';
+
 
 class VotingViewmodel with ChangeNotifier {
   DatabaseReference ref = FirebaseDatabase.instance.ref();
   VotingState votingState = VotingState.notStarted;
   bool isVoteSent = false;
   List<int> teams = [];
-
-  VotingViewmodel() {
-    initializeDateFormatting();
-  }
 
   VotingState _getVotingStateValue({required String from}) {
     switch (from) {
@@ -68,10 +62,7 @@ class VotingViewmodel with ChangeNotifier {
   }
 
   void sendVote() async {
-    var now = DateTime.now();
-    var formatter = DateFormat('yyyyMMddHHmmssSSS');
-    var key = formatter.format(now);
-
+    final key = DateService.dateInMillisAsString();
     final numOfTeams = await DatabaseService.getNumberOfTeams();
 
     Map<int, int> votes = {};

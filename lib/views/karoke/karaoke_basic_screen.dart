@@ -10,10 +10,12 @@ class KaraokeBasicScreenState extends State<KaraokeBasicScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('KaraokeBasic'),
+        title: const Text('Karaoke'),
       ),
-      body: Center(
-        child: Text('KaraokeBasic'),
+      body: Column(
+        children: [
+          const Text('Karaoke'),
+        ],
       ),
     );
   }
