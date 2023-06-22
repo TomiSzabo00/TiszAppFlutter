@@ -53,6 +53,7 @@ class KaraokeBasicViewModel extends ChangeNotifier {
     final data =
         KaraokeData(user: userData, music: musicController.text).toJson();
     database.child('karaoke/signed_up/$key').set(data);
+    musicController.clear();
   }
 
   void removeFromKaraoke(KaraokeData data) {
