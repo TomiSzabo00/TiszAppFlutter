@@ -8,6 +8,8 @@ class MainMenuButton {
 
   String get title {
     switch (type) {
+      case MainMenuButtonType.none:
+        return 'Hiba';
       case MainMenuButtonType.karaoke:
         return 'Karaoke';
       case MainMenuButtonType.nappaliPortya:
@@ -34,13 +36,15 @@ class MainMenuButton {
         return 'Szavazás';
       case MainMenuButtonType.wordle:
         return 'Wordle';
-      default:
-        return 'Hiba';
+        case MainMenuButtonType.menuButtons:
+        return 'Főmenü gombok';
     }
   }
 
   IconData get icon {
     switch (type) {
+      case MainMenuButtonType.none:
+        return Icons.error;
       case MainMenuButtonType.karaoke:
         return Icons.mic;
       case MainMenuButtonType.nappaliPortya:
@@ -67,8 +71,8 @@ class MainMenuButton {
         return Icons.how_to_vote;
       case MainMenuButtonType.wordle:
         return Icons.type_specimen;
-      default:
-        return Icons.error;
+      case MainMenuButtonType.menuButtons:
+        return Icons.toggle_on_outlined;
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
+import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
@@ -100,6 +101,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.quizQuick),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
+      MainMenuButton(type: MainMenuButtonType.menuButtons),
     ];
 
     buttons.sort((a, b) => order
@@ -135,9 +137,10 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.voting;
     } else if (key == MainMenuButtonType.wordle.rawValue) {
       return MainMenuButtonType.wordle;
-    } else {
-      return MainMenuButtonType.none;
+    } else if (key == MainMenuButtonType.menuButtons.rawValue) {
+      return MainMenuButtonType.menuButtons;
     }
+    return MainMenuButtonType.none;
   }
 
   VisibilityType _getVisibilityFromKey(int key) {
@@ -156,6 +159,8 @@ class MainMenuViewModel extends ChangeNotifier {
   Function getActionFor(
       {required MainMenuButtonType buttonType, required BuildContext context}) {
     switch (buttonType) {
+      case MainMenuButtonType.none:
+        return () => {};
       case MainMenuButtonType.karaoke:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -230,8 +235,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => const WordleScreen(),
               ),
             );
-      case MainMenuButtonType.none:
-        return () => {};
+      case MainMenuButtonType.menuButtons:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const MenuButtonsScreen(),
+              ),
+            );
     }
   }
 
