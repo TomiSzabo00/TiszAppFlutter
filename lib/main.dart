@@ -43,10 +43,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: CustomColor.btnFaceDay,
+          foregroundColor: CustomColor.btnTextDay,
+        ),
         primarySwatch: Colors.green,
         iconTheme: const IconThemeData(color: CustomColor.btnTextDay),
       ),
       darkTheme: ThemeData(
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: CustomColor.btnFaceNight,
+          foregroundColor: CustomColor.btnTextNight,
+        ),
         brightness: Brightness.dark,
         primarySwatch: CustomColor.white,
         iconTheme: const IconThemeData(color: CustomColor.btnTextNight),
