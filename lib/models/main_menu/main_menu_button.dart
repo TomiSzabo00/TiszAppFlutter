@@ -4,7 +4,7 @@ import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 
 class MainMenuButton {
   final MainMenuButtonType type;
-  final VisibilityType visibilityType;
+  VisibilityType visibilityType;
 
   String get title {
     switch (type) {
@@ -81,6 +81,6 @@ class MainMenuButton {
 
   MainMenuButton({
     required this.type,
-    required this.visibilityType,
+    this.visibilityType = VisibilityType.hidden,
   });
 }

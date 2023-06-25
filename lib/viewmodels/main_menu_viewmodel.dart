@@ -47,11 +47,54 @@ class MainMenuViewModel extends ChangeNotifier {
         if (user.isAdmin || button.isVisible) {
           if (!buttons.any((element) => element.title == button.title)) {
             buttons.add(button);
-            notifyListeners();
           }
         }
+        _reorderButtons();
       }
     });
+
+    database.child("_main_menu").onChildChanged.listen((event) {
+      final snapshot = event.snapshot;
+      final key = snapshot.key;
+      final value = tryCast<int>(snapshot.value) ?? 0;
+      if (key != null) {
+        final buttonType = _getButtonFromKey(key);
+        final visibility = _getVisibilityFromKey(value);
+        final button =
+            MainMenuButton(type: buttonType, visibilityType: visibility);
+        if (user.isAdmin || button.isVisible) {
+          if (!buttons.any((element) => element.title == button.title)) {
+            buttons.add(button);
+          }
+        } else {
+          buttons.removeWhere((element) => element.title == button.title);
+        }
+        _reorderButtons();
+      }
+    });
+  }
+
+  void _reorderButtons() {
+    List<MainMenuButton> order = [
+      MainMenuButton(type: MainMenuButtonType.schedule),
+      MainMenuButton(type: MainMenuButtonType.scores),
+      MainMenuButton(type: MainMenuButtonType.wordle),
+      MainMenuButton(type: MainMenuButtonType.pictures),
+      MainMenuButton(type: MainMenuButtonType.texts),
+      MainMenuButton(type: MainMenuButtonType.pictureUpload),
+      MainMenuButton(type: MainMenuButtonType.textUpload),
+      MainMenuButton(type: MainMenuButtonType.songs),
+      MainMenuButton(type: MainMenuButtonType.karaoke),
+      MainMenuButton(type: MainMenuButtonType.nappaliPortya),
+      MainMenuButton(type: MainMenuButtonType.quizQuick),
+      MainMenuButton(type: MainMenuButtonType.scoreUpload),
+      MainMenuButton(type: MainMenuButtonType.voting),
+    ];
+
+    buttons.sort((a, b) => order
+        .indexWhere((element) => element.type == a.type)
+        .compareTo(order.indexWhere((element) => element.type == b.type)));
+    notifyListeners();
   }
 
   MainMenuButtonType _getButtonFromKey(String key) {
