@@ -8,6 +8,7 @@ import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
+import 'package:tiszapp_flutter/views/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
@@ -98,7 +99,8 @@ class MainMenuViewModel extends ChangeNotifier {
     }
   }
 
-  Function getActionFor({required MainMenuButtonType buttonType, required BuildContext context}) {
+  Function getActionFor(
+      {required MainMenuButtonType buttonType, required BuildContext context}) {
     switch (buttonType) {
       case MainMenuButtonType.karaoke:
         return () => Navigator.of(context).push(
@@ -111,13 +113,13 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.pictureUpload:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => UploadPicturesScreen(context: context),
+                builder: (context) => const UploadPicturesScreen(),
               ),
             );
       case MainMenuButtonType.pictures:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => UploadPicturesScreen(context: context),
+                builder: (context) => const PicturesScreen(),
               ),
             );
       case MainMenuButtonType.quizQuick:
