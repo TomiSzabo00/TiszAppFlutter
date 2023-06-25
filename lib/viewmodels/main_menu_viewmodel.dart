@@ -72,6 +72,17 @@ class MainMenuViewModel extends ChangeNotifier {
         _reorderButtons();
       }
     });
+
+    database.child("_main_menu").onChildRemoved.listen((event) {
+      final snapshot = event.snapshot;
+      final key = snapshot.key;
+      if (key != null) {
+        final buttonType = _getButtonFromKey(key);
+        final button = MainMenuButton(type: buttonType);
+        buttons.removeWhere((element) => element.title == button.title);
+        _reorderButtons();
+      }
+    });
   }
 
   void _reorderButtons() {
@@ -79,11 +90,11 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.schedule),
       MainMenuButton(type: MainMenuButtonType.scores),
       MainMenuButton(type: MainMenuButtonType.wordle),
+      MainMenuButton(type: MainMenuButtonType.songs),
       MainMenuButton(type: MainMenuButtonType.pictures),
       MainMenuButton(type: MainMenuButtonType.texts),
       MainMenuButton(type: MainMenuButtonType.pictureUpload),
       MainMenuButton(type: MainMenuButtonType.textUpload),
-      MainMenuButton(type: MainMenuButtonType.songs),
       MainMenuButton(type: MainMenuButtonType.karaoke),
       MainMenuButton(type: MainMenuButtonType.nappaliPortya),
       MainMenuButton(type: MainMenuButtonType.quizQuick),
