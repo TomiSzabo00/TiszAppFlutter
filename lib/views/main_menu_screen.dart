@@ -47,16 +47,14 @@ class MainMenuState extends State<MainMenu> {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
                     children: List.generate(viewModel.buttons.length, (index) {
-                      return Flexible(
-                        child: MenuIcon(
-                          text: viewModel.buttons[index].title,
-                          icon: viewModel.buttons[index].icon,
-                          onPressed: () {
-                            viewModel.getActionFor(
-                                buttonType: viewModel.buttons[index].type,
-                                context: context)();
-                          },
-                        ),
+                      return MenuIcon(
+                        text: viewModel.buttons[index].title,
+                        icon: viewModel.buttons[index].icon,
+                        onPressed: () {
+                          viewModel.getActionFor(
+                              buttonType: viewModel.buttons[index].type,
+                              context: context)();
+                        },
                       );
                     })),
               ),
