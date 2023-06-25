@@ -13,8 +13,6 @@ import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
 import 'firebase_options.dart';
 import 'widget_tree.dart';
 
-// Hello Szakdolgozat!
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
