@@ -1,110 +1,182 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/main_menu/main_menu_button.dart';
+import 'package:tiszapp_flutter/models/main_menu/main_menu_button_type.dart';
+import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
-import 'package:tiszapp_flutter/services/api_service.dart';
-// ignore: depend_on_referenced_packages
-import 'package:collection/collection.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
+import 'package:tiszapp_flutter/views/quiz_screen.dart';
+import 'package:tiszapp_flutter/views/schedule_screen.dart';
+import 'package:tiszapp_flutter/views/scores_screen.dart';
+import 'package:tiszapp_flutter/views/songs_screen.dart';
+import 'package:tiszapp_flutter/views/texts_screen.dart';
+import 'package:tiszapp_flutter/views/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/upload_score_screen.dart';
+import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
+import 'package:tiszapp_flutter/views/voting_screen.dart';
+import 'package:tiszapp_flutter/views/wordle_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MainMenuViewModel {
-  MainMenuViewModel(BuildContext context) {
-    _context = context;
-  }
-
-  late BuildContext _context;
+class MainMenuViewModel extends ChangeNotifier {
+  MainMenuViewModel();
   UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
 
-  final buttonTexts = [
-    "Napirend",
-    "Pontállás",
-    "Pontok feltöltése",
-    "Képek",
-    "Képek feltöltése",
-    "Szövegek",
-    "Szövegek feltöltése",
-    "Daloskönyv",
-    "Szavazás",
-    "Wordle",
-    "AV Kvíz",
-    "Nappali portya",
-    "Karaoke",
-  ];
-  final buttonIcons = [
-    Icons.calendar_today,
-    Icons.format_list_numbered,
-    Icons.add,
-    Icons.image,
-    Icons.add,
-    Icons.text_fields,
-    Icons.add,
-    Icons.music_note,
-    Icons.how_to_vote,
-    Icons.type_specimen,
-    Icons.front_hand,
-    Icons.holiday_village_outlined,
-    Icons.mic,
-  ];
+  List<MainMenuButton> buttons = [];
 
-  List<String> _getButtonTextsForUserRole(List<bool> buttonVisible) {
-    List<String> texts = [];
-    for (var i = 0; i < buttonTexts.length; i++) {
-      if (buttonVisible[i]) {
-        texts.add(buttonTexts[i]);
-      }
+  void subscribeToButtonEvents() async {
+    DatabaseReference database = FirebaseDatabase.instance.ref();
+    if (user.uid.isEmpty) {
+      user = await DatabaseService.getUserData(
+          FirebaseAuth.instance.currentUser!.uid);
+      notifyListeners();
     }
-    return texts;
-  }
 
-  List<IconData> _getButtonIconsForUserRole(List<bool> buttonVisible) {
-    List<IconData> icons = [];
-    for (var i = 0; i < buttonIcons.length; i++) {
-      if (buttonVisible[i]) {
-        icons.add(buttonIcons[i]);
-      }
-    }
-    return icons;
-  }
-
-  List<Function> _getButtonActionsForUserRole(List<bool> buttonVisible) {
-    List<Function> actions = [];
-    _getButtonTextsForUserRole(buttonVisible).forEach((element) {
-      if (element == "AV Kvíz" || element == "Karaoke") {
-        actions.add(() {
-          _navigateToScreen(element, arguments: user.isAdmin);
-        });
-      } else if (element == "Nappali portya") {
-        actions.add(() {
-          _launchURL();
-        });
-      } else {
-        actions.add(() {
-          _navigateToScreen(element);
-        });
+    database.child("_main_menu").onChildAdded.listen((event) {
+      final snapshot = event.snapshot;
+      final key = snapshot.key;
+      final value = tryCast<int>(snapshot.value) ?? 0;
+      if (key != null) {
+        final buttonType = _getButtonFromKey(key);
+        final visibility = _getVisibilityFromKey(value);
+        final button =
+            MainMenuButton(type: buttonType, visibilityType: visibility);
+        if (user.isAdmin || button.isVisible) {
+          if (!buttons.any((element) => element.title == button.title)) {
+            buttons.add(button);
+            notifyListeners();
+          }
+        }
       }
     });
-    return actions;
   }
 
-  void _navigateToScreen(String screenName, {Object? arguments}) {
-    Navigator.pushNamed(_context, '/$screenName', arguments: arguments);
-  }
-
-  Future<IterableZip<Object>> getButtons() async {
-    List<bool> visibility = [];
-    final apiResponse = await ApiService.getButtonVisibility();
-    user = await DatabaseService.getUserData(
-        FirebaseAuth.instance.currentUser!.uid);
-    if (user.isAdmin) {
-      visibility = apiResponse.map((e) => true).toList();
+  MainMenuButtonType _getButtonFromKey(String key) {
+    if (key == MainMenuButtonType.karaoke.rawValue) {
+      return MainMenuButtonType.karaoke;
+    } else if (key == MainMenuButtonType.nappaliPortya.rawValue) {
+      return MainMenuButtonType.nappaliPortya;
+    } else if (key == MainMenuButtonType.pictureUpload.rawValue) {
+      return MainMenuButtonType.pictureUpload;
+    } else if (key == MainMenuButtonType.pictures.rawValue) {
+      return MainMenuButtonType.pictures;
+    } else if (key == MainMenuButtonType.quizQuick.rawValue) {
+      return MainMenuButtonType.quizQuick;
+    } else if (key == MainMenuButtonType.schedule.rawValue) {
+      return MainMenuButtonType.schedule;
+    } else if (key == MainMenuButtonType.scoreUpload.rawValue) {
+      return MainMenuButtonType.scoreUpload;
+    } else if (key == MainMenuButtonType.scores.rawValue) {
+      return MainMenuButtonType.scores;
+    } else if (key == MainMenuButtonType.songs.rawValue) {
+      return MainMenuButtonType.songs;
+    } else if (key == MainMenuButtonType.textUpload.rawValue) {
+      return MainMenuButtonType.textUpload;
+    } else if (key == MainMenuButtonType.texts.rawValue) {
+      return MainMenuButtonType.texts;
+    } else if (key == MainMenuButtonType.voting.rawValue) {
+      return MainMenuButtonType.voting;
+    } else if (key == MainMenuButtonType.wordle.rawValue) {
+      return MainMenuButtonType.wordle;
     } else {
-      visibility = apiResponse;
+      return MainMenuButtonType.none;
     }
-    return IterableZip([
-      _getButtonTextsForUserRole(visibility),
-      _getButtonIconsForUserRole(visibility),
-      _getButtonActionsForUserRole(visibility),
-    ]);
+  }
+
+  VisibilityType _getVisibilityFromKey(int key) {
+    switch (key) {
+      case 0:
+        return VisibilityType.hidden;
+      case 1:
+        return VisibilityType.visible;
+      case 2:
+        return VisibilityType.never;
+      default:
+        return VisibilityType.hidden;
+    }
+  }
+
+  Function getActionFor({required MainMenuButtonType buttonType, required BuildContext context}) {
+    switch (buttonType) {
+      case MainMenuButtonType.karaoke:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => KaraokeBasicScreen(isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.nappaliPortya:
+        return () => _launchURL();
+      case MainMenuButtonType.pictureUpload:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UploadPicturesScreen(context: context),
+              ),
+            );
+      case MainMenuButtonType.pictures:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UploadPicturesScreen(context: context),
+              ),
+            );
+      case MainMenuButtonType.quizQuick:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => QuizScreen(isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.schedule:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ScheduleScreen(),
+              ),
+            );
+      case MainMenuButtonType.scoreUpload:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UploadScoreScreen(),
+              ),
+            );
+      case MainMenuButtonType.scores:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ScoresScreen(),
+              ),
+            );
+      case MainMenuButtonType.songs:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const SongsScreen(),
+              ),
+            );
+      case MainMenuButtonType.textUpload:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UploadTextsScreen(),
+              ),
+            );
+      case MainMenuButtonType.texts:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const TextsScreen(),
+              ),
+            );
+      case MainMenuButtonType.voting:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => VotingScreen(),
+              ),
+            );
+      case MainMenuButtonType.wordle:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const WordleScreen(),
+              ),
+            );
+      case MainMenuButtonType.none:
+        return () => {};
+    }
   }
 
   _launchURL() async {
