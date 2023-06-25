@@ -5,7 +5,7 @@ import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class SongsViewModel with ChangeNotifier {
   final List<Song> songs = [];
-  final List<Song> filteredSongs = [];
+  final Set<Song> filteredSongs = {};
   bool isLoading = true;
 
   SongsViewModel();
