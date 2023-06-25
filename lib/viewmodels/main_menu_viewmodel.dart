@@ -27,6 +27,7 @@ class MainMenuViewModel extends ChangeNotifier {
   UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
 
   List<MainMenuButton> buttons = [];
+  List<MainMenuButton> buttonToggles = [];
 
   void subscribeToButtonEvents() async {
     DatabaseReference database = FirebaseDatabase.instance.ref();
@@ -51,6 +52,9 @@ class MainMenuViewModel extends ChangeNotifier {
           }
         }
         _reorderButtons();
+        if (!buttonToggles.any((element) => element.title == button.title)) {
+          buttonToggles.add(button);
+        }
       }
     });
 
@@ -71,6 +75,11 @@ class MainMenuViewModel extends ChangeNotifier {
           buttons.removeWhere((element) => element.title == button.title);
         }
         _reorderButtons();
+        final index = buttonToggles
+            .indexWhere((element) => element.title == button.title);
+        if (index != -1) {
+          buttonToggles[index] = button;
+        }
       }
     });
 
@@ -82,6 +91,7 @@ class MainMenuViewModel extends ChangeNotifier {
         final button = MainMenuButton(type: buttonType);
         buttons.removeWhere((element) => element.title == button.title);
         _reorderButtons();
+        buttonToggles.removeWhere((element) => element.title == button.title);
       }
     });
   }
@@ -253,5 +263,11 @@ class MainMenuViewModel extends ChangeNotifier {
 
   Future<String> _getDriveURL() async {
     return await DatabaseService.getDriveURL(teamNum: user.teamNum);
+  }
+
+  void toggleButtonVisibility(
+      {required MainMenuButton button, required bool isVisible}) {
+    DatabaseReference ref = FirebaseDatabase.instance.ref();
+    ref.child('_main_menu/${button.type.rawValue}').set(isVisible ? 1 : 0);
   }
 }
