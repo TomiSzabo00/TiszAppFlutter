@@ -9,8 +9,6 @@ class ProfileViewModel {
 
   ProfileViewModel(this.args);
 
-  // ejjeli portya branch mdosoitas
-
   String getTeamNum() {
     if (args.user.teamNum == 0) {
       return "Szervező";

@@ -6,8 +6,7 @@ import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
 
 class UploadPicturesScreen extends StatefulWidget {
-  const UploadPicturesScreen({super.key, required this.context});
-  final BuildContext context;
+  const UploadPicturesScreen({super.key});
 
   @override
   State<UploadPicturesScreen> createState() => _UploadPicturesScreenState();
@@ -21,7 +20,7 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   @override
   void initState() {
     super.initState();
-    PicturesViewModel.init(widget.context).then((value) {
+    PicturesViewModel.init(context).then((value) {
       setState(() {
         _viewModel = value;
       });

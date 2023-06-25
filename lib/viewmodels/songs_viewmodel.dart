@@ -33,7 +33,7 @@ class SongsViewModel with ChangeNotifier {
   }
 
   String _getAssetPathFromFile(String file) {
-    return 'assets/$file';
+    return 'assets/songs/$file';
   }
 
   void filterSongs(String filter) {
