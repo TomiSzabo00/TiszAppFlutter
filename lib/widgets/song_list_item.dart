@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
+import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
 
 class SongListItem extends StatelessWidget {
   const SongListItem({Key? key, required this.song}) : super(key: key);
@@ -11,7 +12,10 @@ class SongListItem extends StatelessWidget {
     return ListTile(
       title: Text(song.name),
       onTap: () {
-        Navigator.pushNamed(context, '/Daloskönyv/Részlet', arguments: song);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => SongsDetailScreen(song: song)),
+        );
       },
       trailing: Icon(
         Icons.chevron_right,
