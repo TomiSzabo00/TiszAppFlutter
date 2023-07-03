@@ -20,6 +20,7 @@ import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
+import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MainMenuViewModel extends ChangeNotifier {
@@ -112,6 +113,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
       MainMenuButton(type: MainMenuButtonType.menuButtons),
+      MainMenuButton(type: MainMenuButtonType.hazasParbaj),
     ];
 
     buttons.sort((a, b) => order
@@ -149,7 +151,10 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
+    } else if (key == MainMenuButtonType.hazasParbaj.rawValue) {
+      return MainMenuButtonType.hazasParbaj;
     }
+
     return MainMenuButtonType.none;
   }
 
@@ -249,6 +254,12 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const MenuButtonsScreen(),
+              ),
+            );
+      case MainMenuButtonType.hazasParbaj:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => HazasParbajScreen(),
               ),
             );
     }
