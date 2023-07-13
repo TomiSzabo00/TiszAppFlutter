@@ -7,7 +7,7 @@ class HazasParbajData {
   final UserData user;
   final String name1;
   final String name2;
-  final int team;
+  final String team;
   bool votedOut = false;
 
   HazasParbajData(
@@ -26,7 +26,7 @@ class HazasParbajData {
     final name2 =
         tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['name2']) ?? "";
     final team =
-        tryCast<int>((tryCast<Map>(snapshot.value) ?? {})['team']) ?? 0;
+        tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['team']) ?? "0";
     final votedOut =
         tryCast<bool>((tryCast<Map>(snapshot.value) ?? {})['votedOut']) ??
             false;

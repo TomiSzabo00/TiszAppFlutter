@@ -259,7 +259,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.hazasParbaj:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => HazasParbajScreen(),
+                builder: (context) => HazasParbajScreen(isAdmin: user.isAdmin),
               ),
             );
     }

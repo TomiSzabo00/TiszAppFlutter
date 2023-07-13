@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/hazas_parbaj_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
@@ -56,7 +55,7 @@ class HazasParbajViewModel extends ChangeNotifier {
     });
   }
 
-  Future<bool> signUpForKaraoke() async {
+  Future<bool> signUp() async {
     final key = DateService.dateInMillisAsString();
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final userData = await DatabaseService.getUserData(uid);
@@ -64,17 +63,19 @@ class HazasParbajViewModel extends ChangeNotifier {
         user: userData,
         name1: name1Controller.text,
         name2: name2Controller.text,
-        team: (tryCast<int>(teamController.text) ?? -1));
+        team: teamController.text);
     final index = signedUpPairs.indexWhere((element) =>
         (element.user.uid == userData.uid &&
             element.name1 == name1Controller.text &&
             element.name2 == name2Controller.text &&
-            element.team == (tryCast<int>(teamController.text) ?? -1)));
+            element.team == teamController.text));
     if (index != -1) {
       notifyListeners();
       return true;
     }
-    database.child('hazas_parbaj/signed_up/$key').set(data);
+    final dataJson = data.toJson();
+    database.child('hazas_parbaj/signed_up/$key').set(dataJson);
+    signedUpPairs.add(data);
     name1Controller.clear();
     name2Controller.clear();
     teamController.clear();

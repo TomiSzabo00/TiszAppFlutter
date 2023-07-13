@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/models/hazas_parbaj_data.dart';
+import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz_viewmodel.dart';
@@ -29,6 +31,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => WordleViewModel()),
       ChangeNotifierProvider(create: (_) => QuizViewModel()),
       ChangeNotifierProvider(create: (_) => KaraokeBasicViewModel()),
+      ChangeNotifierProvider(create: (_) => HazasParbajViewModel()),
     ], child: const MyApp()),
   );
 }
