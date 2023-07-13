@@ -93,20 +93,20 @@ class NotificationViewModel extends ChangeNotifier {
       return tokens;
     }
     // decode data
-    final data = tryCast<Map<String, String>>(event.snapshot.value);
+    final data = tryCast<Map>(event.snapshot.value);
     if (data == null) {
       return tokens;
     }
     data.forEach((key, value) {
-      DatabaseService.getUserData(key).then((user) {
+      DatabaseService.getUserData(value).then((user) {
         if (user.isAdmin && adminsSwitch) {
-          tokens.add(value);
+          tokens.add(key);
         } else if (allUsersSwitch) {
-          tokens.add(value);
+          tokens.add(key);
         } else if (user.teamNum > 0 &&
-            switches.length <= user.teamNum &&
+            switches.length >= user.teamNum &&
             switches[user.teamNum - 1]) {
-          tokens.add(value);
+          tokens.add(key);
         }
       });
     });

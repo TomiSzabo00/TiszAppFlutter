@@ -23,7 +23,6 @@ Future<void> main() async {
   );
 
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
-  await FirebaseMessaging.instance.subscribeToTopic("tiszap");
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
