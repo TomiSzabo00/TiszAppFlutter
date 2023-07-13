@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/services/database_service.dart';
 
 class NotificationViewModel extends ChangeNotifier {
   final titleController = TextEditingController();
@@ -64,8 +65,8 @@ class NotificationViewModel extends ChangeNotifier {
   }
 
   void sendNotification() async {
-    List<String> tokens = List.empty(growable: true);
-    String serverKey = '';
+    List<String> tokens = await getTokens();
+    String serverKey = await getServerKey();
     try {
       final bool result = await platform.invokeMethod('sendNotification', {
         'title': titleController.text,
@@ -81,5 +82,49 @@ class NotificationViewModel extends ChangeNotifier {
       error = e.message;
       notifyListeners();
     }
+  }
+
+  Future<List<String>> getTokens() async {
+    final List<String> tokens = List.empty(growable: true);
+    final database = FirebaseDatabase.instance.ref();
+
+    final event = await database.child('notification_tokens').once();
+    if (event.snapshot.value == null) {
+      return tokens;
+    }
+    // decode data
+    final data = tryCast<Map<String, String>>(event.snapshot.value);
+    if (data == null) {
+      return tokens;
+    }
+    data.forEach((key, value) {
+      DatabaseService.getUserData(key).then((user) {
+        if (user.isAdmin && adminsSwitch) {
+          tokens.add(value);
+        } else if (allUsersSwitch) {
+          tokens.add(value);
+        } else if (user.teamNum > 0 &&
+            switches.length <= user.teamNum &&
+            switches[user.teamNum - 1]) {
+          tokens.add(value);
+        }
+      });
+    });
+
+    return tokens;
+  }
+
+  Future<String> getServerKey() async {
+    final database = FirebaseDatabase.instance.ref();
+    final event = await database.child('messagingKey/key').once();
+    if (event.snapshot.value == null) {
+      return '';
+    }
+    // decode data
+    final data = tryCast<String>(event.snapshot.value);
+    if (data == null) {
+      return '';
+    }
+    return data;
   }
 }
