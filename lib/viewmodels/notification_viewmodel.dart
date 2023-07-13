@@ -6,6 +6,8 @@ class NotificationViewModel extends ChangeNotifier {
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
   List<bool> switches = List.empty(growable: true);
+  bool allUsersSwitch = false;
+  bool adminsSwitch = false;
 
   void initSwitches() {
     final database = FirebaseDatabase.instance.ref();
@@ -19,4 +21,42 @@ class NotificationViewModel extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  void turnOnAllUsers() {
+    allUsersSwitch = true;
+    for (int i = 0; i < switches.length; i++) {
+      switches[i] = true;
+    }
+    notifyListeners();
+  }
+
+  void turnOffAllUsers() {
+    allUsersSwitch = false;
+    for (int i = 0; i < switches.length; i++) {
+      switches[i] = false;
+    }
+    notifyListeners();
+  }
+
+  void turnOnAdmins() {
+    adminsSwitch = true;
+    notifyListeners();
+  }
+
+  void turnOffAdmins() {
+    adminsSwitch = false;
+    notifyListeners();
+  }
+
+  void updateSwitch(int index, bool value) {
+    switches[index] = value;
+    if (switches.every((element) => element == true)) {
+      allUsersSwitch = true;
+    } else {
+      allUsersSwitch = false;
+    }
+    notifyListeners();
+  }
+
+  void sendNotification() {}
 }
