@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 
 class NotificationViewModel extends ChangeNotifier {
@@ -8,6 +9,10 @@ class NotificationViewModel extends ChangeNotifier {
   List<bool> switches = List.empty(growable: true);
   bool allUsersSwitch = false;
   bool adminsSwitch = false;
+
+  static const platform = MethodChannel('flutter/notifications');
+  bool? didSend;
+  String? error;
 
   void initSwitches() {
     final database = FirebaseDatabase.instance.ref();
@@ -58,5 +63,23 @@ class NotificationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void sendNotification() {}
+  void sendNotification() async {
+    List<String> tokens = List.empty(growable: true);
+    String serverKey = '';
+    try {
+      final bool result = await platform.invokeMethod('sendNotification', {
+        'title': titleController.text,
+        'body': bodyController.text,
+        'to': tokens,
+        'serverKey': serverKey
+      });
+      print(result);
+      didSend = result;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      didSend = false;
+      error = e.message;
+      notifyListeners();
+    }
+  }
 }
