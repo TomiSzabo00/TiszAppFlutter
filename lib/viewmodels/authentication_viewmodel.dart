@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tiszapp_flutter/models/admin_api_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
@@ -118,6 +119,14 @@ class AuthenticationViewModel {
         email: "$username@tiszap.hu",
         password: password,
       );
+      final token = await FirebaseMessaging.instance.getToken();
+      if (FirebaseAuth.instance.currentUser != null && token != null) {
+        FirebaseDatabase.instance
+            .ref()
+            .child("notification_tokens")
+            .child(token)
+            .set(FirebaseAuth.instance.currentUser!.uid);
+      }
     } on FirebaseAuthException catch (e) {
       errorMessage = e.code;
     }
