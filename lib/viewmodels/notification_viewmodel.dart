@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class NotificationViewModel extends ChangeNotifier {
   final titleController = TextEditingController();
@@ -66,22 +70,66 @@ class NotificationViewModel extends ChangeNotifier {
 
   void sendNotification() async {
     List<String> tokens = await getTokens();
-    String serverKey = await getServerKey();
-    try {
-      final bool result = await platform.invokeMethod('sendNotification', {
-        'title': titleController.text,
-        'body': bodyController.text,
-        'to': tokens,
-        'serverKey': serverKey
-      });
-      print(result);
-      didSend = result;
-      notifyListeners();
-    } on PlatformException catch (e) {
-      didSend = false;
-      error = e.message;
-      notifyListeners();
+    AccessCredentials credentials = await obtainCredentials();
+    const url =
+        "https://fcm.googleapis.com/v1/projects/tiszapp-175fb/messages:send";
+    var header = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer ${credentials.accessToken.data}"
+    };
+    for (final token in tokens) {
+      var request = {
+        "message": {
+          "token": token,
+          "notification": {
+            "title": titleController.text,
+            "body": bodyController.text,
+          },
+          // "android": {
+          //   "notification": {
+          //     "click_action": "FLUTTER_NOTIFICATION_CLICK",
+          //     "body": bodyController.text,
+          //   }
+          // },
+        }
+      };
+      try {
+        var response = await http.post(
+          Uri.parse(url),
+          headers: header,
+          body: json.encode(request),
+        );
+        if (response.statusCode == 200) {
+          didSend = true;
+          notifyListeners();
+          print('notification sent. response: ${response.body}');
+        } else {
+          didSend = false;
+          notifyListeners();
+          print('notification not sent. reason: ${response.body}');
+        }
+      } catch (e) {
+        error = e.toString();
+        didSend = false;
+        notifyListeners();
+        print('error: $e');
+        return;
+      }
     }
+  }
+
+  Future<AccessCredentials> obtainCredentials() async {
+    final serviceFile = await StorageService.getServiceFile();
+    var accountCredentials = ServiceAccountCredentials.fromJson(serviceFile);
+    var scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+
+    var client = http.Client();
+    AccessCredentials credentials =
+        await obtainAccessCredentialsViaServiceAccount(
+            accountCredentials, scopes, client);
+
+    client.close();
+    return credentials;
   }
 
   Future<List<String>> getTokens() async {

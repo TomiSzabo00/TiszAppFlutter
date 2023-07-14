@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
-import 'dart:convert' show utf8;
+import 'dart:convert' show json, utf8;
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
@@ -53,6 +53,19 @@ class StorageService {
     final uri = Uri.parse(url);
     return await http.get(uri).then((content) {
       return utf8.decode(content.bodyBytes);
+    });
+  }
+
+  static Future<Map<String, dynamic>> getServiceFile() async {
+    const serviceFileNmae =
+        'tiszapp-175fb-firebase-adminsdk-wj70k-b37db09c17.json';
+    final data = await storage.FirebaseStorage.instance
+        .ref()
+        .child('not_a_password/$serviceFileNmae')
+        .getDownloadURL();
+    final uri = Uri.parse(data);
+    return await http.get(uri).then((content) {
+      return json.decode(content.body);
     });
   }
 }
