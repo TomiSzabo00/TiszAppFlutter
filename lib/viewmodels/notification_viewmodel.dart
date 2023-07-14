@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
@@ -16,8 +17,10 @@ class NotificationViewModel extends ChangeNotifier {
   bool adminsSwitch = false;
 
   static const platform = MethodChannel('flutter/notifications');
-  bool? didSend;
+  bool startedSending = false;
   String? error;
+
+  String get alertTitle => error == null ? 'Sikeres küldés' : 'Hiba történt';
 
   void initSwitches() {
     final database = FirebaseDatabase.instance.ref();
@@ -68,7 +71,8 @@ class NotificationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void sendNotification() async {
+  Future<void> sendNotification() async {
+    startedSending = true;
     List<String> tokens = await getTokens();
     AccessCredentials credentials = await obtainCredentials();
     const url =
@@ -99,23 +103,34 @@ class NotificationViewModel extends ChangeNotifier {
           headers: header,
           body: json.encode(request),
         );
+        startedSending = false;
         if (response.statusCode == 200) {
-          didSend = true;
           notifyListeners();
-          print('notification sent. response: ${response.body}');
+          if (kDebugMode) {
+            print('notification sent. response: ${response.body}');
+          }
         } else {
-          didSend = false;
+          error = response.body;
           notifyListeners();
-          print('notification not sent. reason: ${response.body}');
+          if (kDebugMode) {
+            print('notification not sent. reason: ${response.body}');
+          }
         }
       } catch (e) {
+        startedSending = false;
         error = e.toString();
-        didSend = false;
         notifyListeners();
-        print('error: $e');
+        if (kDebugMode) {
+          print('error: $e');
+        }
         return;
       }
     }
+  }
+
+  void dismissAlert() {
+    error = null;
+    notifyListeners();
   }
 
   Future<AccessCredentials> obtainCredentials() async {

@@ -107,8 +107,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
                 const SizedBox(height: 20),
                 Button3D(
-                  onPressed: () {
-                    viewModel.sendNotification();
+                  onPressed: () async {
+                    _showLoadingDialog();
+                    await viewModel.sendNotification();
+                    Navigator.of(context).pop();
+                    _showDialog(viewModel);
                   },
                   child: const Text('Küldés'),
                 ),
@@ -116,5 +119,53 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
           ),
         ));
+  }
+
+  Future<void> _showLoadingDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text('Értesítés küldése'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showDialog(NotificationViewModel viewModel) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(viewModel.alertTitle),
+          content: SingleChildScrollView(
+            child: (() {
+              if (viewModel.error != null) {
+                return Text(viewModel.error!);
+              } else {
+                return const Text('Sikeresen elküldted az értesítést!');
+              }
+            }()),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                viewModel.dismissAlert();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
