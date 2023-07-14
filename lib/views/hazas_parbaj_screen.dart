@@ -5,6 +5,8 @@ import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/colors.dart';
 
+import '../widgets/hazas_parbaj_tile.dart';
+
 class HazasParbajScreen extends StatefulWidget {
   const HazasParbajScreen({super.key, required this.isAdmin});
 
@@ -15,7 +17,9 @@ class HazasParbajScreen extends StatefulWidget {
 }
 
 class HazasParbajScreenState extends State<HazasParbajScreen> {
-  void initStatte() {
+  @override
+  void initState() {
+    super.initState();
     Provider.of<HazasParbajViewModel>(context, listen: false)
         .subscribeToUserChanges();
   }
@@ -29,7 +33,7 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
         title: const Text('Házaspárbaj'),
       ),
       body: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: <Widget>[
               const SizedBox(
@@ -45,29 +49,87 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
                       child: Text('Még senki sem jelentkezett!',
                           style: TextStyle(fontSize: 20.0)));
                 } else {
-                  return ListView.builder(
-                    itemCount: viewmodel.signedUpPairs.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(viewmodel.signedUpPairs[index].name1),
-                      );
-                    },
-                  );
+                  return Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                          child: SlidableAutoCloseBehavior(
+                        child: Column(
+                          children: List.generate(
+                              viewmodel.signedUpPairs.length, (index) {
+                            if (widget.isAdmin) {
+                              final key = Key(
+                                  viewmodel.signedUpPairs[index].user.uid +
+                                      viewmodel.signedUpPairs[index].name1 +
+                                      viewmodel.signedUpPairs[index].name2 +
+                                      viewmodel.signedUpPairs[index].team);
+                              return Slidable(
+                                  key: key,
+                                  groupTag: 0,
+                                  endActionPane: ActionPane(
+                                      extentRatio: 0.3,
+                                      motion: const DrawerMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) => viewmodel
+                                              .removeFromPairs(viewmodel
+                                                  .signedUpPairs[index]),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
+                                          label: 'Törlés',
+                                        ),
+                                      ]),
+                                  child: HazasTile(
+                                      data: viewmodel.signedUpPairs[index]));
+                            }
+                            return HazasTile(
+                                data: viewmodel.signedUpPairs[index]);
+                          }),
+                        ),
+                      )));
                 }
               }()),
               const SizedBox(height: 20.0),
-              Button3D(
-                onPressed: () => _showSignUpModalSheet(viewmodel, isDarkTheme),
-                child: Text(
-                  'Jelentkezés',
-                  style: TextStyle(
-                    color: isDarkTheme
-                        ? CustomColor.btnTextNight
-                        : CustomColor.btnTextDay,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Button3D(
+                      onPressed: () =>
+                          _showSignUpModalSheet(viewmodel, isDarkTheme),
+                      child: Text(
+                        'Jelentkezés',
+                        style: TextStyle(
+                          color: isDarkTheme
+                              ? CustomColor.btnTextNight
+                              : CustomColor.btnTextDay,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (widget.isAdmin) ...[
+                      const SizedBox(width: 20.0),
+                      Visibility(
+                        visible: widget.isAdmin,
+                        child: Button3D(
+                          onPressed: () => null,
+                          child: Text(
+                            'Szavazás indítása',
+                            style: TextStyle(
+                              color: isDarkTheme
+                                  ? CustomColor.btnTextNight
+                                  : CustomColor.btnTextDay,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ),
+              )
             ],
           )),
     );
