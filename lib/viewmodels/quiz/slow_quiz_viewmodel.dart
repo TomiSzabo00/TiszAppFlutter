@@ -98,9 +98,8 @@ class SlowQuizViewModel extends ChangeNotifier {
       if (event.snapshot.value == null) {
         return;
       }
-      final data = tryCast<Map>(event.snapshot.value) ?? {};
       final answers =
-          data.values.map((e) => QuizAnswer.fromSnapshot(e)).toList();
+          event.snapshot.children.map((e) => QuizAnswer.fromSnapshot(e)).toList();
       answers.sort((a, b) => a.teamNum.compareTo(b.teamNum));
       answersByTeams = List.generate(
           answers.last.teamNum,
@@ -112,6 +111,9 @@ class SlowQuizViewModel extends ChangeNotifier {
   }
 
   void sendAnswers() async {
+    if (controllers.every((element) => element.text.isEmpty)) {
+      return;
+    }
     final currUser = await DatabaseService.getUserData(
         FirebaseAuth.instance.currentUser!.uid);
     final answers = controllers.map((e) => e.text).toList();
