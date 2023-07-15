@@ -9,6 +9,7 @@ import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
+import 'package:tiszapp_flutter/views/notification_screen.dart';
 import 'package:tiszapp_flutter/views/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
@@ -111,6 +112,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.quizQuick),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
+      MainMenuButton(type: MainMenuButtonType.notifications),
       MainMenuButton(type: MainMenuButtonType.menuButtons),
     ];
 
@@ -149,6 +151,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
+    } else if (key == MainMenuButtonType.notifications.rawValue) {
+      return MainMenuButtonType.notifications;
     }
     return MainMenuButtonType.none;
   }
@@ -249,6 +253,12 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const MenuButtonsScreen(),
+              ),
+            );
+      case MainMenuButtonType.notifications:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const NotificationScreen(),
               ),
             );
     }

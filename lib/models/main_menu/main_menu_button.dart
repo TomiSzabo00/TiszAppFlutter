@@ -38,6 +38,8 @@ class MainMenuButton {
         return 'Wordle';
         case MainMenuButtonType.menuButtons:
         return 'Főmenü gombok';
+      case MainMenuButtonType.notifications:
+        return 'Értesítések';
     }
   }
 
@@ -73,6 +75,8 @@ class MainMenuButton {
         return Icons.type_specimen;
       case MainMenuButtonType.menuButtons:
         return Icons.toggle_on_outlined;
+      case MainMenuButtonType.notifications:
+        return Icons.notifications;
     }
   }
 
