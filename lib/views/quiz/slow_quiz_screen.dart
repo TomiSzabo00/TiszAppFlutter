@@ -30,7 +30,25 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<SlowQuizViewModel>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Lassú kvíz')),
+      appBar: AppBar(
+        title: viewModel.isSummary
+            ? const Text('Összefoglaló')
+            : const Text('Lassú kvíz'),
+        actions: [
+          () {
+            if (viewModel.isSummary) {
+              return IconButton(
+                onPressed: () {
+                  showAreYouSureDialog();
+                },
+                icon: const Icon(Icons.delete),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }(),
+        ],
+      ),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -203,23 +221,52 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
   }
 
   Widget adminSummaryScreen() {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        const Text(
-          'Összefoglaló',
-          style: TextStyle(fontSize: 20),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        ElevatedButton(
-          onPressed: () {},
-          child: const Text('Kvíz újraindítása'),
-        ),
-      ],
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width - 40,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            'Beérkezett válaszok:',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: () {
+              if (Provider.of<SlowQuizViewModel>(context, listen: false)
+                  .answersByTeams
+                  .isNotEmpty) {
+                return ListView.builder(
+                  itemCount:
+                      Provider.of<SlowQuizViewModel>(context, listen: false)
+                          .answersByTeams
+                          .length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index]}. csapat',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      subtitle: Text(
+                        '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index].length} darab válasz',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return const Text('Nem érkezett válasz :(');
+              }
+            }(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -282,6 +329,33 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  void showAreYouSureDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Biztosan törölni szeretnéd a kvízt?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Mégse'),
+            ),
+            TextButton(
+              onPressed: () {
+                Provider.of<SlowQuizViewModel>(context, listen: false)
+                    .deleteQuiz();
+                Navigator.pop(context);
+              },
+              child: const Text('Igen'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
