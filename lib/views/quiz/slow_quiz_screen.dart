@@ -140,7 +140,9 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
         ),
         Button3D(
           width: 150,
-          onPressed: () {},
+          onPressed: () {
+            Provider.of<SlowQuizViewModel>(context, listen: false).stopQuiz();
+          },
           child: Text(
             'Kvíz leállítása',
             style: TextStyle(
@@ -157,7 +159,10 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
         ),
         Button3D(
           width: 200,
-          onPressed: () {},
+          onPressed: () {
+            Provider.of<SlowQuizViewModel>(context, listen: false)
+                .resetAnswers();
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: AutoSizeText(
@@ -179,7 +184,9 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
         ),
         Button3D(
           width: 150,
-          onPressed: () {},
+          onPressed: () {
+            Provider.of<SlowQuizViewModel>(context, listen: false).deleteQuiz();
+          },
           child: Text(
             'Kvíz törlése',
             style: TextStyle(

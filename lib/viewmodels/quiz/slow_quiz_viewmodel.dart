@@ -11,10 +11,7 @@ class SlowQuizViewModel extends ChangeNotifier {
   int counter = 0;
 
   void initListeners() {
-    database
-        .child('slow_quiz/number_of_questions')
-        .onValue
-        .listen((event) {
+    database.child('slow_quiz/number_of_questions').onValue.listen((event) {
       numberOfQuestions = tryCast<int>(event.snapshot.value ?? 0) ?? 0;
       controllers =
           List.generate(numberOfQuestions, (index) => TextEditingController());
@@ -24,6 +21,14 @@ class SlowQuizViewModel extends ChangeNotifier {
     database.child('slow_quiz/is_summary').onValue.listen((event) {
       isSummary = tryCast<bool>(event.snapshot.value ?? false) ?? false;
       notifyListeners();
+    });
+
+    database.child('slow_quiz').onChildRemoved.listen((event) {
+      if (event.snapshot.key == 'answers') {
+        controllers = List.generate(
+            numberOfQuestions, (index) => TextEditingController());
+        notifyListeners();
+      }
     });
   }
 
@@ -43,5 +48,17 @@ class SlowQuizViewModel extends ChangeNotifier {
     database.child('slow_quiz/is_summary').set(false);
     database.child('slow_quiz/number_of_questions').set(counter);
     database.child('slow_quiz/answers').remove();
+  }
+
+  void deleteQuiz() {
+    database.child('slow_quiz').remove();
+  }
+
+  void resetAnswers() {
+    database.child('slow_quiz/answers').remove();
+  }
+
+  void stopQuiz() {
+    database.child('slow_quiz/is_summary').set(true);
   }
 }
