@@ -110,6 +110,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   onPressed: () async {
                     _showLoadingDialog();
                     await viewModel.sendNotification();
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                     _showDialog(viewModel);
                   },
@@ -124,7 +125,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _showLoadingDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return const AlertDialog(
           title: Text('Értesítés küldése'),
