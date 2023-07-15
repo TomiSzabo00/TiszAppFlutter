@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_state.dart';
-import 'package:tiszapp_flutter/viewmodels/quiz_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/quiz/quiz_tile.dart';
 

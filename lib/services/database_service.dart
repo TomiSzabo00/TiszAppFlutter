@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart' as database;
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
@@ -17,6 +18,9 @@ class DatabaseService {
   }
 
   static Future<UserData> getUserData(String uid) async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return UserData(uid: "", name: "Error", isAdmin: false, teamNum: -1);
+    }
     return await ref.child('users/$uid').get().then((snapshot) {
       if (snapshot.value != null) {
         return UserData.fromSnapshot(snapshot);

@@ -40,6 +40,8 @@ class MainMenuButton {
         return 'Főmenü gombok';
       case MainMenuButtonType.notifications:
         return 'Értesítések';
+      case MainMenuButtonType.slowQuiz:
+        return 'Lassú kvíz';
     }
   }
 
@@ -77,6 +79,8 @@ class MainMenuButton {
         return Icons.toggle_on_outlined;
       case MainMenuButtonType.notifications:
         return Icons.notifications;
+      case MainMenuButtonType.slowQuiz:
+        return Icons.edit_note_rounded;
     }
   }
 

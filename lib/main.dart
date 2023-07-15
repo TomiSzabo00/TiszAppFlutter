@@ -7,7 +7,8 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/notification_viewmodel.dart';
-import 'package:tiszapp_flutter/viewmodels/quiz_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
@@ -50,6 +51,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => QuizViewModel()),
       ChangeNotifierProvider(create: (_) => KaraokeBasicViewModel()),
       ChangeNotifierProvider(create: (_) => NotificationViewModel()),
+      ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
     ], child: const MyApp()),
   );
 }

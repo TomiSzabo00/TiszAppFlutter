@@ -15,6 +15,7 @@ enum MainMenuButtonType {
   wordle,
   menuButtons,
   notifications,
+  slowQuiz,
 }
 
 extension RawValuesExtension on MainMenuButtonType {
@@ -34,6 +35,7 @@ extension RawValuesExtension on MainMenuButtonType {
     MainMenuButtonType.wordle: 'wordle',
     MainMenuButtonType.menuButtons: 'menu_buttons',
     MainMenuButtonType.notifications: 'notifications',
+    MainMenuButtonType.slowQuiz: 'slow_quiz',
   };
 
   String get rawValue => rawValues[this] ?? 'error';
