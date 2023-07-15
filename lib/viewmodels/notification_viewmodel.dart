@@ -15,8 +15,6 @@ class NotificationViewModel extends ChangeNotifier {
   List<bool> switches = List.empty(growable: true);
   bool allUsersSwitch = false;
   bool adminsSwitch = false;
-
-  static const platform = MethodChannel('flutter/notifications');
   bool startedSending = false;
   String? error;
 
@@ -175,19 +173,5 @@ class NotificationViewModel extends ChangeNotifier {
     });
 
     return tokens;
-  }
-
-  Future<String> getServerKey() async {
-    final database = FirebaseDatabase.instance.ref();
-    final event = await database.child('messagingKey/key').once();
-    if (event.snapshot.value == null) {
-      return '';
-    }
-    // decode data
-    final data = tryCast<String>(event.snapshot.value);
-    if (data == null) {
-      return '';
-    }
-    return data;
   }
 }
