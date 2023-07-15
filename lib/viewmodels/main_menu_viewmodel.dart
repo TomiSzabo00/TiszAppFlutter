@@ -22,6 +22,9 @@ import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../views/ejjeli_portya_admin_screen.dart';
+import '../views/ejjeli_portya_screen.dart';
+
 class MainMenuViewModel extends ChangeNotifier {
   MainMenuViewModel();
   UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
@@ -111,6 +114,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.quizQuick),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
+      MainMenuButton(type: MainMenuButtonType.ejjeliportya),
       MainMenuButton(type: MainMenuButtonType.menuButtons),
     ];
 
@@ -149,6 +153,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
+    } else if(key == MainMenuButtonType.ejjeliportya.rawValue) {
+      return MainMenuButtonType.ejjeliportya;
     }
     return MainMenuButtonType.none;
   }
@@ -245,6 +251,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => const WordleScreen(),
               ),
             );
+      case MainMenuButtonType.ejjeliportya:
+        return () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const EjjeliPortyaScreen(),
+          ),
+        );
       case MainMenuButtonType.menuButtons:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
