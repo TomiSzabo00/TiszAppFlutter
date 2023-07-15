@@ -17,13 +17,31 @@ class HazasTile extends StatelessWidget {
         ),
         title: Text('${data.name1} és ${data.name2}',
             style: TextStyle(
-              color: isDarkTheme ? Colors.green[50] : Colors.green[700],
+              color: !data.votedOut
+                  ? isDarkTheme
+                      ? Colors.green[50]
+                      : Colors.green[700]
+                  : isDarkTheme
+                      ? Colors.red[50]
+                      : Colors.red[700],
             )),
         subtitle: Text('${data.team}. csapat',
             style: TextStyle(
-              color: isDarkTheme ? Colors.green[100] : Colors.green[600],
+              color: !data.votedOut
+                  ? isDarkTheme
+                      ? Colors.green[100]
+                      : Colors.green[600]
+                  : isDarkTheme
+                      ? Colors.red[100]
+                      : Colors.red[600],
             )),
-        tileColor: isDarkTheme ? Colors.green[600] : Colors.green[100],
+        tileColor: !data.votedOut
+            ? isDarkTheme
+                ? Colors.green[600]
+                : Colors.green[100]
+            : isDarkTheme
+                ? Colors.red[600]
+                : Colors.red[100],
       ),
     );
   }

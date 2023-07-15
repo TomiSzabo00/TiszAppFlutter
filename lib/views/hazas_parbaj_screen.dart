@@ -49,6 +49,8 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
                       child: Text('Még senki sem jelentkezett!',
                           style: TextStyle(fontSize: 20.0)));
                 } else {
+                  viewmodel.signedUpPairs.sort(
+                      (a, b) => (a.votedOut ? 1 : 0) - (b.votedOut ? 1 : 0));
                   return Scrollbar(
                       thumbVisibility: true,
                       child: SingleChildScrollView(
