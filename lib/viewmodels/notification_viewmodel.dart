@@ -89,12 +89,12 @@ class NotificationViewModel extends ChangeNotifier {
             "title": titleController.text,
             "body": bodyController.text,
           },
-          // "android": {
-          //   "notification": {
-          //     "click_action": "FLUTTER_NOTIFICATION_CLICK",
-          //     "body": bodyController.text,
-          //   }
-          // },
+          "android": {
+            "notification": {
+              "click_action": "FLUTTER_NOTIFICATION_CLICK",
+              "body": bodyController.text,
+            }
+          },
         }
       };
       try {
