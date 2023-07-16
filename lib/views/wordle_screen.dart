@@ -68,9 +68,9 @@ class WordleScreenState extends State<WordleScreen> {
                   padding: const EdgeInsets.all(20.0),
                   child: (() {
                     if (viewModel.isLoading) {
-                      return Column(
+                      return const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           CircularProgressIndicator(),
                           SizedBox(height: 20),
                           Text(
@@ -254,12 +254,12 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
   }
 
   Widget _oneLetterInWord() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
               "A megoldásban van valahol egy 'R' betű, de nem a második helyen. A többi betű nem szerepel a megoldásban.",
@@ -271,7 +271,7 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
+            children: [
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
@@ -335,12 +335,12 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
   }
 
   Widget _someLettersCorrect() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
               "A megoldás második és negyedik betűje 'Á' és 'O', de a többi betű nincs benne.",
@@ -352,7 +352,7 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
+            children: [
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
@@ -416,12 +416,12 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
   }
 
   Widget _sameLetterTwice() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
               "Itt viszont az látható, hogy mindkét 'S' betű színes lett, tehát kettő is van a magoldásban. Az egyik az utolsó helyen, de a másik nem az utolsó előttin.",
@@ -433,7 +433,7 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
+            children: [
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
@@ -497,12 +497,12 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
   }
 
   Widget _sameLetterTwiceOneCorrect() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
               "Itt a lényeg a két 'O' betű, ugyanis csak az egyikre jelzi, hogy szerepelne a megoldásban. Ez azért van, mert csak egy 'O' betű van a megoldásban, ami nem az első, se nem a harmadik helyen áll.",
@@ -514,7 +514,7 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
+            children: [
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
@@ -578,12 +578,12 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
   }
 
   Widget _solution() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
               "A megoldás a SÁROS volt.",
@@ -595,7 +595,7 @@ A játék nem pontban éjfélkor frissül, hanem később, a hajnali órákban, 
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
+            children: [
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
