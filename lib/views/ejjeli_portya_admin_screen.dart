@@ -19,7 +19,7 @@ class _EjjeliPortyaAdminState extends State<EjjeliPortyaAdminScreen> {
   void initState() {
     super.initState();
     //Provider.of<EjjeliPortyaViewModel>(context, listen: false).getColors();
-    Provider.of<EjjeliPortyaViewModel>(context, listen: false).getData();
+    Provider.of<EjjeliPortyaViewModel>(context, listen: false).getDataAdmin();
   }
 
   late GoogleMapController mapController;

@@ -25,10 +25,10 @@ class EjjeliPortyaViewModel with ChangeNotifier {
 
   LatLng get center => _center;
 
-  bool locSettingsSet = false;
-  late StreamSubscription<Position> locationSubscription;
+  bool locBackGroundOn = false;
+  late StreamSubscription<LocationData> locationSubscription;
 
-  void getData() async {
+  void getDataAdmin() async {
     final databaseref = FirebaseDatabase.instance.ref().child(
         'ejjeli_porty_locs');
     databaseref.onValue.listen((event) {
@@ -38,6 +38,17 @@ class EjjeliPortyaViewModel with ChangeNotifier {
       user = await DatabaseService.getUserData(
           FirebaseAuth.instance.currentUser!.uid);
     }
+    notifyListeners();
+  }
+
+  void getData() async {
+    Location location = Location();
+    if (user.uid.isEmpty) {
+      user = await DatabaseService.getUserData(
+          FirebaseAuth.instance.currentUser!.uid);
+    }
+    locBackGroundOn = (await location.isBackgroundModeEnabled()) && (await location.serviceEnabled());
+    log("locBackGroundOn: $locBackGroundOn");
     notifyListeners();
   }
 
@@ -60,6 +71,15 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     });
   }*/
 
+  Future<void> stopBackGroundLoc()
+  async {
+    Location location = Location();
+    location.enableBackgroundMode(enable: false);
+    locationSubscription.cancel();
+    locBackGroundOn = false;
+    notifyListeners();
+  }
+
   Future<void> updateLocationCore() async {
 
     if(user.uid.isEmpty) {
@@ -70,7 +90,6 @@ class EjjeliPortyaViewModel with ChangeNotifier {
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
-    LocationData _locationData;
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -90,24 +109,21 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     }
     final res = await location.enableBackgroundMode(enable: true);
     log(res.toString());
-    location.onLocationChanged.listen((LocationData currentLocation) {
+    locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {
       final ref = FirebaseDatabase.instance.ref().child(
           'ejjeli_porty_locs/${user.teamNum.toString()}/${user.uid}');
       ref.set({
         'lat': currentLocation.latitude,
-        'long': currentLocation.longitude
+        'long': currentLocation.longitude,
+        'locBackGroundOn': true,
       });
     });
+    locBackGroundOn = true;
+    notifyListeners();
   }
 
   pauseLocation() async {
     locationSubscription.pause();
-  }
-
-  @override
-  void dispose() {
-    //locationSubscription.cancel();
-    super.dispose();
   }
 
   Future<int> getNumberOfTeams() async {
@@ -135,7 +151,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
   }*/
 
   Future<List<Marker>> getMarkers() async {
-    getData();
+    getDataAdmin();
     final markers = List<Marker>.empty(growable: true);
     for (EjjeliPortyaCsapatData data in data.csapatData) {
       if (data.team > await getNumberOfTeams()) {
