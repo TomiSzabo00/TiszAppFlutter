@@ -9,6 +9,7 @@ import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
+import 'package:tiszapp_flutter/views/notification_screen.dart';
 import 'package:tiszapp_flutter/views/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
@@ -20,10 +21,9 @@ import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
+import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
+import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../views/ejjeli_portya_admin_screen.dart';
-import '../views/ejjeli_portya_screen.dart';
 
 class MainMenuViewModel extends ChangeNotifier {
   MainMenuViewModel();
@@ -39,6 +39,17 @@ class MainMenuViewModel extends ChangeNotifier {
           FirebaseAuth.instance.currentUser!.uid);
       notifyListeners();
     }
+
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+      if (firebaseUser == null) {
+        return;
+      }
+      DatabaseService.getUserData(firebaseUser!.uid)
+          .then((value) {
+        user = value;
+        notifyListeners();
+      });
+    });
 
     database.child("_main_menu").onChildAdded.listen((event) {
       final snapshot = event.snapshot;
@@ -115,6 +126,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
       MainMenuButton(type: MainMenuButtonType.ejjeliportya),
+      MainMenuButton(type: MainMenuButtonType.notifications),
       MainMenuButton(type: MainMenuButtonType.menuButtons),
     ];
 
@@ -155,6 +167,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.menuButtons;
     } else if(key == MainMenuButtonType.ejjeliportya.rawValue) {
       return MainMenuButtonType.ejjeliportya;
+    } else if (key == MainMenuButtonType.notifications.rawValue) {
+      return MainMenuButtonType.notifications;
     }
     return MainMenuButtonType.none;
   }
@@ -261,6 +275,12 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const MenuButtonsScreen(),
+              ),
+            );
+      case MainMenuButtonType.notifications:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const NotificationScreen(),
               ),
             );
     }

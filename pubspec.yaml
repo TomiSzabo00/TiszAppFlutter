@@ -38,7 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^2.14.0
   firebase_auth: ^4.6.3
-  http: ^0.13.5
+  http: ^1.1.0
   firebase_database: ^10.2.3
   firebase_storage: ^11.2.3
   image_picker: ^1.0.1
@@ -58,6 +58,8 @@ dependencies:
   background_location: ^0.8.1
   location: ^5.0.0
   battery_info: ^1.1.1
+  firebase_messaging: ^14.6.4
+  googleapis_auth: ^1.4.1
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/notification_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
@@ -20,6 +23,23 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (kDebugMode) {
+    print('User granted permission: ${settings.authorizationStatus}');
+  }
+
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => MainMenuViewModel()),
@@ -31,6 +51,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => QuizViewModel()),
       ChangeNotifierProvider(create: (_) => KaraokeBasicViewModel()),
       ChangeNotifierProvider(create: (_) => EjjeliPortyaViewModel()),
+      ChangeNotifierProvider(create: (_) => NotificationViewModel()),
     ], child: const MyApp()),
   );
 }

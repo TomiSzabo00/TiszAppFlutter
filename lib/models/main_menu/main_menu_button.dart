@@ -40,6 +40,8 @@ class MainMenuButton {
         return 'Éjjeli portya';
         case MainMenuButtonType.menuButtons:
         return 'Főmenü gombok';
+      case MainMenuButtonType.notifications:
+        return 'Értesítések';
     }
   }
 
@@ -77,6 +79,8 @@ class MainMenuButton {
         return Icons.holiday_village_outlined;
       case MainMenuButtonType.menuButtons:
         return Icons.toggle_on_outlined;
+      case MainMenuButtonType.notifications:
+        return Icons.notifications;
     }
   }
 
