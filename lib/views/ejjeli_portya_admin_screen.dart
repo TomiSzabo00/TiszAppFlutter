@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +16,6 @@ class _EjjeliPortyaAdminState extends State<EjjeliPortyaAdminScreen> {
   @override
   void initState() {
     super.initState();
-    //Provider.of<EjjeliPortyaViewModel>(context, listen: false).getColors();
     Provider.of<EjjeliPortyaViewModel>(context, listen: false).getDataAdmin(true);
   }
 
@@ -41,7 +38,7 @@ class _EjjeliPortyaAdminState extends State<EjjeliPortyaAdminScreen> {
           elevation: 2,
           actions: <Widget>[
             IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.refresh,
                 color: Colors.white,
               ),
@@ -67,8 +64,7 @@ class _EjjeliPortyaAdminState extends State<EjjeliPortyaAdminScreen> {
   async {
     final tmpMarkers = await viewModel.getMarkers();
     setState(() {
-      // Update the positions of the markers
-      markers = tmpMarkers; // Clear existing markers
+      markers = tmpMarkers;
     });
   }
 }

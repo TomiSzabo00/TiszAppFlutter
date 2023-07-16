@@ -1,17 +1,11 @@
 import 'dart:developer';
-import 'dart:ffi';
 
-import 'package:battery_info/battery_info_plugin.dart';
-import 'package:battery_info/enums/charging_status.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'dart:io' show Platform;
-
 
 import '../viewmodels/ejjeli_portya_viewmodel.dart';
-import '../widgets/3d_button.dart';
 
 class EjjeliPortyaScreen extends StatefulWidget {
   const EjjeliPortyaScreen({super.key});
@@ -37,17 +31,10 @@ class _EjjeliPortyaState extends State<EjjeliPortyaScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Lokáció Megosztása'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text("Éjjeli Portyához szükség van GPS (lokáció) adatokra.\n\n" +
-                    "Ha itt rányomsz az 'Értem'-re, akkor engedélyezheted a lokációd megosztását a háttérben a szervezőkkel a " +
-                    "portya ideje alatt lezárt képernyő, illetve az applikáció bezárása mellett is.\n" +
-                    "A lokáció megosztását bármikor leállíthatod.\n\n" +
-                    "Location data is crucial for the Éjjeli Portya activity.\n\n" +
-                    "By clicking on the 'Értem' option, you can allow the sharing of your location data in the background " +
-                    "even when your phone's screen is locked or the application has been closed.\n" +
-                    "This option can always be disabled"),
+                Text("Éjjeli Portyához szükség van GPS (lokáció) adatokra.\n\nHa itt rányomsz az 'Értem'-re, akkor engedélyezheted a lokációd megosztását a háttérben a szervezőkkel a portya ideje alatt lezárt képernyő, illetve az applikáció bezárása mellett is.\nA lokáció megosztását bármikor leállíthatod.\n\nLocation data is crucial for the Éjjeli Portya activity.\n\nBy clicking on the 'Értem' option, you can allow the sharing of your location data in the background even when your phone's screen is locked or the application has been closed.\nThis option can always be disabled"),
               ],
             ),
           ),

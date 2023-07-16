@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:typed_data';
+import 'dart:io' show Platform;
 
 import 'package:battery_info/battery_info_plugin.dart';
 import 'package:battery_info/enums/charging_status.dart';
@@ -8,16 +8,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tiszapp_flutter/models/ejjeli_portya_data.dart';
-import 'dart:ui' as ui;
 import 'package:location/location.dart';
+import 'package:tiszapp_flutter/models/ejjeli_portya_data.dart';
 
 import '../models/user_data.dart';
 import '../services/database_service.dart';
-
-import 'dart:io' show Platform;
 
 class EjjeliPortyaViewModel with ChangeNotifier {
   EjjeliPortyaData data = EjjeliPortyaData(csapatData: List.empty(growable: true));
@@ -60,25 +56,6 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-/*  Future<void> updateLocationCore() async {
-    log("Updating location");
-    final positionStream = Geolocator.getPositionStream(locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 0,
-        timeLimit: Duration(seconds: 20),));
-    if(user.uid.isEmpty) {
-      user = await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid);
-    }
-    locationSubscription = positionStream.listen((Position position) {
-      final ref = FirebaseDatabase.instance.ref().child(
-          'ejjeli_porty_locs/${user.teamNum.toString()}/${user.uid}');
-      ref.set({
-        'lat': position.latitude,
-        'long': position.longitude
-      });
-    });
-  }*/
-
   Future<void> stopBackGroundLoc(bool dispose)
   async {
     log("Stopping background location");
@@ -109,7 +86,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
       if (!_serviceEnabled) {
-        log("faszkivan");
+        log("Service still disabled");
         return;
       }
     }
@@ -122,7 +99,9 @@ class EjjeliPortyaViewModel with ChangeNotifier {
       }
     }
     final res = await location.enableBackgroundMode(enable: true);
-    log(res.toString());
+    if(!res) {
+      log("Background tracking failed to start");
+    }
     locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) async {
       final ref = FirebaseDatabase.instance.ref().child(
           'ejjeli_porty_locs/${user.teamNum.toString()}/${user.uid}');
@@ -131,14 +110,11 @@ class EjjeliPortyaViewModel with ChangeNotifier {
         'long': currentLocation.longitude,
         'name': user.name
       });
-      log("popo");
-      log(Platform.isAndroid.toString());
-      log((await BatteryInfoPlugin().androidBatteryInfo)!.batteryLevel!.toString());
 
       if((Platform.isAndroid && ((await BatteryInfoPlugin().androidBatteryInfo)!.batteryLevel! < 45 && (await BatteryInfoPlugin().androidBatteryInfo)!.chargingStatus != ChargingStatus.Charging) ||
       Platform.isIOS && ((await BatteryInfoPlugin().iosBatteryInfo)!.batteryLevel! < 45 && (await BatteryInfoPlugin().iosBatteryInfo)!.chargingStatus != ChargingStatus.Charging)))
       {
-        log("message");
+        log("Battery requirements not met");
         locBackGroundOn = false;
         locationSubscription.cancel();
         notifyListeners();
@@ -167,15 +143,6 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     final hsvColor = HSVColor.fromColor(color);
     return hsvColor.hue;
   }
-
-  /*void getColors() async {
-    final num = await getNumberOfTeams();
-    for(int i = 0; i <= num; i++)
-    {
-      final color = await getColor(i);
-      colorList.add(color);
-    }
-  }*/
 
   Future<List<Marker>> getMarkers() async {
     getDataAdmin(false);
