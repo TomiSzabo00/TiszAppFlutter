@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_answer.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_answer_state.dart';
+import 'package:tiszapp_flutter/models/quiz/quiz_solution.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
 class SlowQuizViewModel extends ChangeNotifier {
@@ -17,25 +18,26 @@ class SlowQuizViewModel extends ChangeNotifier {
 
   List<List<QuizAnswer>> answersByTeams = [];
 
-  List<List<QuizAnswerState>> answerStatesByTeams = [];
-
   List<double> get scores {
-    return answerStatesByTeams
+    return answersByTeams
         .map((e) => e.fold<double>(
             0,
             (previousValue, element) =>
                 previousValue +
-                (element == QuizAnswerState.correct
-                    ? 1
-                    : element == QuizAnswerState.partiallyCorrect
-                        ? 0.5
-                        : 0)))
+                element.answers.fold<double>(
+                    0,
+                    (previousValue2, element2) =>
+                        previousValue2 +
+                        (element2.state == QuizAnswerState.correct
+                            ? 1
+                            : element2.state == QuizAnswerState.partiallyCorrect
+                                ? 0.5
+                                : 0))))
         .toList();
   }
 
   void initListeners() {
     answersByTeams.clear();
-    answerStatesByTeams.clear();
     didSendAnswers = false;
     isSummary = false;
     database.child('slow_quiz/number_of_questions').onValue.listen((event) {
@@ -73,8 +75,6 @@ class SlowQuizViewModel extends ChangeNotifier {
       final answer = QuizAnswer.fromSnapshot(event.snapshot);
       if (answersByTeams.length < answer.teamNum) {
         answersByTeams.add([answer]);
-        answerStatesByTeams.add(
-            List.generate(numberOfQuestions, (index) => QuizAnswerState.na));
       } else {
         if (answersByTeams[answer.teamNum - 1]
             .any((element) => element.author == answer.author)) {
@@ -82,6 +82,20 @@ class SlowQuizViewModel extends ChangeNotifier {
         }
         answersByTeams[answer.teamNum - 1].add(answer);
       }
+      notifyListeners();
+    });
+
+    database.child('slow_quiz/answers').onChildChanged.listen((event) {
+      if (event.snapshot.value == null) {
+        return;
+      }
+      final answer = QuizAnswer.fromSnapshot(event.snapshot);
+      final teamNum = answer.teamNum;
+      final teamIndex = answersByTeams.indexWhere(
+          (element) => element.any((element) => element.teamNum == teamNum));
+      final answerIndex = answersByTeams[teamIndex]
+          .indexWhere((element) => element.author == answer.author);
+      answersByTeams[teamIndex][answerIndex] = answer;
       notifyListeners();
     });
   }
@@ -128,7 +142,8 @@ class SlowQuizViewModel extends ChangeNotifier {
     }
     final currUser = await DatabaseService.getUserData(
         FirebaseAuth.instance.currentUser!.uid);
-    final answers = controllers.map((e) => e.text).toList();
+    final answers =
+        controllers.map((e) => QuizSolution(solution: e.text)).toList();
     final answer = QuizAnswer(
       author: currUser.uid,
       teamNum: currUser.teamNum,
@@ -150,11 +165,11 @@ class SlowQuizViewModel extends ChangeNotifier {
   }
 
   Color getBackgroundForAnswers(int teamNum, int index) {
-    if (answerStatesByTeams[teamNum].length <= index) {
+    if (answersByTeams.length <= teamNum) {
       return Colors.white;
     }
-    final states = answerStatesByTeams[teamNum];
-    final state = states[index];
+    final states = answersByTeams[teamNum];
+    final state = states.first.answers[index].state;
     if (state == QuizAnswerState.correct) {
       return Colors.green;
     }
@@ -168,29 +183,48 @@ class SlowQuizViewModel extends ChangeNotifier {
   }
 
   void setAnswersCorrect(int index, int answerIndex) {
-    if (answerStatesByTeams[answerIndex].length <= index) {
+    if (answersByTeams.length <= answerIndex) {
       return;
     }
-    final states = answerStatesByTeams[answerIndex];
-    states[index] = QuizAnswerState.correct;
+    final states = answersByTeams[answerIndex];
+    for (int i = 0; i < states.length; i++) {
+      states[i].answers[index].state = QuizAnswerState.correct;
+    }
+    updateAnswers();
     notifyListeners();
   }
 
   void setAnswersIncorrect(int index, int answerIndex) {
-    if (answerStatesByTeams[answerIndex].length <= index) {
+    if (answersByTeams.length <= answerIndex) {
       return;
     }
-    final states = answerStatesByTeams[answerIndex];
-    states[index] = QuizAnswerState.incorrect;
+    final states = answersByTeams[answerIndex];
+    for (int i = 0; i < states.length; i++) {
+      states[i].answers[index].state = QuizAnswerState.incorrect;
+    }
+    updateAnswers();
     notifyListeners();
   }
 
   void setAnswersPartiallyCorrect(int index, int answerIndex) {
-    if (answerStatesByTeams[answerIndex].length <= index) {
+    if (answersByTeams.length <= answerIndex) {
       return;
     }
-    final states = answerStatesByTeams[answerIndex];
-    states[index] = QuizAnswerState.partiallyCorrect;
+    final states = answersByTeams[answerIndex];
+    for (int i = 0; i < states.length; i++) {
+      states[i].answers[index].state = QuizAnswerState.partiallyCorrect;
+    }
+    updateAnswers();
     notifyListeners();
+  }
+
+  void updateAnswers() {
+    for (var teams in answersByTeams) {
+      for (var answer in teams) {
+        database
+            .child('slow_quiz/answers/${answer.author}')
+            .set(answer.toJson());
+      }
+    }
   }
 }

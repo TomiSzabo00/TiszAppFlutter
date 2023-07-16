@@ -64,7 +64,7 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
               itemCount: widget.answers.length,
               itemBuilder: (context, innerIndex) {
                 return ListTile(
-                  title: Text(widget.answers[innerIndex].answers[index]),
+                  title: Text(widget.answers[innerIndex].answers[index].solution),
                 );
               },
             ),
