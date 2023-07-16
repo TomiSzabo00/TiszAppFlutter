@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
+import 'package:tiszapp_flutter/views/quiz/quiz_answers_summary_screen.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
 class SlowQuizScreen extends StatefulWidget {
@@ -278,6 +279,19 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      QuizAnswersSummaryScreen(
+                                        answers: Provider.of<SlowQuizViewModel>(
+                                                context,
+                                                listen: false)
+                                            .answersByTeams[index],
+                                      )),
+                            );
+                          },
                         );
                       },
                     );
