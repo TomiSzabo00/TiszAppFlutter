@@ -27,7 +27,7 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
         title: Text('${widget.answers[0].teamNum}. csapat válaszai'),
       ),
       body: ListView.builder(
-        itemCount: widget.answers.length,
+        itemCount: widget.answers.first.answers.length,
         itemBuilder: (context, index) {
           return answerCorrectionBlock(widget.viewModel, index, widget.index);
         },
