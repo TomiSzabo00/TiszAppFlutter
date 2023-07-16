@@ -32,7 +32,7 @@ class SlowQuizViewModel extends ChangeNotifier {
                             ? 1
                             : element2.state == QuizAnswerState.partiallyCorrect
                                 ? 0.5
-                                : 0))))
+                                : 0))) / e.length)
         .toList();
   }
 
@@ -73,14 +73,16 @@ class SlowQuizViewModel extends ChangeNotifier {
         didSendAnswers = true;
       }
       final answer = QuizAnswer.fromSnapshot(event.snapshot);
-      if (answersByTeams.length < answer.teamNum) {
+      final teamIndex = answersByTeams.indexWhere(
+          (element) => element.any((element) => element.teamNum == answer.teamNum));
+      if (teamIndex == -1) {
         answersByTeams.add([answer]);
       } else {
-        if (answersByTeams[answer.teamNum - 1]
+        if (answersByTeams[teamIndex]
             .any((element) => element.author == answer.author)) {
           return;
         }
-        answersByTeams[answer.teamNum - 1].add(answer);
+        answersByTeams[teamIndex].add(answer);
       }
       notifyListeners();
     });
