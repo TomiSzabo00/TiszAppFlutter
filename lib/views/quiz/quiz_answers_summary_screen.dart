@@ -82,6 +82,7 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
                     child: IconButton(
                       onPressed: () {
                         viewModel.setAnswersCorrect(index, teamNum);
+                        setState(() {});
                       },
                       icon: const Icon(Icons.check),
                       color: Colors.green,
@@ -93,8 +94,11 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
                     width: double.infinity,
                     color: Colors.orange[100],
                     child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.safety_divider),
+                      onPressed: () {
+                        viewModel.setAnswersPartiallyCorrect(index, teamNum);
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.iso),
                       color: Colors.orange,
                     ),
                   ),
@@ -108,7 +112,10 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
                     ),
                     width: double.infinity,
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        viewModel.setAnswersIncorrect(index, teamNum);
+                        setState(() {});
+                      },
                       icon: const Icon(Icons.close),
                       color: Colors.red,
                     ),

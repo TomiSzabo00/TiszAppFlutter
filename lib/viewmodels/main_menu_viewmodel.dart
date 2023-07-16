@@ -43,7 +43,7 @@ class MainMenuViewModel extends ChangeNotifier {
       if (firebaseUser == null) {
         return;
       }
-      DatabaseService.getUserData(firebaseUser!.uid)
+      DatabaseService.getUserData(firebaseUser.uid)
           .then((value) {
         user = value;
         notifyListeners();

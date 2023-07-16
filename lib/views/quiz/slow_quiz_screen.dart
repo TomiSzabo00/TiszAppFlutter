@@ -55,7 +55,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
               if (viewModel.numberOfQuestions == 0) {
                 return adminNotStaertedScreen(isDarkTheme);
               } else {
-                return adminSummaryScreen(isDarkTheme);
+                return adminSummaryScreen(viewModel, isDarkTheme);
               }
             } else {
               if (viewModel.numberOfQuestions == 0) {
@@ -125,7 +125,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
     );
   }
 
-  Widget adminSummaryScreen(bool isDarkTheme) {
+  Widget adminSummaryScreen(SlowQuizViewModel viewModel, bool isDarkTheme) {
     return Flex(
       direction: Axis.vertical,
       children: [
@@ -136,8 +136,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  Provider.of<SlowQuizViewModel>(context, listen: false)
-                          .isSummary
+                  viewModel.isSummary
                       ? 'A kvíz megállt.'
                       : 'A kvíz folyamatban van!',
                   style: const TextStyle(fontSize: 20),
@@ -146,25 +145,23 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                   height: 10,
                 ),
                 Text(
-                  'Kérdések száma: ${Provider.of<SlowQuizViewModel>(context, listen: false).numberOfQuestions}',
+                  'Kérdések száma: ${viewModel.numberOfQuestions}',
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                answersWidget(),
+                answersWidget(viewModel),
                 const SizedBox(
                   height: 20,
                 ),
                 Button3D(
                   width: MediaQuery.of(context).size.width - 40,
                   onPressed: () {
-                    Provider.of<SlowQuizViewModel>(context, listen: false)
-                        .toggleQuizState();
+                    viewModel.toggleQuizState();
                   },
                   child: Text(
-                    Provider.of<SlowQuizViewModel>(context, listen: false)
-                            .isSummary
+                    viewModel.isSummary
                         ? 'Kvíz elindítása'
                         : 'Kvíz megállítása',
                     style: TextStyle(
@@ -185,8 +182,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                     Button3D(
                       width: 140,
                       onPressed: () {
-                        Provider.of<SlowQuizViewModel>(context, listen: false)
-                            .resetAnswers();
+                        viewModel.resetAnswers();
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -210,8 +206,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                     Button3D(
                       width: 140,
                       onPressed: () {
-                        Provider.of<SlowQuizViewModel>(context, listen: false)
-                            .deleteQuiz();
+                        viewModel.deleteQuiz();
                       },
                       child: Text(
                         'Kvíz törlése',
@@ -237,7 +232,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
     );
   }
 
-  Widget answersWidget() {
+  Widget answersWidget(SlowQuizViewModel viewModel) {
     return Flexible(
       child: Container(
         decoration: BoxDecoration(
@@ -262,22 +257,17 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
               ),
               Expanded(
                 child: () {
-                  if (Provider.of<SlowQuizViewModel>(context, listen: false)
-                      .answersByTeams
-                      .isNotEmpty) {
+                  if (viewModel.answersByTeams.isNotEmpty) {
                     return ListView.builder(
-                      itemCount:
-                          Provider.of<SlowQuizViewModel>(context, listen: false)
-                              .answersByTeams
-                              .length,
+                      itemCount: viewModel.answersByTeams.length,
                       itemBuilder: (context, index) {
                         return ListTile(
                           title: Text(
-                              '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index][0].teamNum}. csapat'),
+                              '${viewModel.answersByTeams[index][0].teamNum}. csapat'),
                           subtitle: Text(
-                              '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index].length} darab válasz'),
+                              '${viewModel.answersByTeams[index].length} darab válasz'),
                           trailing: Text(
-                              '${Provider.of<SlowQuizViewModel>(context, listen: false).getScoreFor(index)}/${Provider.of<SlowQuizViewModel>(context, listen: false).numberOfQuestions} pont'),
+                              '${viewModel.getScoreFor(index)}/${Provider.of<SlowQuizViewModel>(context, listen: false).numberOfQuestions} pont'),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -287,11 +277,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       QuizAnswersSummaryScreen(
-                                        viewModel:
-                                            Provider.of<SlowQuizViewModel>(
-                                          context,
-                                          listen: false,
-                                        ),
+                                        viewModel: viewModel,
                                         index: index,
                                       )),
                             );

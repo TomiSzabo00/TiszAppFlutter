@@ -159,7 +159,7 @@ class SlowQuizViewModel extends ChangeNotifier {
       return Colors.green;
     }
     if (state == QuizAnswerState.partiallyCorrect) {
-      return Colors.yellow;
+      return Colors.orange;
     }
     if (state == QuizAnswerState.incorrect) {
       return Colors.red;
@@ -173,6 +173,24 @@ class SlowQuizViewModel extends ChangeNotifier {
     }
     final states = answerStatesByTeams[answerIndex];
     states[index] = QuizAnswerState.correct;
+    notifyListeners();
+  }
+
+  void setAnswersIncorrect(int index, int answerIndex) {
+    if (answerStatesByTeams[answerIndex].length <= index) {
+      return;
+    }
+    final states = answerStatesByTeams[answerIndex];
+    states[index] = QuizAnswerState.incorrect;
+    notifyListeners();
+  }
+
+  void setAnswersPartiallyCorrect(int index, int answerIndex) {
+    if (answerStatesByTeams[answerIndex].length <= index) {
+      return;
+    }
+    final states = answerStatesByTeams[answerIndex];
+    states[index] = QuizAnswerState.partiallyCorrect;
     notifyListeners();
   }
 }
