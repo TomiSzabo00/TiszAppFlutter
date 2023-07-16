@@ -11,7 +11,8 @@ import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/notification_screen.dart';
 import 'package:tiszapp_flutter/views/pictures_screen.dart';
-import 'package:tiszapp_flutter/views/quiz_screen.dart';
+import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
+import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
@@ -44,7 +45,7 @@ class MainMenuViewModel extends ChangeNotifier {
       if (firebaseUser == null) {
         return;
       }
-      DatabaseService.getUserData(firebaseUser!.uid)
+      DatabaseService.getUserData(firebaseUser.uid)
           .then((value) {
         user = value;
         notifyListeners();
@@ -123,6 +124,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.karaoke),
       MainMenuButton(type: MainMenuButtonType.nappaliPortya),
       MainMenuButton(type: MainMenuButtonType.quizQuick),
+      MainMenuButton(type: MainMenuButtonType.slowQuiz),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
       MainMenuButton(type: MainMenuButtonType.ejjeliportya),
@@ -169,6 +171,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.ejjeliportya;
     } else if (key == MainMenuButtonType.notifications.rawValue) {
       return MainMenuButtonType.notifications;
+    } else if (key == MainMenuButtonType.slowQuiz.rawValue) {
+      return MainMenuButtonType.slowQuiz;
     }
     return MainMenuButtonType.none;
   }
@@ -281,6 +285,12 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const NotificationScreen(),
+              ),
+            );
+      case MainMenuButtonType.slowQuiz:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SlowQuizScreen(isAdmin: user.isAdmin),
               ),
             );
     }
