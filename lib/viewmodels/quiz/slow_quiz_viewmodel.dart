@@ -148,4 +148,31 @@ class SlowQuizViewModel extends ChangeNotifier {
     }
     return scores[index].toString();
   }
+
+  Color getBackgroundForAnswers(int teamNum, int index) {
+    if (answerStatesByTeams[teamNum].length <= index) {
+      return Colors.white;
+    }
+    final states = answerStatesByTeams[teamNum];
+    final state = states[index];
+    if (state == QuizAnswerState.correct) {
+      return Colors.green;
+    }
+    if (state == QuizAnswerState.partiallyCorrect) {
+      return Colors.yellow;
+    }
+    if (state == QuizAnswerState.incorrect) {
+      return Colors.red;
+    }
+    return Colors.white;
+  }
+
+  void setAnswersCorrect(int index, int answerIndex) {
+    if (answerStatesByTeams[answerIndex].length <= index) {
+      return;
+    }
+    final states = answerStatesByTeams[answerIndex];
+    states[index] = QuizAnswerState.correct;
+    notifyListeners();
+  }
 }
