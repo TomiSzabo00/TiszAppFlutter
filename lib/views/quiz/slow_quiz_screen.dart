@@ -276,6 +276,8 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                               '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index][0].teamNum}. csapat'),
                           subtitle: Text(
                               '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index].length} darab válasz'),
+                          trailing: Text(
+                              '${Provider.of<SlowQuizViewModel>(context, listen: false).getScoreFor(index)}/${Provider.of<SlowQuizViewModel>(context, listen: false).numberOfQuestions} pont'),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -285,10 +287,12 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       QuizAnswersSummaryScreen(
-                                        answers: Provider.of<SlowQuizViewModel>(
-                                                context,
-                                                listen: false)
-                                            .answersByTeams[index],
+                                        viewModel:
+                                            Provider.of<SlowQuizViewModel>(
+                                          context,
+                                          listen: false,
+                                        ),
+                                        index: index,
                                       )),
                             );
                           },

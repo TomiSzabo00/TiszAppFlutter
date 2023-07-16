@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_answer.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
 
 class QuizAnswersSummaryScreen extends StatefulWidget {
   const QuizAnswersSummaryScreen({
     Key? key,
-    required this.answers,
+    required this.viewModel,
+    required this.index,
   }) : super(key: key);
 
-  final List<QuizAnswer> answers;
+  final SlowQuizViewModel viewModel;
+  final int index;
+
+  List<QuizAnswer> get answers => viewModel.answersByTeams[index];
 
   @override
   QuizAnswersSummaryScreenState createState() =>
@@ -25,7 +28,6 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<SlowQuizViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.answers[0].teamNum}. csapat válaszai'),
@@ -33,13 +35,32 @@ class QuizAnswersSummaryScreenState extends State<QuizAnswersSummaryScreen> {
       body: ListView.builder(
         itemCount: widget.answers.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(widget.answers[index].author),
-            subtitle: Text(widget.answers[index].answers.join(', ')),
-            trailing: Text(widget.answers[index].teamNum.toString()),
-          );
+          return answerCorrectionBlock(index);
         },
       ),
+    );
+  }
+
+  Widget answerCorrectionBlock(int index) {
+    return Column(
+      children: [
+        Text(
+          '${index + 1}. kérdésre érkezett válaszok:',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: widget.answers.length,
+          itemBuilder: (context, innerIndex) {
+            return ListTile(
+              title: Text(widget.answers[innerIndex].answers[index]),
+            );
+          },
+        ),
+      ],
     );
   }
 }

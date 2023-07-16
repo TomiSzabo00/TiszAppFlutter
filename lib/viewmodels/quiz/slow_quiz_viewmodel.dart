@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_answer.dart';
+import 'package:tiszapp_flutter/models/quiz/quiz_answer_state.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
 class SlowQuizViewModel extends ChangeNotifier {
@@ -16,8 +17,25 @@ class SlowQuizViewModel extends ChangeNotifier {
 
   List<List<QuizAnswer>> answersByTeams = [];
 
+  List<List<QuizAnswerState>> answerStatesByTeams = [];
+
+  List<double> get scores {
+    return answerStatesByTeams
+        .map((e) => e.fold<double>(
+            0,
+            (previousValue, element) =>
+                previousValue +
+                (element == QuizAnswerState.correct
+                    ? 1
+                    : element == QuizAnswerState.partiallyCorrect
+                        ? 0.5
+                        : 0)))
+        .toList();
+  }
+
   void initListeners() {
     answersByTeams.clear();
+    answerStatesByTeams.clear();
     didSendAnswers = false;
     isSummary = false;
     database.child('slow_quiz/number_of_questions').onValue.listen((event) {
@@ -55,6 +73,8 @@ class SlowQuizViewModel extends ChangeNotifier {
       final answer = QuizAnswer.fromSnapshot(event.snapshot);
       if (answersByTeams.length < answer.teamNum) {
         answersByTeams.add([answer]);
+        answerStatesByTeams.add(
+            List.generate(numberOfQuestions, (index) => QuizAnswerState.na));
       } else {
         if (answersByTeams[answer.teamNum - 1]
             .any((element) => element.author == answer.author)) {
@@ -116,5 +136,16 @@ class SlowQuizViewModel extends ChangeNotifier {
     );
     database.child('slow_quiz/answers/${currUser.uid}').set(answer.toJson());
     resetControllers();
+  }
+
+  String getScoreFor(int index) {
+    if (scores.length < index) {
+      return '0';
+    }
+    final score = scores[index];
+    if (score == score.round()) {
+      return score.round().toString();
+    }
+    return scores[index].toString();
   }
 }
