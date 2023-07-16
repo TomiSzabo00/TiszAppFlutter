@@ -58,37 +58,34 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                 ? const AssetImage("images/bg2_night.png")
                 : const AssetImage("images/bg2_day.png"),
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.5), BlendMode.dstATop),
+            colorFilter: widget.isAdmin
+                ? null
+                : ColorFilter.mode(
+                    Colors.black.withOpacity(0.5), BlendMode.dstATop),
           ),
         ),
         child: Center(
-          child: SingleChildScrollView(
-            child: () {
-              if (widget.isAdmin) {
-                if (viewModel.numberOfQuestions == 0 && !viewModel.isSummary) {
-                  return adminNotStaertedScreen(isDarkTheme);
-                } else if (viewModel.numberOfQuestions > 0 &&
-                    !viewModel.isSummary) {
-                  return adminDidStartScreen(isDarkTheme);
-                } else if (viewModel.isSummary) {
-                  return adminSummaryScreen();
-                } else {
-                  return const Text('Hiba történt!');
-                }
+          //child: SingleChildScrollView(
+          child: () {
+            if (widget.isAdmin) {
+              if (viewModel.numberOfQuestions == 0) {
+                return adminNotStaertedScreen(isDarkTheme);
               } else {
-                if (viewModel.numberOfQuestions == 0 && !viewModel.isSummary) {
-                  return notStartedUserScreen();
-                } else if (viewModel.numberOfQuestions > 0 &&
-                    !viewModel.isSummary &&
-                    !viewModel.didSendAnswers) {
-                  return didStartUserScreen(viewModel, isDarkTheme);
-                } else {
-                  return didSendUserScreen();
-                }
+                return adminSummaryScreen(isDarkTheme);
               }
-            }(),
-          ),
+            } else {
+              if (viewModel.numberOfQuestions == 0) {
+                return notStartedUserScreen();
+              } else if (viewModel.numberOfQuestions > 0 &&
+                  !viewModel.isSummary &&
+                  !viewModel.didSendAnswers) {
+                return didStartUserScreen(viewModel, isDarkTheme);
+              } else {
+                return didSendUserScreen();
+              }
+            }
+          }(),
+          //),
         ),
       ),
     );
@@ -144,83 +141,105 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
     );
   }
 
-  Widget adminDidStartScreen(bool isDarkTheme) {
-    return Column(
+  Widget adminSummaryScreen(bool isDarkTheme) {
+    return Flex(
+      direction: Axis.vertical,
       children: [
-        const SizedBox(
-          height: 20,
-        ),
-        const Text(
-          'A kvíz folyamatban van!',
-          style: TextStyle(fontSize: 20),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Kérdések száma: ${Provider.of<SlowQuizViewModel>(context, listen: false).numberOfQuestions}',
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(
-          height: 60,
-        ),
-        Button3D(
-          width: 150,
-          onPressed: () {
-            Provider.of<SlowQuizViewModel>(context, listen: false).stopQuiz();
-          },
-          child: Text(
-            'Kvíz leállítása',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDarkTheme
-                  ? CustomColor.btnTextNight
-                  : CustomColor.btnTextDay,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-        Button3D(
-          width: 200,
-          onPressed: () {
-            Provider.of<SlowQuizViewModel>(context, listen: false)
-                .resetAnswers();
-          },
+        Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: AutoSizeText(
-              'Válaszok visszaállítása',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: isDarkTheme
-                    ? CustomColor.btnTextNight
-                    : CustomColor.btnTextDay,
-              ),
-              maxLines: 1,
-              minFontSize: 10,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-        Button3D(
-          width: 150,
-          onPressed: () {
-            Provider.of<SlowQuizViewModel>(context, listen: false).deleteQuiz();
-          },
-          child: Text(
-            'Kvíz törlése',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDarkTheme
-                  ? CustomColor.btnTextNight
-                  : CustomColor.btnTextDay,
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'A kvíz folyamatban van!',
+                  style: TextStyle(fontSize: 20),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Kérdések száma: ${Provider.of<SlowQuizViewModel>(context, listen: false).numberOfQuestions}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                answersWidget(),
+                const SizedBox(
+                  height: 20,
+                ),
+                Button3D(
+                  width: MediaQuery.of(context).size.width - 40,
+                  onPressed: () {
+                    Provider.of<SlowQuizViewModel>(context, listen: false)
+                        .stopQuiz();
+                  },
+                  child: Text(
+                    'Kvíz bezárása',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkTheme
+                          ? CustomColor.btnTextNight
+                          : CustomColor.btnTextDay,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Button3D(
+                      width: 140,
+                      onPressed: () {
+                        Provider.of<SlowQuizViewModel>(context, listen: false)
+                            .resetAnswers();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: AutoSizeText(
+                          'Válaszok törlése',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkTheme
+                                ? CustomColor.btnTextNight
+                                : CustomColor.btnTextDay,
+                          ),
+                          maxLines: 1,
+                          minFontSize: 6,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Button3D(
+                      width: 140,
+                      onPressed: () {
+                        Provider.of<SlowQuizViewModel>(context, listen: false)
+                            .deleteQuiz();
+                      },
+                      child: Text(
+                        'Kvíz törlése',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDarkTheme
+                              ? CustomColor.btnTextNight
+                              : CustomColor.btnTextDay,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+              ],
             ),
           ),
         ),
@@ -228,52 +247,59 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
     );
   }
 
-  Widget adminSummaryScreen() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width - 40,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          const Text(
-            'Beérkezett válaszok:',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: () {
-              if (Provider.of<SlowQuizViewModel>(context, listen: false)
-                  .answersByTeams
-                  .isNotEmpty) {
-                return ListView.builder(
-                  itemCount:
-                      Provider.of<SlowQuizViewModel>(context, listen: false)
-                          .answersByTeams
-                          .length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                          '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index][0].teamNum}. csapat'),
-                      subtitle: Text(
-                          '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index].length} darab válasz'),
-                      tileColor: Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+  Widget answersWidget() {
+    return Flexible(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white.withOpacity(0.4),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    'Beérkezett válaszok:',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: () {
+                  if (Provider.of<SlowQuizViewModel>(context, listen: false)
+                      .answersByTeams
+                      .isNotEmpty) {
+                    return ListView.builder(
+                      itemCount:
+                          Provider.of<SlowQuizViewModel>(context, listen: false)
+                              .answersByTeams
+                              .length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                              '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index][0].teamNum}. csapat'),
+                          subtitle: Text(
+                              '${Provider.of<SlowQuizViewModel>(context, listen: false).answersByTeams[index].length} darab válasz'),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        );
+                      },
                     );
-                  },
-                );
-              } else {
-                return const Text('Nem érkezett válasz :(');
-              }
-            }(),
+                  } else {
+                    return const Text('Nem érkezett válasz :(');
+                  }
+                }(),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

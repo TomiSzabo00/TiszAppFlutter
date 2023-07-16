@@ -17,6 +17,9 @@ class SlowQuizViewModel extends ChangeNotifier {
   List<List<QuizAnswer>> answersByTeams = [];
 
   void initListeners() {
+    answersByTeams.clear();
+    didSendAnswers = false;
+    isSummary = false;
     database.child('slow_quiz/number_of_questions').onValue.listen((event) {
       numberOfQuestions = tryCast<int>(event.snapshot.value ?? 0) ?? 0;
       controllers =
@@ -30,18 +33,14 @@ class SlowQuizViewModel extends ChangeNotifier {
         if (controllers.any((element) => element.text.isNotEmpty)) {
           sendAnswers();
         }
-        Future.delayed(const Duration(seconds: 1)).then((value) {
-          getAnswers();
-          notifyListeners();
-        });
-      } else {
-        notifyListeners();
       }
+      notifyListeners();
     });
 
     database.child('slow_quiz').onChildRemoved.listen((event) {
       if (event.snapshot.key == 'answers') {
         didSendAnswers = false;
+        answersByTeams = [];
         resetControllers();
       }
     });
@@ -52,6 +51,16 @@ class SlowQuizViewModel extends ChangeNotifier {
       }
       if (event.snapshot.key == FirebaseAuth.instance.currentUser!.uid) {
         didSendAnswers = true;
+      }
+      final answer = QuizAnswer.fromSnapshot(event.snapshot);
+      if (answersByTeams.length < answer.teamNum) {
+        answersByTeams.add([answer]);
+      } else {
+        if (answersByTeams[answer.teamNum - 1]
+            .any((element) => element.author == answer.author)) {
+          return;
+        }
+        answersByTeams[answer.teamNum - 1].add(answer);
       }
       notifyListeners();
     });
@@ -93,23 +102,6 @@ class SlowQuizViewModel extends ChangeNotifier {
     database.child('slow_quiz/is_summary').set(true);
   }
 
-  void getAnswers() {
-    database.child('slow_quiz/answers').once().then((event) {
-      if (event.snapshot.value == null) {
-        return;
-      }
-      final answers =
-          event.snapshot.children.map((e) => QuizAnswer.fromSnapshot(e)).toList();
-      answers.sort((a, b) => a.teamNum.compareTo(b.teamNum));
-      answersByTeams = List.generate(
-          answers.last.teamNum,
-          (index) => answers
-              .where((element) => element.teamNum == index + 1)
-              .toList());
-      notifyListeners();
-    });
-  }
-
   void sendAnswers() async {
     if (controllers.every((element) => element.text.isEmpty)) {
       return;
@@ -118,6 +110,7 @@ class SlowQuizViewModel extends ChangeNotifier {
         FirebaseAuth.instance.currentUser!.uid);
     final answers = controllers.map((e) => e.text).toList();
     final answer = QuizAnswer(
+      author: currUser.uid,
       teamNum: currUser.teamNum,
       answers: answers,
     );
