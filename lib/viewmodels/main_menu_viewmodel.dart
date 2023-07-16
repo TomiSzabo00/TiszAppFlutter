@@ -39,6 +39,17 @@ class MainMenuViewModel extends ChangeNotifier {
       notifyListeners();
     }
 
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+      if (firebaseUser == null) {
+        return;
+      }
+      DatabaseService.getUserData(firebaseUser!.uid)
+          .then((value) {
+        user = value;
+        notifyListeners();
+      });
+    });
+
     database.child("_main_menu").onChildAdded.listen((event) {
       final snapshot = event.snapshot;
       final key = snapshot.key;
