@@ -36,6 +36,8 @@ class MainMenuButton {
         return 'Szavazás';
       case MainMenuButtonType.wordle:
         return 'Wordle';
+      case MainMenuButtonType.ejjeliportya:
+        return 'Éjjeli portya';
         case MainMenuButtonType.menuButtons:
         return 'Főmenü gombok';
       case MainMenuButtonType.notifications:
@@ -75,6 +77,8 @@ class MainMenuButton {
         return Icons.how_to_vote;
       case MainMenuButtonType.wordle:
         return Icons.type_specimen;
+      case MainMenuButtonType.ejjeliportya:
+        return Icons.holiday_village_outlined;
       case MainMenuButtonType.menuButtons:
         return Icons.toggle_on_outlined;
       case MainMenuButtonType.notifications:

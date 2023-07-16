@@ -15,6 +15,7 @@ enum MainMenuButtonType {
   wordle,
   menuButtons,
   notifications,
+  ejjeliportya,
   slowQuiz,
 }
 
@@ -34,6 +35,7 @@ extension RawValuesExtension on MainMenuButtonType {
     MainMenuButtonType.voting: 'voting',
     MainMenuButtonType.wordle: 'wordle',
     MainMenuButtonType.menuButtons: 'menu_buttons',
+    MainMenuButtonType.ejjeliportya: 'ejjeli_portya',
     MainMenuButtonType.notifications: 'notifications',
     MainMenuButtonType.slowQuiz: 'slow_quiz',
   };

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/notification_viewmodel.dart';
@@ -50,6 +51,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => WordleViewModel()),
       ChangeNotifierProvider(create: (_) => QuizViewModel()),
       ChangeNotifierProvider(create: (_) => KaraokeBasicViewModel()),
+      ChangeNotifierProvider(create: (_) => EjjeliPortyaViewModel()),
       ChangeNotifierProvider(create: (_) => NotificationViewModel()),
       ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
     ], child: const MyApp()),
