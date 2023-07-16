@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:battery_info/battery_info_plugin.dart';
+import 'package:battery_info/enums/charging_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +17,8 @@ import 'package:location/location.dart';
 import '../models/user_data.dart';
 import '../services/database_service.dart';
 
+import 'dart:io' show Platform;
+
 class EjjeliPortyaViewModel with ChangeNotifier {
   EjjeliPortyaData data = EjjeliPortyaData(csapatData: List.empty(growable: true));
 
@@ -26,6 +30,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
   LatLng get center => _center;
 
   bool locBackGroundOn = false;
+  bool locSubsInitialized = false;
   late StreamSubscription<LocationData> locationSubscription;
 
   void getDataAdmin() async {
@@ -71,13 +76,19 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     });
   }*/
 
-  Future<void> stopBackGroundLoc()
+  Future<void> stopBackGroundLoc(bool dispose)
   async {
+    log("Stopping background location");
     Location location = Location();
     location.enableBackgroundMode(enable: false);
-    locationSubscription.cancel();
+    if(locSubsInitialized) {
+      locationSubscription.cancel();
+    }
     locBackGroundOn = false;
-    notifyListeners();
+    if(!dispose)
+    {
+      notifyListeners();
+    }
   }
 
   Future<void> updateLocationCore() async {
@@ -109,15 +120,27 @@ class EjjeliPortyaViewModel with ChangeNotifier {
     }
     final res = await location.enableBackgroundMode(enable: true);
     log(res.toString());
-    locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) {
+    locationSubscription = location.onLocationChanged.listen((LocationData currentLocation) async {
       final ref = FirebaseDatabase.instance.ref().child(
           'ejjeli_porty_locs/${user.teamNum.toString()}/${user.uid}');
       ref.set({
         'lat': currentLocation.latitude,
         'long': currentLocation.longitude,
-        'locBackGroundOn': true,
       });
+      log("popo");
+      log(Platform.isAndroid.toString());
+      log((await BatteryInfoPlugin().androidBatteryInfo)!.batteryLevel!.toString());
+
+      if((Platform.isAndroid && ((await BatteryInfoPlugin().androidBatteryInfo)!.batteryLevel! < 45 && (await BatteryInfoPlugin().androidBatteryInfo)!.chargingStatus != ChargingStatus.Charging) ||
+      Platform.isIOS && ((await BatteryInfoPlugin().iosBatteryInfo)!.batteryLevel! < 45 && (await BatteryInfoPlugin().iosBatteryInfo)!.chargingStatus != ChargingStatus.Charging)))
+      {
+        log("message");
+        locBackGroundOn = false;
+        locationSubscription.cancel();
+        notifyListeners();
+      }
     });
+    locSubsInitialized = true;
     locBackGroundOn = true;
     notifyListeners();
   }

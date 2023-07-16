@@ -57,6 +57,7 @@ dependencies:
   permission_handler: ^10.4.3
   background_location: ^0.8.1
   location: ^5.0.0
+  battery_info: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,14 @@
 import 'dart:developer';
+import 'dart:ffi';
 
+import 'package:battery_info/battery_info_plugin.dart';
+import 'package:battery_info/enums/charging_status.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
+
 
 import '../viewmodels/ejjeli_portya_viewmodel.dart';
 import '../widgets/3d_button.dart';
@@ -16,6 +21,8 @@ class EjjeliPortyaScreen extends StatefulWidget {
 }
 
 class _EjjeliPortyaState extends State<EjjeliPortyaScreen> {
+
+  EjjeliPortyaViewModel viewModel = EjjeliPortyaViewModel();
 
   @override
   void initState() {
@@ -64,9 +71,7 @@ class _EjjeliPortyaState extends State<EjjeliPortyaScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final viewModel = context.watch<EjjeliPortyaViewModel>();
-
-
+    viewModel = context.watch<EjjeliPortyaViewModel>();
 
     return Scaffold(
       appBar: AppBar(
@@ -76,20 +81,19 @@ class _EjjeliPortyaState extends State<EjjeliPortyaScreen> {
           child: TextButton(
             onPressed: () async {
               if(viewModel.locBackGroundOn) {
-                viewModel.stopBackGroundLoc();
+                viewModel.stopBackGroundLoc(false);
               }
               else {
                 _showMyDialog(viewModel);
               }
             },
             style: TextButton.styleFrom(
-              primary: Colors.white,
-              onSurface: viewModel.locBackGroundOn ? Colors.red : Colors.green, // Disable color
+              foregroundColor: Colors.white,
               backgroundColor: viewModel.locBackGroundOn ? Colors.red : Colors.green,
             ),
             child: viewModel.locBackGroundOn ?
-              const Text("Megosztás leállítása"):
-              const Text("Lokáció megosztása"),
+                    const Text("Megosztás leállítása"):
+                    const Text("Lokáció megosztása"),
           )),
     );
   }
@@ -123,5 +127,17 @@ class _EjjeliPortyaState extends State<EjjeliPortyaScreen> {
       return false;
     }
     return true;
+  }
+
+  @override
+  void dispose() {
+    viewModel.stopBackGroundLoc(true);
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    viewModel = Provider.of<EjjeliPortyaViewModel>(context, listen: false);
+    super.didChangeDependencies();
   }
 }
