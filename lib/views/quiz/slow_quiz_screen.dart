@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
@@ -31,23 +30,7 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
     final viewModel = context.watch<SlowQuizViewModel>();
     return Scaffold(
       appBar: AppBar(
-        title: viewModel.isSummary
-            ? const Text('Összefoglaló')
-            : const Text('Lassú kvíz'),
-        actions: [
-          () {
-            if (viewModel.isSummary) {
-              return IconButton(
-                onPressed: () {
-                  showAreYouSureDialog();
-                },
-                icon: const Icon(Icons.delete),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }(),
-        ],
+        title: const Text('Lassú kvíz'),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -151,9 +134,12 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'A kvíz folyamatban van!',
-                  style: TextStyle(fontSize: 20),
+                Text(
+                  Provider.of<SlowQuizViewModel>(context, listen: false)
+                          .isSummary
+                      ? 'A kvíz megállt.'
+                      : 'A kvíz folyamatban van!',
+                  style: const TextStyle(fontSize: 20),
                 ),
                 const SizedBox(
                   height: 10,
@@ -173,10 +159,13 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
                   width: MediaQuery.of(context).size.width - 40,
                   onPressed: () {
                     Provider.of<SlowQuizViewModel>(context, listen: false)
-                        .stopQuiz();
+                        .toggleQuizState();
                   },
                   child: Text(
-                    'Kvíz bezárása',
+                    Provider.of<SlowQuizViewModel>(context, listen: false)
+                            .isSummary
+                        ? 'Kvíz elindítása'
+                        : 'Kvíz megállítása',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

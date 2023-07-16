@@ -98,8 +98,8 @@ class SlowQuizViewModel extends ChangeNotifier {
     database.child('slow_quiz/answers').remove();
   }
 
-  void stopQuiz() {
-    database.child('slow_quiz/is_summary').set(true);
+  void toggleQuizState() {
+    database.child('slow_quiz/is_summary').set(!isSummary);
   }
 
   void sendAnswers() async {
