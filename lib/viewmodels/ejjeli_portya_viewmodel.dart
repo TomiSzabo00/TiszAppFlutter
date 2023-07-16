@@ -33,7 +33,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
   bool locSubsInitialized = false;
   late StreamSubscription<LocationData> locationSubscription;
 
-  void getDataAdmin() async {
+  void getDataAdmin(bool init) async {
     final databaseref = FirebaseDatabase.instance.ref().child(
         'ejjeli_porty_locs');
     databaseref.onValue.listen((event) {
@@ -43,7 +43,10 @@ class EjjeliPortyaViewModel with ChangeNotifier {
       user = await DatabaseService.getUserData(
           FirebaseAuth.instance.currentUser!.uid);
     }
-    notifyListeners();
+    if(!init)
+    {
+      notifyListeners();
+    }
   }
 
   void getData() async {
@@ -126,6 +129,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
       ref.set({
         'lat': currentLocation.latitude,
         'long': currentLocation.longitude,
+        'name': user.name
       });
       log("popo");
       log(Platform.isAndroid.toString());
@@ -174,19 +178,20 @@ class EjjeliPortyaViewModel with ChangeNotifier {
   }*/
 
   Future<List<Marker>> getMarkers() async {
-    getDataAdmin();
+    getDataAdmin(false);
     final markers = List<Marker>.empty(growable: true);
     for (EjjeliPortyaCsapatData data in data.csapatData) {
       if (data.team > await getNumberOfTeams()) {
         continue;
       }
       for (EjjeliPortyaGyerekData gyerekData in data.gyerekData) {
+        log(gyerekData.toJson().toString());
         markers.add(
           Marker(
               markerId: MarkerId(gyerekData.id.toString()),
               position: LatLng(gyerekData.location.latitude,
                   gyerekData.location.longitude), // New marker position
-              infoWindow: InfoWindow(title: gyerekData.id),
+              infoWindow: InfoWindow(title: gyerekData.name),
               icon: BitmapDescriptor.defaultMarkerWithHue(
                   await getColor(data.team))
           ),

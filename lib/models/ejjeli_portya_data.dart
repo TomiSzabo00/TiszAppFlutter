@@ -25,24 +25,29 @@ class LatitudeLongitude {
 
 class EjjeliPortyaGyerekData {
   final String id;
+  late String name;
   late LatitudeLongitude location;
 
   EjjeliPortyaGyerekData({
     required this.id,
+    required this.name,
     required this.location,
   });
 
   EjjeliPortyaGyerekData.fromJson(Map<String, dynamic> json)
       : id = json['id'],
+        name = json['name'],
         location = json['location'];
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'location': location,
+    'name': name,
+    'location': location.toJson(),
   };
   
   EjjeliPortyaGyerekData.fromSnapshot(DataSnapshot snapshot, this.id)
   {
+    name = snapshot.child("name").exists ? snapshot.child("name").value.toString() : id;
     location = LatitudeLongitude(
         latitude: tryCast<double>(snapshot.child("lat").value ?? 0.0)!,
         longitude: tryCast<double>(snapshot.child("long").value ?? 0.0)!);

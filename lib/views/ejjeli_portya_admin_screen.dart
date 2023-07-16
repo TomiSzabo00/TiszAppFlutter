@@ -19,7 +19,7 @@ class _EjjeliPortyaAdminState extends State<EjjeliPortyaAdminScreen> {
   void initState() {
     super.initState();
     //Provider.of<EjjeliPortyaViewModel>(context, listen: false).getColors();
-    Provider.of<EjjeliPortyaViewModel>(context, listen: false).getDataAdmin();
+    Provider.of<EjjeliPortyaViewModel>(context, listen: false).getDataAdmin(true);
   }
 
   late GoogleMapController mapController;
@@ -37,7 +37,7 @@ class _EjjeliPortyaAdminState extends State<EjjeliPortyaAdminScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Maps'),
+          title: const Text('Éjjeli Portya Admin'),
           elevation: 2,
           actions: <Widget>[
             IconButton(
