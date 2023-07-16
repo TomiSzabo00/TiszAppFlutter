@@ -254,7 +254,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.ejjeliportya:
         return () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => /*user.isAdmin ? const EjjeliPortyaAdminScreen() :*/ const EjjeliPortyaScreen(),
+            builder: (context) => user.isAdmin ? const EjjeliPortyaAdminScreen() : const EjjeliPortyaScreen(),
           ),
         );
       case MainMenuButtonType.menuButtons:
