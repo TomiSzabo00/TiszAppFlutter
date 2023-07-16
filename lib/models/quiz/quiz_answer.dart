@@ -1,7 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
-import 'package:tiszapp_flutter/models/user_data.dart';
-import 'package:tiszapp_flutter/services/database_service.dart';
 
 class QuizAnswer {
   final String author;
