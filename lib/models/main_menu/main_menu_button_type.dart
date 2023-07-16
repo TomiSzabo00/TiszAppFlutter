@@ -34,7 +34,7 @@ extension RawValuesExtension on MainMenuButtonType {
     MainMenuButtonType.voting: 'voting',
     MainMenuButtonType.wordle: 'wordle',
     MainMenuButtonType.menuButtons: 'menu_buttons',
-    MainMenuButtonType.ejjeliportya: 'ejjeli_portya'
+    MainMenuButtonType.ejjeliportya: 'ejjeli_portya',
     MainMenuButtonType.notifications: 'notifications',
   };
 
