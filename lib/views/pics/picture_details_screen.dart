@@ -1,5 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
@@ -33,6 +35,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<PicturesViewModel>();
     return Scaffold(
       appBar: AppBar(
@@ -80,9 +83,16 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Feltöltő: ${viewModel.authorDetails.name}'),
+              Text(
+                'Feltöltő: ${viewModel.authorDetails.name}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
               const SizedBox(height: 10),
-              Text('Csapat: ${viewModel.authorDetails.teamNum}'),
+              Text('Csapat: ${viewModel.authorDetails.teamNum}',
+                  style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
               Image.network(
                 widget.picture.url,
@@ -90,7 +100,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                 fit: BoxFit.cover,
               ),
               const SizedBox(height: 20),
-              reactionsWidget(viewModel),
+              reactionsWidget(viewModel, isDarkTheme),
             ],
           ),
         ),
@@ -98,35 +108,85 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
     );
   }
 
-  Widget reactionsWidget(PicturesViewModel viewModel) {
+  Widget reactionsWidget(PicturesViewModel viewModel, bool isDarkTheme) {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(widget.picture.reactions.length, (index) {
         final key = widget.picture.reactions.keys.toList()[index];
-        return singleReactionWidget(key, widget.picture.reactions[key] ?? 0);
+        return singleReactionWidget(index, key,
+            widget.picture.reactions[key] ?? 0, index == 2, isDarkTheme);
       }),
     );
   }
 
-  Widget singleReactionWidget(PicReaction type, int count) {
-    return Row(
-      children: [
-        () {
-          switch (type) {
-            case PicReaction.love:
-              return Icon(MdiIcons.heartOutline);
-            case PicReaction.funny:
-              return const Icon(Boxicons.bx_happy_beaming);
-            case PicReaction.sad:
-              return const Icon(CommunityMaterialIcons.emoticon_sad_outline);
-            case PicReaction.angry:
-              return const Icon(Boxicons.bx_angry);
-          }
-        }(),
-        const SizedBox(width: 10),
-        Text(count.toString()),
-      ],
+  Widget singleReactionWidget(int index, PicReaction type, int count,
+      bool isSelected, bool isDarkTheme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected
+            ? Colors.red.withOpacity(0.2)
+            : isDarkTheme
+                ? CustomColor.btnFaceNight
+                : CustomColor.btnFaceDay,
+        borderRadius: index == 0
+            ? const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+              )
+            : index == widget.picture.reactions.length - 1
+                ? const BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  )
+                : null,
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {},
+            icon: () {
+              switch (type) {
+                case PicReaction.love:
+                  return Icon(MdiIcons.heartOutline);
+                case PicReaction.funny:
+                  return const Icon(Boxicons.bx_happy_beaming);
+                case PicReaction.sad:
+                  return const Icon(
+                      CommunityMaterialIcons.emoticon_sad_outline);
+                case PicReaction.angry:
+                  return const Icon(Boxicons.bx_angry);
+              }
+            }(),
+            color: isSelected
+                ? Colors.red
+                : isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
+          ),
+          const SizedBox(width: 10),
+          AutoSizeText(
+            count.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            minFontSize: 6,
+          ),
+          const SizedBox(width: 12),
+          () {
+            if (index != widget.picture.reactions.length - 1) {
+              return Divider(
+                thickness: 3,
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
+              );
+            } else {
+              return const SizedBox();
+            }
+          }(),
+        ],
+      ),
     );
   }
 }
