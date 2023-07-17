@@ -62,7 +62,7 @@ class PicturesViewModel {
     this.image = image;
   }
 
-  void loadIamgeData() {
+  void loadImageData() {
 
   }
 }

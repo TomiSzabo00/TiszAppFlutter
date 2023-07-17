@@ -48,7 +48,6 @@ class Picture {
       return MapEntry(newKey, value);
     });
     return {
-      'key': key,
       'url': url,
       'title': title,
       'author': author,
