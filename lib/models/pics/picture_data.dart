@@ -48,7 +48,7 @@ class Picture {
       return MapEntry(newKey, value);
     });
     return {
-      'url': url,
+      'fileName': url,
       'title': title,
       'author': author,
       'isPicOfTheDay' : isPicOfTheDay,

@@ -8,6 +8,7 @@ import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/notification_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
@@ -46,6 +47,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => MainMenuViewModel()),
       ChangeNotifierProvider(create: (_) => ScoresViewModel()),
       ChangeNotifierProvider(create: (_) => TextsViewModel()),
+      ChangeNotifierProvider(create: (_) => PicturesViewModel()),
       ChangeNotifierProvider(create: (_) => VotingViewmodel()),
       ChangeNotifierProvider(create: (_) => SongsViewModel()),
       ChangeNotifierProvider(create: (_) => WordleViewModel()),

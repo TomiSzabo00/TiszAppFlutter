@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
+import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
 class PictureDetailsScreen extends StatefulWidget {
@@ -23,7 +24,8 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<PicturesViewModel>(context).loadImageData(widget.picture);
+    Provider.of<PicturesViewModel>(context, listen: false)
+        .loadImageData(widget.picture);
   }
 
   @override
@@ -80,14 +82,38 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
               const SizedBox(height: 20),
               Image.network(
                 widget.picture.url,
-                width: double.infinity,
-                height: double.infinity,
+                width: MediaQuery.of(context).size.width,
                 fit: BoxFit.cover,
-              )
+              ),
+              const SizedBox(height: 20),
+              reactionsWidget(viewModel),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget reactionsWidget(PicturesViewModel viewModel) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(widget.picture.reactions.length, (index) {
+        final key = widget.picture.reactions.keys.toList()[index];
+        return singleReactionWidget(key, widget.picture.reactions[key] ?? 0);
+      }),
+    );
+  }
+
+  Widget singleReactionWidget(PicReaction type, int count) {
+    return Row(
+      children: [
+        () {
+          return const Icon(Icons.heart_broken);
+        }(),
+        const SizedBox(width: 10),
+        Text(count.toString()),
+      ],
     );
   }
 }

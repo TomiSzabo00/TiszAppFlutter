@@ -9,7 +9,7 @@ import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
 import '../models/pics/picture_data.dart';
 
-class PicturesViewModel {
+class PicturesViewModel extends ChangeNotifier {
   PicturesViewModel();
 
   bool isAdmin = false;

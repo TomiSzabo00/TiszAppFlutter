@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'dart:convert' show json, utf8;
 
@@ -23,11 +24,12 @@ class StorageService {
 
     final database.DatabaseReference picsRef =
         database.FirebaseDatabase.instance.ref().child("debug/pics");
-    picsRef.child(key).set({
-      'fileName': url,
-      'author': FirebaseAuth.instance.currentUser!.uid,
-      'title': title.isEmpty ? key : title,
-    });
+    final pictureData = Picture(
+            url: url,
+            title: title,
+            author: FirebaseAuth.instance.currentUser!.uid)
+        .toJson();
+    picsRef.child(key).set(pictureData);
   }
 
   static Future<List<Song>> getSongs() async {
