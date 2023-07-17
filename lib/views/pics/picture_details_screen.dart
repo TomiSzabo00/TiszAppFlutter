@@ -115,7 +115,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
       children: List.generate(widget.picture.reactions.length, (index) {
         final key = widget.picture.reactions.keys.toList()[index];
         return singleReactionWidget(index, key,
-            widget.picture.reactions[key] ?? 0, index == 2, isDarkTheme);
+            widget.picture.reactions[key] ?? 0, index == 1, isDarkTheme);
       }),
     );
   }
@@ -125,10 +125,10 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
     return Container(
       decoration: BoxDecoration(
         color: isSelected
-            ? Colors.red.withOpacity(0.2)
+            ? _getColorForReaction(type).withOpacity(0.2)
             : isDarkTheme
-                ? CustomColor.btnFaceNight
-                : CustomColor.btnFaceDay,
+                ? CustomColor.btnFaceNight.withOpacity(0.8)
+                : CustomColor.btnFaceDay.withOpacity(0.5),
         borderRadius: index == 0
             ? const BorderRadius.only(
                 topLeft: Radius.circular(10),
@@ -159,7 +159,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
               }
             }(),
             color: isSelected
-                ? Colors.red
+                ? _getColorForReaction(type)
                 : isDarkTheme
                     ? CustomColor.btnTextNight
                     : CustomColor.btnTextDay,
@@ -188,5 +188,18 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
         ],
       ),
     );
+  }
+
+  Color _getColorForReaction(PicReaction reaction) {
+    switch (reaction) {
+      case PicReaction.love:
+        return Colors.red;
+      case PicReaction.funny:
+        return Colors.orange;
+      case PicReaction.sad:
+        return Colors.purple;
+      case PicReaction.angry:
+        return const Color.fromARGB(255, 245, 105, 18);
+    }
   }
 }
