@@ -10,14 +10,14 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/notification_screen.dart';
-import 'package:tiszapp_flutter/views/pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -144,6 +144,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.wordle),
       MainMenuButton(type: MainMenuButtonType.songs),
       MainMenuButton(type: MainMenuButtonType.pictures),
+      MainMenuButton(type: MainMenuButtonType.reviewPics),
       MainMenuButton(type: MainMenuButtonType.texts),
       MainMenuButton(type: MainMenuButtonType.pictureUpload),
       MainMenuButton(type: MainMenuButtonType.textUpload),
@@ -193,12 +194,14 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
-    } else if(key == MainMenuButtonType.ejjeliportya.rawValue) {
+    } else if (key == MainMenuButtonType.ejjeliportya.rawValue) {
       return MainMenuButtonType.ejjeliportya;
     } else if (key == MainMenuButtonType.notifications.rawValue) {
       return MainMenuButtonType.notifications;
     } else if (key == MainMenuButtonType.slowQuiz.rawValue) {
       return MainMenuButtonType.slowQuiz;
+    } else if (key == MainMenuButtonType.reviewPics.rawValue) {
+      return MainMenuButtonType.reviewPics;
     }
     return MainMenuButtonType.none;
   }
@@ -297,10 +300,12 @@ class MainMenuViewModel extends ChangeNotifier {
             );
       case MainMenuButtonType.ejjeliportya:
         return () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => user.isAdmin ? const EjjeliPortyaAdminScreen() : const EjjeliPortyaScreen(),
-          ),
-        );
+              MaterialPageRoute(
+                builder: (context) => user.isAdmin
+                    ? const EjjeliPortyaAdminScreen()
+                    : const EjjeliPortyaScreen(),
+              ),
+            );
       case MainMenuButtonType.menuButtons:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -317,6 +322,12 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => SlowQuizScreen(isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.reviewPics:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const PicturesScreen(),
               ),
             );
     }

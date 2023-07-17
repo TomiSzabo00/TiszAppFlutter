@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../viewmodels/pictures_viewmodel.dart';
+import '../../viewmodels/pictures_viewmodel.dart';
 
 class PicturesScreen extends StatefulWidget {
   const PicturesScreen({super.key});
