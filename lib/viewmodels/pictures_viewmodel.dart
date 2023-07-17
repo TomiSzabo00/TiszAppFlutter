@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
@@ -9,12 +11,15 @@ import '../models/pics/picture_data.dart';
 class PicturesViewModel {
   PicturesViewModel();
 
-  PicturesViewModel._fromContext(BuildContext context) {
+  bool isAdmin = false;
+
+  PicturesViewModel._fromContext(BuildContext context, bool isAdmin) {
     _context = context;
+    isAdmin = isAdmin;
   }
 
   static Future<PicturesViewModel> init(BuildContext context) async {
-    return PicturesViewModel._fromContext(context);
+    return PicturesViewModel._fromContext(context, await PicturesViewModel._getIsUserAdmin());
   }
 
   late BuildContext? _context;
@@ -34,7 +39,7 @@ class PicturesViewModel {
     });
     pics.sort((a, b) => b.key.compareTo(a.key));
     for (var pic in pics) {
-      children.add(PictureItem(pic: pic, isReview: isReview));
+      children.add(PictureItem(pic: pic, isReview: isReview, isAdmin: isAdmin));
     }
     return children;
   }
@@ -62,7 +67,11 @@ class PicturesViewModel {
     this.image = image;
   }
 
-  void loadImageData() {
+  static Future<bool> _getIsUserAdmin() async {
+    return (await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid)).isAdmin;
+  }
 
+  void loadImageData(Picture pic) {
+    picsRef.child(pic.key).onChildChanged.listen((event) {});
   }
 }

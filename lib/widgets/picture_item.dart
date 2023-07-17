@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
+import 'package:tiszapp_flutter/views/pics/picture_details_screen.dart';
 
 class PictureItem extends StatelessWidget {
   const PictureItem({
     super.key,
     required this.pic,
     required this.isReview,
+    required this.isAdmin,
   });
 
   final Picture pic;
   final bool isReview;
+  final bool isAdmin;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // TODO: show details screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PictureDetailsScreen(
+                picture: pic, isReview: isReview, isAdmin: isAdmin),
+          ),
+        );
       },
       child: Card(
         shape: RoundedRectangleBorder(
