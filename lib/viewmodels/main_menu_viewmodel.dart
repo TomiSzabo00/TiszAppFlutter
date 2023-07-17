@@ -43,11 +43,15 @@ class MainMenuViewModel extends ChangeNotifier {
 
     FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
       if (firebaseUser == null) {
+        buttons.clear();
         return;
       }
-      DatabaseService.getUserData(firebaseUser.uid)
-          .then((value) {
+      DatabaseService.getUserData(firebaseUser.uid).then((value) {
+        buttons.clear();
         user = value;
+        database.child('_main_menu').once().then((event) {
+          _addAllButtons(event);
+        });
         notifyListeners();
       });
     });
@@ -71,6 +75,7 @@ class MainMenuViewModel extends ChangeNotifier {
           buttonToggles.add(button);
         }
       }
+      notifyListeners();
     });
 
     database.child("_main_menu").onChildChanged.listen((event) {
@@ -109,6 +114,27 @@ class MainMenuViewModel extends ChangeNotifier {
         buttonToggles.removeWhere((element) => element.title == button.title);
       }
     });
+  }
+
+  void _addAllButtons(DatabaseEvent event) {
+    final snapshot = event.snapshot;
+    final values = tryCast<Map>(snapshot.value) ?? {};
+    values.forEach((key, value) {
+      final buttonType = _getButtonFromKey(key);
+      final visibility = _getVisibilityFromKey(value);
+      final button =
+          MainMenuButton(type: buttonType, visibilityType: visibility);
+      if (user.isAdmin || button.isVisible) {
+        if (!buttons.any((element) => element.title == button.title)) {
+          buttons.add(button);
+        }
+      }
+      _reorderButtons();
+      if (!buttonToggles.any((element) => element.title == button.title)) {
+        buttonToggles.add(button);
+      }
+    });
+    notifyListeners();
   }
 
   void _reorderButtons() {
