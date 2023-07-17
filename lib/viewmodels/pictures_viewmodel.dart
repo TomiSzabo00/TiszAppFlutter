@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
-import '../models/picture_data.dart';
+import '../models/pics/picture_data.dart';
 
 class PicturesViewModel {
   PicturesViewModel();
@@ -23,7 +23,7 @@ class PicturesViewModel {
 
   XFile? image;
 
-  List<Widget> handlePics(AsyncSnapshot snapshot) {
+  List<Widget> handlePics(AsyncSnapshot snapshot, bool isReview) {
     final Map<dynamic, dynamic> values =
         snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
     final List<Widget> children = [];
@@ -34,7 +34,7 @@ class PicturesViewModel {
     });
     pics.sort((a, b) => b.key.compareTo(a.key));
     for (var pic in pics) {
-      children.add(PictureItem(pic: pic));
+      children.add(PictureItem(pic: pic, isReview: isReview));
     }
     return children;
   }
@@ -60,5 +60,9 @@ class PicturesViewModel {
 
   void pickImage(XFile image) {
     this.image = image;
+  }
+
+  void loadIamgeData() {
+
   }
 }

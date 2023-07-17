@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import '../../viewmodels/pictures_viewmodel.dart';
 
 class PicturesScreen extends StatefulWidget {
-  const PicturesScreen({super.key});
+  const PicturesScreen({
+    super.key,
+    required this.isReview,
+  });
+
+  final bool isReview;
 
   @override
   State<PicturesScreen> createState() => _PicturesScreenState();
@@ -37,7 +42,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
                   crossAxisSpacing: 10,
                   padding: const EdgeInsets.all(10),
                   childAspectRatio: 1.2,
-                  children: _viewModel.handlePics(snapshot),
+                  children: _viewModel.handlePics(snapshot, widget.isReview),
                 );
               } else {
                 return const Center(
