@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
@@ -78,8 +79,21 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   void loadImageData(Picture pic) {
+    picsRef.child('${pic.key}/author').onValue.listen((event) {
+      DatabaseService.getUserData(event.snapshot.value.toString()).then((value) {
+        authorDetails = value;
+        notifyListeners();
+      });
+    });
+
     picsRef.child(pic.key).onChildChanged.listen((event) {
-      if (event.snapshot.key == "reactions") {}
+      if (event.snapshot.key == "reactions") {
+        (tryCast<Map>(event.snapshot.value) ?? {}).forEach((key, value) {
+          pic.reactions[key.toString().toPicReaction] =
+              (tryCast<List>(value) ?? []).map((e) => e.toString()).toList();
+        });
+        notifyListeners();
+      }
     });
   }
 
