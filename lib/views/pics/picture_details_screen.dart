@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:community_material_icon/community_material_icon.dart';
 
 class PictureDetailsScreen extends StatefulWidget {
   const PictureDetailsScreen({
@@ -75,6 +78,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Feltöltő: ${viewModel.authorDetails.name}'),
               const SizedBox(height: 10),
@@ -109,7 +113,16 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
     return Row(
       children: [
         () {
-          return const Icon(Icons.heart_broken);
+          switch (type) {
+            case PicReaction.love:
+              return Icon(MdiIcons.heartOutline);
+            case PicReaction.funny:
+              return const Icon(Boxicons.bx_happy_beaming);
+            case PicReaction.sad:
+              return const Icon(CommunityMaterialIcons.emoticon_sad_outline);
+            case PicReaction.angry:
+              return const Icon(Boxicons.bx_angry);
+          }
         }(),
         const SizedBox(width: 10),
         Text(count.toString()),
