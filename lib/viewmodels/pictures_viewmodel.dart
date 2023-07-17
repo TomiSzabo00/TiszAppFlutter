@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
@@ -77,6 +78,13 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   void loadImageData(Picture pic) {
-    picsRef.child(pic.key).onChildChanged.listen((event) {});
+    picsRef.child(pic.key).onChildChanged.listen((event) {
+      if (event.snapshot.key == "reactions") {}
+    });
+  }
+
+  bool isSelected(Picture picture, PicReaction reaction) {
+    final reactions = picture.reactions[reaction] ?? [];
+    return reactions.contains(FirebaseAuth.instance.currentUser!.uid);
   }
 }

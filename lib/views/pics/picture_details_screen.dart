@@ -114,8 +114,12 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(widget.picture.reactions.length, (index) {
         final key = widget.picture.reactions.keys.toList()[index];
-        return singleReactionWidget(index, key,
-            widget.picture.reactions[key] ?? 0, index == 1, isDarkTheme);
+        return singleReactionWidget(
+            index,
+            key,
+            (widget.picture.reactions[key]?.length ?? 1) - 1,
+            viewModel.isSelected(widget.picture, key),
+            isDarkTheme);
       }),
     );
   }

@@ -7,7 +7,7 @@ class Picture {
   final String title;
   final String author;
   bool isPicOfTheDay;
-  Map<PicReaction, int> reactions;
+  Map<PicReaction, List<String>> reactions;
 
   Picture({
     this.key = "0",
@@ -15,21 +15,21 @@ class Picture {
     required this.title,
     required this.author,
     this.isPicOfTheDay = false,
-    Map<PicReaction, int>? reactions,
+    Map<PicReaction, List<String>>? reactions,
   }) : reactions = reactions ??
             {
-              PicReaction.love: 0,
-              PicReaction.funny: 0,
-              PicReaction.sad: 0,
-              PicReaction.angry: 0,
+              PicReaction.love: [''],
+              PicReaction.funny: [''],
+              PicReaction.sad: [''],
+              PicReaction.angry: [''],
             };
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
     final rawReactions = tryCast<Map>(snapshot['reactions']) ?? {};
-    Map<PicReaction, int> reactions = rawReactions.map((key, value) {
+    Map<PicReaction, List<String>> reactions = rawReactions.map((key, value) {
       key = key.toString().toPicReaction;
-      value = tryCast<int>(value) ?? 0;
-      return MapEntry(key, value);
+      List<String> newValue = (tryCast<List>(value) ?? []).map((e) => e.toString()).toList();
+      return MapEntry(key, newValue);
     });
 
     return Picture(
@@ -43,7 +43,7 @@ class Picture {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, int> reaccMap = reactions.map((key, value) {
+    final Map<String, List<String>> reaccMap = reactions.map((key, value) {
       final newKey = key.name;
       return MapEntry(newKey, value);
     });
