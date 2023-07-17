@@ -115,17 +115,21 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
       children: List.generate(widget.picture.reactions.length, (index) {
         final key = widget.picture.reactions.keys.toList()[index];
         return singleReactionWidget(
-            index,
-            key,
-            (widget.picture.reactions[key]?.length ?? 1) - 1,
-            viewModel.isSelected(widget.picture, key),
-            isDarkTheme);
+          index,
+          key,
+          (widget.picture.reactions[key]?.length ?? 1) - 1,
+          viewModel.isSelected(widget.picture, key),
+          isDarkTheme,
+          () {
+            viewModel.toggleReactionTo(widget.picture, key);
+          },
+        );
       }),
     );
   }
 
   Widget singleReactionWidget(int index, PicReaction type, int count,
-      bool isSelected, bool isDarkTheme) {
+      bool isSelected, bool isDarkTheme, Function onTap) {
     return Container(
       decoration: BoxDecoration(
         color: isSelected
@@ -148,7 +152,9 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
       child: Row(
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              onTap();
+            },
             icon: () {
               switch (type) {
                 case PicReaction.love:

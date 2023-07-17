@@ -87,4 +87,24 @@ class PicturesViewModel extends ChangeNotifier {
     final reactions = picture.reactions[reaction] ?? [];
     return reactions.contains(FirebaseAuth.instance.currentUser!.uid);
   }
+
+  void toggleReactionTo(Picture picture, PicReaction reaction) {
+    final reactions = picture.reactions[reaction] ?? [];
+    if (reactions.contains(FirebaseAuth.instance.currentUser!.uid)) {
+      reactions.remove(FirebaseAuth.instance.currentUser!.uid);
+    } else {
+      final existingReactionKey = picture.reactions.keys.firstWhere(
+          (element) => picture.reactions[element]!
+              .contains(FirebaseAuth.instance.currentUser!.uid),
+          orElse: () => reaction);
+      if (existingReactionKey != reaction) {
+        picture.reactions[existingReactionKey]!
+            .remove(FirebaseAuth.instance.currentUser!.uid);
+      }
+      reactions.add(FirebaseAuth.instance.currentUser!.uid);
+    }
+    picture.reactions[reaction] = reactions;
+    picsRef.child(picture.key).update(picture.toJson());
+    notifyListeners();
+  }
 }
