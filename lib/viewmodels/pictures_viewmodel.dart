@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
@@ -12,6 +13,7 @@ class PicturesViewModel {
   PicturesViewModel();
 
   bool isAdmin = false;
+  UserData authorDetails = UserData.empty();
 
   PicturesViewModel._fromContext(BuildContext context, bool isAdmin) {
     _context = context;
@@ -19,7 +21,8 @@ class PicturesViewModel {
   }
 
   static Future<PicturesViewModel> init(BuildContext context) async {
-    return PicturesViewModel._fromContext(context, await PicturesViewModel._getIsUserAdmin());
+    return PicturesViewModel._fromContext(
+        context, await PicturesViewModel._getIsUserAdmin());
   }
 
   late BuildContext? _context;
@@ -68,7 +71,9 @@ class PicturesViewModel {
   }
 
   static Future<bool> _getIsUserAdmin() async {
-    return (await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid)).isAdmin;
+    return (await DatabaseService.getUserData(
+            FirebaseAuth.instance.currentUser!.uid))
+        .isAdmin;
   }
 
   void loadImageData(Picture pic) {
