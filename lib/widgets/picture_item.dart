@@ -23,8 +23,8 @@ class PictureItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PictureDetailsScreen(
-                picture: pic, isReview: isReview, isAdmin: isAdmin),
+            builder: (context) =>
+                PictureDetailsScreen(picture: pic, isReview: isReview),
           ),
         );
       },

@@ -26,14 +26,12 @@ class PicturesViewModel extends ChangeNotifier {
   };
   PicReaction? currentReaction;
 
-  PicturesViewModel._fromContext(BuildContext context, bool isAdmin) {
+  PicturesViewModel._fromContext(BuildContext context) {
     _context = context;
-    isAdmin = isAdmin;
   }
 
   static Future<PicturesViewModel> init(BuildContext context) async {
-    return PicturesViewModel._fromContext(
-        context, await PicturesViewModel._getIsUserAdmin());
+    return PicturesViewModel._fromContext(context);
   }
 
   late BuildContext? _context;
@@ -99,7 +97,8 @@ class PicturesViewModel extends ChangeNotifier {
         .isAdmin;
   }
 
-  void loadImageData(Picture pic) {
+  void loadImageData(Picture pic) async {
+    isAdmin = await _getIsUserAdmin();
     authorDetails = UserData.empty();
     reactions = {
       PicReaction.love: 0,

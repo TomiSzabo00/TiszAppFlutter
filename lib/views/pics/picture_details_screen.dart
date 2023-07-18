@@ -16,12 +16,10 @@ class PictureDetailsScreen extends StatefulWidget {
     super.key,
     required this.picture,
     required this.isReview,
-    required this.isAdmin,
   });
 
   final Picture picture;
   final bool isReview;
-  final bool isAdmin;
 
   @override
   State<PictureDetailsScreen> createState() => PictureDetailsScreenState();
@@ -42,7 +40,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.picture.title),
-        actions: widget.isAdmin
+        actions: viewModel.isAdmin
             ? widget.isReview
                 ? [
                     // review actions
