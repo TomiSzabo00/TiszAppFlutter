@@ -47,4 +47,8 @@
             android:name="firebase_analytics_collection_enabled"
             android:value="false" />
     </application>
+    <!-- Gal: If supports API <29 add this key :Gal-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+                 android:maxSdkVersion="29" />
+    <!-- Gal: If supports API <29 add this key :Gal-->
 </manifest>

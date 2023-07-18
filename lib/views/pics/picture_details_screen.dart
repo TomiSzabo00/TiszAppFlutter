@@ -103,6 +103,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                     MaterialPageRoute(
                       builder: (context) => FullScreenPage(
                         dark: true,
+                        url: widget.picture.url,
                         child: Image(
                           image: CachedNetworkImageProvider(
                             widget.picture.url,

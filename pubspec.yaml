@@ -65,6 +65,7 @@ dependencies:
   community_material_icon: ^5.9.55
   gal: ^1.6.2
   cached_network_image: ^3.2.3
+  dio: ^5.3.0
 
 dev_dependencies:
   flutter_test:

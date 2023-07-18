@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
@@ -37,6 +38,8 @@ Future<void> main() async {
     provisional: false,
     sound: true,
   );
+
+  await Gal.requestAccess();
 
   if (kDebugMode) {
     print('User granted permission: ${settings.authorizationStatus}');
