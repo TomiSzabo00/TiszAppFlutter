@@ -26,7 +26,7 @@ class StorageService {
     picsRef.child(key).set({
       'fileName': url,
       'author': FirebaseAuth.instance.currentUser!.uid,
-      'title': title.isEmpty ? key : title,
+      'title': title.isEmpty ? key : title
     });
   }
 

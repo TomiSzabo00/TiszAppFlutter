@@ -23,6 +23,8 @@ class PicturesViewModel {
 
   XFile? image;
 
+  bool notEmpty = false;
+
   List<Widget> handlePics(AsyncSnapshot snapshot) {
     final Map<dynamic, dynamic> values =
         snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
@@ -39,8 +41,8 @@ class PicturesViewModel {
     return children;
   }
 
-  void uploadPicture(String title) async {
-    if (image != null) {
+  void uploadPicture(String title, bool notEmpty) async {
+    if (image != null && notEmpty == true) {
       await StorageService.uploadImage(image!, title);
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(_context!).showSnackBar(
@@ -49,6 +51,12 @@ class PicturesViewModel {
         ),
       );
       Navigator.pop(_context!);
+    } else if (notEmpty == false) {
+      ScaffoldMessenger.of(_context!).showSnackBar(
+        const SnackBar(
+          content: Text("Nem adtál meg címet"),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(_context!).showSnackBar(
         const SnackBar(
