@@ -60,6 +60,7 @@ dependencies:
   battery_info: ^1.1.1
   firebase_messaging: ^14.6.4
   googleapis_auth: ^1.4.1
+  wheel_chooser: ^1.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
+import 'dart:developer' as dev;
+import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -8,10 +10,16 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
+enum distrType {
+  none, proportional, spreadOut
+}
+
 class ScoresViewModel with ChangeNotifier {
   List<Score> scores = [];
 
   int numberOfTeams = 4;
+
+  distrType chosenDistr = distrType.none;
 
   Score totalScore = Score(
     author: '',
@@ -23,6 +31,11 @@ class ScoresViewModel with ChangeNotifier {
   final List<TextEditingController> scoreControllers = List.generate(
     6,
     (_) => TextEditingController(),
+  );
+  final maxController = TextEditingController();
+  final List<TextEditingController> finalScoreControllers = List.generate(
+    6,
+        (_) => TextEditingController(),
   );
 
   ScoresViewModel() {
@@ -43,6 +56,8 @@ class ScoresViewModel with ChangeNotifier {
     final num = await DatabaseService.getNumberOfTeams();
     scoreControllers.clear();
     scoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
+    finalScoreControllers.clear();
+    finalScoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
     return num;
   }
 
@@ -70,7 +85,7 @@ class ScoresViewModel with ChangeNotifier {
     var score = Score(
       author: FirebaseAuth.instance.currentUser!.uid,
       name: nameController.text,
-      scores: _scoresTextToInt(scoreControllers.map((e) => e.text).toList()),
+      scores: _scoresTextToInt(finalScoreControllers.map((e) => e.text).toList()),
     );
 
     var ref = FirebaseDatabase.instance.ref().child("debug/scores");
@@ -82,13 +97,19 @@ class ScoresViewModel with ChangeNotifier {
   }
 
   void _clearControllers() {
+    dev.log("Clearing controllers");
     nameController.clear();
+    maxController.clear();
     for (var element in scoreControllers) {
+      element.clear();
+    }
+    for (var element in finalScoreControllers) {
       element.clear();
     }
   }
 
   List<int> _scoresTextToInt(List<String> scores) {
+    dev.log("Converting scores to int");
     return scores.map((e) {
       if (e.isEmpty) {
         return 0;
@@ -96,5 +117,100 @@ class ScoresViewModel with ChangeNotifier {
         return int.tryParse(e) ?? 0;
       }
     }).toList();
+  }
+
+  getAvailableDistrs() {
+    dev.log("Getting available distributions");
+    return ["Sima", "Arányos", "N-felé osztva"];
+  }
+
+  chooseDistr(s) {
+    dev.log("Choosing distribution");
+    switch (s) {
+      case "Sima":
+        setNone();
+        break;
+      case "Arányos":
+        setProportional();
+        break;
+      case "N-felé osztva":
+        setSpreadOut();
+        break;
+      default:
+        setNone();
+    }
+  }
+
+  bool baseScoresAdded()
+  {
+    dev.log("Checking if base scores are added");
+    for(var element in scoreControllers)
+      {
+        if(element.text.isEmpty)
+          {
+            return false;
+          }
+      }
+    return true;
+  }
+
+  void setNone() {
+    dev.log("Setting distribution to none");
+    chosenDistr = distrType.none;
+    for(int i = 0; i <= scoreControllers.length; i++)
+      {
+        finalScoreControllers[i].text = scoreControllers[i].text;
+      }
+  }
+
+  void setProportional() {
+    dev.log("Setting distribution to proportional");
+    chosenDistr = distrType.proportional;
+    List<int> values = [];
+    for(var scoreController in scoreControllers)
+      {
+        values.add(int.parse(scoreController.value.text));
+      }
+    final maxVal = values.reduce(max);
+    for(int i = 0; i <= scoreControllers.length; i++)
+    {
+      finalScoreControllers[i].text = (values[i] / maxVal * int.parse(maxController.value.text)).toString();
+    }
+  }
+
+  void setSpreadOut() {
+    dev.log("Setting distribution to spread out");
+    chosenDistr = distrType.spreadOut;
+    final ranks = [];
+    for(int i = 0; i <= scoreControllers.length; i++){
+      int cnt = 0;
+      for(int j = 0; j <= scoreControllers.length; j++) {
+        if(int.parse(scoreControllers[i].value.text) > int.parse(scoreControllers[j].value.text)) {
+          cnt++;
+        }
+        ranks.add(cnt);
+      }
+    }
+    for(int i = 0; i <= finalScoreControllers.length; i++) {
+      finalScoreControllers[i].text = (int.parse(maxController.value.text) * ranks[i] / finalScoreControllers.length).round().toString();
+    }
+  }
+
+  maxChanged() {
+    dev.log("Max changed");
+    if(!baseScoresAdded()){
+      return;
+    }
+    switch(chosenDistr) {
+      case distrType.none:
+        setNone();
+        break;
+      case distrType.spreadOut:
+        setSpreadOut();
+        break;
+      case distrType.proportional:
+        setProportional();
+        break;
+    }
   }
 }

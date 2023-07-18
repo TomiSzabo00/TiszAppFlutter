@@ -11,6 +11,7 @@ class InputField extends StatefulWidget {
     this.icon,
     this.isNumber = false,
     this.maxChar = 5,
+    this.onChanged = onChangedFunc
   });
 
   final String placeholder;
@@ -19,6 +20,8 @@ class InputField extends StatefulWidget {
   final Icon? icon;
   final bool isNumber;
   final int maxChar;
+  final Function onChanged;
+  static onChangedFunc(){}
 
   final _padding = 15.0;
 
@@ -70,6 +73,7 @@ class _InputFieldState extends State<InputField> {
             FocusScope.of(context).requestFocus(FocusNode());
           }
         }
+        widget.onChanged();
       },
       suffix: widget.obscureText
           ? IconButton(
