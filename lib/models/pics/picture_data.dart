@@ -1,5 +1,4 @@
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
-import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 
 class Picture {
   String key;
