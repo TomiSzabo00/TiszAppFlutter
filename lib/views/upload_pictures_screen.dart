@@ -93,8 +93,9 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                 onPressed: () async {
                   final ImagePicker picker = ImagePicker();
                   final XFile? image = await picker.pickImage(
-                    source: ImageSource.gallery,
-                  );
+                      source: ImageSource.gallery,
+                      maxHeight: 400,
+                      maxWidth: 600);
                   if (image != null) {
                     _viewModel.pickImage(image);
                     setState(() {
