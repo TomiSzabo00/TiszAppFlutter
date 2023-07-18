@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
-import 'package:tiszapp_flutter/widgets/input_field.dart';
 
 class UploadPicturesScreen extends StatefulWidget {
   const UploadPicturesScreen({super.key});
@@ -17,7 +16,6 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   final _titleController = TextEditingController();
   XFile? image;
   bool notEmpty = false;
-  dynamic dropdownValue = null;
   @override
   void initState() {
     super.initState();
@@ -33,14 +31,6 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
       return null;
     } else {
       return null;
-    }
-  }
-
-  void dropdownCallback(dynamic selectedValue) {
-    if (selectedValue is String) {
-      setState(() {
-        dropdownValue = selectedValue;
-      });
     }
   }
 
@@ -80,11 +70,9 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
               Button3D(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _viewModel.uploadPicture(
-                        _titleController.text, true, dropdownValue);
+                    _viewModel.uploadPicture(_titleController.text, true);
                   } else {
-                    _viewModel.uploadPicture(
-                        _titleController.text, false, dropdownValue);
+                    _viewModel.uploadPicture(_titleController.text, false);
                   }
                 },
                 child: const Text("Kép feltöltése"),
@@ -106,20 +94,7 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                 child: const Text("Kép kiválasztása"),
               ),
             ],
-          ),
-          SizedBox(
-            height: 50,
-            child: DropdownButton(
-                hint: const Text("Válassz egy értéket!"),
-                items: ['yellow', 'brown', 'silver'].map((String value) {
-                  return DropdownMenuItem(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                value: dropdownValue,
-                onChanged: dropdownCallback),
-          ),
+          )
         ],
       )),
     );
