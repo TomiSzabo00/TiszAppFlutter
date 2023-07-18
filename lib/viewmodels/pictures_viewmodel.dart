@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
 import 'package:tiszapp_flutter/models/pics/reaction_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
@@ -10,8 +11,6 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
-
-import '../models/pics/picture_data.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   PicturesViewModel();
