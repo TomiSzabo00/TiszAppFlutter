@@ -10,7 +10,6 @@ import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
-import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   PicturesViewModel();
@@ -69,22 +68,6 @@ class PicturesViewModel extends ChangeNotifier {
       pictures.addAll(pics);
       notifyListeners();
     });
-  }
-
-  List<Widget> handlePics(AsyncSnapshot snapshot, bool isReview) {
-    final Map<dynamic, dynamic> values =
-        snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
-    final List<Widget> children = [];
-    final List<Picture> pics = [];
-    values.forEach((key, value) {
-      final pic = Picture.fromSnapshot(key, value);
-      pics.add(pic);
-    });
-    pics.sort((a, b) => b.key.compareTo(a.key));
-    for (var pic in pics) {
-      children.add(PictureItem(pic: pic, isReview: isReview, isAdmin: isAdmin));
-    }
-    return children;
   }
 
   void uploadPicture(String title) async {
