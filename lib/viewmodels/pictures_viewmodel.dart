@@ -15,6 +15,8 @@ import 'package:tiszapp_flutter/widgets/picture_item.dart';
 class PicturesViewModel extends ChangeNotifier {
   PicturesViewModel();
 
+  final List<Picture> pictures = [];
+
   bool isAdmin = false;
   UserData authorDetails = UserData.empty();
   Map<PicReaction, int> reactions = {
@@ -38,6 +40,8 @@ class PicturesViewModel extends ChangeNotifier {
   late BuildContext? _context;
   final DatabaseReference picsRef =
       FirebaseDatabase.instance.ref().child("debug/pics");
+  final DatabaseReference reviewPicsRef =
+      FirebaseDatabase.instance.ref().child("debug/reviewPics");
   final DatabaseReference reactionsRef =
       FirebaseDatabase.instance.ref().child("reactions");
 
@@ -49,6 +53,23 @@ class PicturesViewModel extends ChangeNotifier {
   ];
 
   XFile? image;
+
+  void getImages(bool isReview) {
+    pictures.clear();
+    final ref = isReview ? reviewPicsRef : picsRef;
+    ref.onValue.listen((event) {
+      final snapshot = event.snapshot;
+      final Map<dynamic, dynamic> values = tryCast<Map>(snapshot.value) ?? {};
+      final List<Picture> pics = [];
+      values.forEach((key, value) {
+        final pic = Picture.fromSnapshot(key, value);
+        pics.add(pic);
+      });
+      pics.sort((a, b) => b.key.compareTo(a.key));
+      pictures.addAll(pics);
+      notifyListeners();
+    });
+  }
 
   List<Widget> handlePics(AsyncSnapshot snapshot, bool isReview) {
     final Map<dynamic, dynamic> values =
@@ -149,13 +170,15 @@ class PicturesViewModel extends ChangeNotifier {
 
   void toggleReactionTo(Picture picture, PicReaction reaction) {
     final reactionData = Reaction(
-        userId: FirebaseAuth.instance.currentUser!.uid,
-        imageFileName: picture.key,
-        reaction: reaction,
-      );
+      userId: FirebaseAuth.instance.currentUser!.uid,
+      imageFileName: picture.key,
+      reaction: reaction,
+    );
 
     if (currentReaction == null) {
-      reactionsRef.child(DateService.dateInMillisAsString()).set(reactionData.toJson());
+      reactionsRef
+          .child(DateService.dateInMillisAsString())
+          .set(reactionData.toJson());
     } else if (currentReaction == reaction) {
       reactionsRef.once().then((value) {
         final Map<dynamic, dynamic> values =
@@ -181,7 +204,9 @@ class PicturesViewModel extends ChangeNotifier {
             reactionsRef.child(key).remove();
           }
         });
-        reactionsRef.child(DateService.dateInMillisAsString()).set(reactionData.toJson());
+        reactionsRef
+            .child(DateService.dateInMillisAsString())
+            .set(reactionData.toJson());
       });
     }
   }
