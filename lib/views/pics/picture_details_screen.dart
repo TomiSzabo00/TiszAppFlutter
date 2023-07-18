@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
@@ -94,10 +95,17 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
               Text('Csapat: ${viewModel.authorDetails.teamNum}',
                   style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
-              Image.network(
-                widget.picture.url,
+              CachedNetworkImage(
+                imageUrl: widget.picture.url,
                 width: MediaQuery.of(context).size.width,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => const Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               reactionsWidget(viewModel, isDarkTheme),

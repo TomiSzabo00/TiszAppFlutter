@@ -63,6 +63,8 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   flutter_boxicons: ^3.0.0
   community_material_icon: ^5.9.55
+  gal: ^1.6.2
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
