@@ -139,13 +139,13 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(widget.picture.reactions.length, (index) {
-        final key = widget.picture.reactions.keys.toList()[index];
+      children: List.generate(viewModel.availableReactions.length, (index) {
+        final key = viewModel.availableReactions[index];
         return singleReactionWidget(
           index,
           key,
-          (widget.picture.reactions[key]?.length ?? 1) - 1,
-          viewModel.isSelected(widget.picture, key),
+          viewModel.reactions[key] ?? 0,
+          viewModel.isSelected(key),
           isDarkTheme,
           () {
             viewModel.toggleReactionTo(widget.picture, key);
@@ -169,7 +169,11 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                 topLeft: Radius.circular(10),
                 bottomLeft: Radius.circular(10),
               )
-            : index == widget.picture.reactions.length - 1
+            : index ==
+                    Provider.of<PicturesViewModel>(context)
+                            .availableReactions
+                            .length -
+                        1
                 ? const BorderRadius.only(
                     topRight: Radius.circular(10),
                     bottomRight: Radius.circular(10),
@@ -210,18 +214,6 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
             minFontSize: 6,
           ),
           const SizedBox(width: 12),
-          () {
-            if (index != widget.picture.reactions.length - 1) {
-              return Divider(
-                thickness: 3,
-                color: isDarkTheme
-                    ? CustomColor.btnTextNight
-                    : CustomColor.btnTextDay,
-              );
-            } else {
-              return const SizedBox();
-            }
-          }(),
         ],
       ),
     );

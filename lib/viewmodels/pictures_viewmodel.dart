@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
+import 'package:tiszapp_flutter/models/pics/reaction_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:tiszapp_flutter/services/date_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 
@@ -16,6 +18,13 @@ class PicturesViewModel extends ChangeNotifier {
 
   bool isAdmin = false;
   UserData authorDetails = UserData.empty();
+  Map<PicReaction, int> reactions = {
+    PicReaction.love: 0,
+    PicReaction.funny: 0,
+    PicReaction.angry: 0,
+    PicReaction.sad: 0,
+  };
+  PicReaction? currentReaction;
 
   PicturesViewModel._fromContext(BuildContext context, bool isAdmin) {
     _context = context;
@@ -30,6 +39,15 @@ class PicturesViewModel extends ChangeNotifier {
   late BuildContext? _context;
   final DatabaseReference picsRef =
       FirebaseDatabase.instance.ref().child("debug/pics");
+  final DatabaseReference reactionsRef =
+      FirebaseDatabase.instance.ref().child("reactions");
+
+  final availableReactions = [
+    PicReaction.love,
+    PicReaction.funny,
+    PicReaction.angry,
+    PicReaction.sad,
+  ];
 
   XFile? image;
 
@@ -79,46 +97,99 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   void loadImageData(Picture pic) {
+    authorDetails = UserData.empty();
+    reactions = {
+      PicReaction.love: 0,
+      PicReaction.funny: 0,
+      PicReaction.angry: 0,
+      PicReaction.sad: 0,
+    };
+    currentReaction = null;
     picsRef.child('${pic.key}/author').onValue.listen((event) {
-      DatabaseService.getUserData(event.snapshot.value.toString()).then((value) {
+      DatabaseService.getUserData(event.snapshot.value.toString())
+          .then((value) {
         authorDetails = value;
         notifyListeners();
       });
     });
 
-    picsRef.child(pic.key).onChildChanged.listen((event) {
-      if (event.snapshot.key == "reactions") {
-        (tryCast<Map>(event.snapshot.value) ?? {}).forEach((key, value) {
-          pic.reactions[key.toString().toPicReaction] =
-              (tryCast<List>(value) ?? []).map((e) => e.toString()).toList();
-        });
-        notifyListeners();
+    reactionsRef.onChildAdded.listen((event) {
+      final reaction =
+          Reaction.fromSnapshot(tryCast<Map>(event.snapshot.value) ?? {});
+      RegExp regex = RegExp(r'debug%2F(\d+)\.jpg');
+      RegExpMatch? match = regex.firstMatch(pic.url);
+      final picKey = match?.group(1) ?? '';
+      if (reaction.imageFileName == picKey) {
+        reactions[reaction.reaction] = (reactions[reaction.reaction] ?? -1) + 1;
       }
+      if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
+          reaction.imageFileName == picKey) {
+        currentReaction = reaction.reaction;
+      }
+      notifyListeners();
+    });
+
+    reactionsRef.onChildRemoved.listen((event) {
+      final reaction =
+          Reaction.fromSnapshot(tryCast<Map>(event.snapshot.value) ?? {});
+      final picKey = _getImageKeyFromUrl(pic.url);
+      if (reaction.imageFileName == picKey) {
+        reactions[reaction.reaction] = (reactions[reaction.reaction] ?? 1) - 1;
+      }
+      if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
+          reaction.imageFileName == picKey) {
+        currentReaction = null;
+      }
+      notifyListeners();
     });
   }
 
-  bool isSelected(Picture picture, PicReaction reaction) {
-    final reactions = picture.reactions[reaction] ?? [];
-    return reactions.contains(FirebaseAuth.instance.currentUser!.uid);
+  bool isSelected(PicReaction reaction) {
+    return currentReaction == reaction;
   }
 
   void toggleReactionTo(Picture picture, PicReaction reaction) {
-    final reactions = picture.reactions[reaction] ?? [];
-    if (reactions.contains(FirebaseAuth.instance.currentUser!.uid)) {
-      reactions.remove(FirebaseAuth.instance.currentUser!.uid);
+    final reactionData = Reaction(
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        imageFileName: _getImageKeyFromUrl(picture.url),
+        reaction: reaction,
+      );
+
+    if (currentReaction == null) {
+      reactionsRef.child(DateService.dateInMillisAsString()).set(reactionData.toJson());
+    } else if (currentReaction == reaction) {
+      reactionsRef.once().then((value) {
+        final Map<dynamic, dynamic> values =
+            tryCast<Map>(value.snapshot.value) ?? {};
+        values.forEach((key, value) {
+          final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
+          final imageKey = _getImageKeyFromUrl(picture.url);
+          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
+              reaction.imageFileName == imageKey) {
+            reactionsRef.child(key).remove();
+          }
+        });
+      });
     } else {
-      final existingReactionKey = picture.reactions.keys.firstWhere(
-          (element) => picture.reactions[element]!
-              .contains(FirebaseAuth.instance.currentUser!.uid),
-          orElse: () => reaction);
-      if (existingReactionKey != reaction) {
-        picture.reactions[existingReactionKey]!
-            .remove(FirebaseAuth.instance.currentUser!.uid);
-      }
-      reactions.add(FirebaseAuth.instance.currentUser!.uid);
+      reactionsRef.once().then((value) {
+        final Map<dynamic, dynamic> values =
+            tryCast<Map>(value.snapshot.value) ?? {};
+        values.forEach((key, value) {
+          final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
+          final imageKey = _getImageKeyFromUrl(picture.url);
+          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
+              reaction.imageFileName == imageKey) {
+            reactionsRef.child(key).remove();
+          }
+        });
+        reactionsRef.child(DateService.dateInMillisAsString()).set(reactionData.toJson());
+      });
     }
-    picture.reactions[reaction] = reactions;
-    picsRef.child(picture.key).update(picture.toJson());
-    notifyListeners();
+  }
+
+  String _getImageKeyFromUrl(String url) {
+    RegExp regex = RegExp(r'debug%2F(\d+)\.jpg');
+    RegExpMatch? match = regex.firstMatch(url);
+    return match?.group(1) ?? '';
   }
 }
