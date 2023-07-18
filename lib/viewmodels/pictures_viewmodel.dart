@@ -132,7 +132,7 @@ class PicturesViewModel extends ChangeNotifier {
     reactionsRef.onChildRemoved.listen((event) {
       final reaction =
           Reaction.fromSnapshot(tryCast<Map>(event.snapshot.value) ?? {});
-      final picKey = _getImageKeyFromUrl(pic.url);
+      final picKey = pic.key;
       if (reaction.imageFileName == picKey) {
         reactions[reaction.reaction] = (reactions[reaction.reaction] ?? 1) - 1;
       }
@@ -151,7 +151,7 @@ class PicturesViewModel extends ChangeNotifier {
   void toggleReactionTo(Picture picture, PicReaction reaction) {
     final reactionData = Reaction(
         userId: FirebaseAuth.instance.currentUser!.uid,
-        imageFileName: _getImageKeyFromUrl(picture.url),
+        imageFileName: picture.key,
         reaction: reaction,
       );
 
@@ -163,7 +163,7 @@ class PicturesViewModel extends ChangeNotifier {
             tryCast<Map>(value.snapshot.value) ?? {};
         values.forEach((key, value) {
           final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-          final imageKey = _getImageKeyFromUrl(picture.url);
+          final imageKey = picture.key;
           if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
               reaction.imageFileName == imageKey) {
             reactionsRef.child(key).remove();
@@ -176,7 +176,7 @@ class PicturesViewModel extends ChangeNotifier {
             tryCast<Map>(value.snapshot.value) ?? {};
         values.forEach((key, value) {
           final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-          final imageKey = _getImageKeyFromUrl(picture.url);
+          final imageKey = picture.key;
           if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
               reaction.imageFileName == imageKey) {
             reactionsRef.child(key).remove();
@@ -185,11 +185,5 @@ class PicturesViewModel extends ChangeNotifier {
         reactionsRef.child(DateService.dateInMillisAsString()).set(reactionData.toJson());
       });
     }
-  }
-
-  String _getImageKeyFromUrl(String url) {
-    RegExp regex = RegExp(r'debug%2F(\d+)\.jpg');
-    RegExpMatch? match = regex.firstMatch(url);
-    return match?.group(1) ?? '';
   }
 }
