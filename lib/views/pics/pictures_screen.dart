@@ -29,7 +29,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
     final viewModel = context.watch<PicturesViewModel>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Képek'),
+        title: widget.isReview
+            ? const Text('Képek ellenőrzése')
+            : const Text('Képek'),
       ),
       body: Container(
         decoration: BoxDecoration(
