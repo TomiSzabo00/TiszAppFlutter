@@ -9,6 +9,7 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:tiszapp_flutter/views/pics/picture_full_screen_screen.dart';
 
 class PictureDetailsScreen extends StatefulWidget {
   const PictureDetailsScreen({
@@ -95,16 +96,33 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
               Text('Csapat: ${viewModel.authorDetails.teamNum}',
                   style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
-              CachedNetworkImage(
-                imageUrl: widget.picture.url,
-                width: MediaQuery.of(context).size.width,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FullScreenPage(
+                        dark: true,
+                        child: Image(
+                          image: CachedNetworkImageProvider(
+                            widget.picture.url,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: CachedNetworkImage(
+                  imageUrl: widget.picture.url,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
