@@ -1,33 +1,45 @@
 import 'package:http/http.dart' as http;
-import 'package:firebase_database/firebase_database.dart' as database;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
-import 'package:intl/intl.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'dart:convert' show json, utf8;
+import 'package:tiszapp_flutter/services/date_service.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+// ignore: depend_on_referenced_packages
+import 'package:path/path.dart';
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
-  static uploadImage(XFile file, String title) async {
-    var now = DateTime.now();
-    var formatter = DateFormat('yyyyMMddHHmmssSSS');
-    var key = formatter.format(now);
+
+  static Future<String> uploadImage(XFile file, String title) async {
+    // compress image
+    final filePath = file.path;
+    final fileExtension = extension(filePath);
+    final lastIndex = filePath.lastIndexOf(RegExp(fileExtension));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+    // check if file is png or jpg
+    if (fileExtension == '.png' || fileExtension == '.jpg' || fileExtension == '.jpeg') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+      );
+      file = XFile(result!.path);
+    }
+
+    var key = DateService.dateInMillisAsString();
     final images = ref.child('debug/$key.jpg');
     final storage.UploadTask uploadTask = images.putData(
         await file.readAsBytes(),
         storage.SettableMetadata(contentType: 'image/jpeg'));
     final storage.TaskSnapshot downloadUrl = (await uploadTask);
     final String url = (await downloadUrl.ref.getDownloadURL());
-    //return url;
+    return url;
+  }
 
-    final database.DatabaseReference picsRef =
-        database.FirebaseDatabase.instance.ref().child("debug/pics");
-    picsRef.child(key).set({
-      'fileName': url,
-      'author': FirebaseAuth.instance.currentUser!.uid,
-      'title': title.isEmpty ? key : title
-    });
+  static deleteImage(String url) async {
+    final ref = storage.FirebaseStorage.instance.refFromURL(url);
+    await ref.delete();
   }
 
   static Future<List<Song>> getSongs() async {
