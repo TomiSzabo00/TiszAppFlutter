@@ -1,12 +1,8 @@
-import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
-import 'package:http/http.dart' as http;
-import 'package:googleapis_auth/auth_io.dart';
-import 'package:tiszapp_flutter/services/storage_service.dart';
+import 'package:tiszapp_flutter/services/notification_service.dart';
 
 class NotificationViewModel extends ChangeNotifier {
   final titleController = TextEditingController();
@@ -68,96 +64,15 @@ class NotificationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendNotification() async {
-    startedSending = true;
-    List<String> tokens = await getTokens();
-    AccessCredentials credentials = await obtainCredentials();
-    const url =
-        "https://fcm.googleapis.com/v1/projects/tiszapp-175fb/messages:send";
-    var header = {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer ${credentials.accessToken.data}"
-    };
-    for (final token in tokens) {
-      var request = {
-        "message": {
-          "token": token,
-          "notification": {
-            "title": titleController.text,
-            "body": bodyController.text,
-          },
-          "android": {
-            "notification": {
-              "click_action": "FLUTTER_NOTIFICATION_CLICK",
-              "body": bodyController.text,
-            }
-          },
-        }
-      };
-      try {
-        var response = await http.post(
-          Uri.parse(url),
-          headers: header,
-          body: json.encode(request),
-        );
-        startedSending = false;
-        if (response.statusCode == 200) {
-          notifyListeners();
-          if (kDebugMode) {
-            print('notification sent. response: ${response.body}');
-          }
-        } else {
-          error = response.body;
-          notifyListeners();
-          if (kDebugMode) {
-            print('notification not sent. reason: ${response.body}');
-          }
-        }
-      } catch (e) {
-        startedSending = false;
-        error = e.toString();
-        notifyListeners();
-        if (kDebugMode) {
-          print('error: $e');
-        }
-        return;
-      }
-    }
-  }
-
   void dismissAlert() {
     error = null;
     notifyListeners();
   }
 
-  Future<AccessCredentials> obtainCredentials() async {
-    final serviceFile = await StorageService.getServiceFile();
-    var accountCredentials = ServiceAccountCredentials.fromJson(serviceFile);
-    var scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-
-    var client = http.Client();
-    AccessCredentials credentials =
-        await obtainAccessCredentialsViaServiceAccount(
-            accountCredentials, scopes, client);
-
-    client.close();
-    return credentials;
-  }
-
   Future<List<String>> getTokens() async {
-    final List<String> tokens = List.empty(growable: true);
-    final database = FirebaseDatabase.instance.ref();
-
-    final event = await database.child('notification_tokens').once();
-    if (event.snapshot.value == null) {
-      return tokens;
-    }
-    // decode data
-    final data = tryCast<Map>(event.snapshot.value);
-    if (data == null) {
-      return tokens;
-    }
-    data.forEach((key, value) {
+    List<String> tokens = [];
+    final allTokens = await NotificationService.getTokensAsMap();
+    allTokens.forEach((key, value) {
       DatabaseService.getUserData(value).then((user) {
         if (user.isAdmin && adminsSwitch) {
           tokens.add(key);
@@ -170,7 +85,20 @@ class NotificationViewModel extends ChangeNotifier {
         }
       });
     });
-
     return tokens;
+  }
+
+  Future<void> sendNotification() async {
+    startedSending = true;
+    notifyListeners();
+    final response = await NotificationService.sendNotification(
+        await getTokens(), titleController.text, bodyController.text);
+    startedSending = false;
+    if (response.$1) {
+      error = null;
+    } else {
+      error = response.$2;
+    }
+    notifyListeners();
   }
 }
