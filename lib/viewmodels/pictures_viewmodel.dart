@@ -131,6 +131,7 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future<void> rejectPic(Picture picture) async {
     await _removePicFromReview(picture);
+    await StorageService.deleteImage(picture.url);
   }
 
   Future<void> deletePic(Picture picture) async {
