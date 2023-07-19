@@ -28,15 +28,17 @@ class ScoresViewModel with ChangeNotifier {
   );
 
   final nameController = TextEditingController();
-  final List<TextEditingController> scoreControllers = List.generate(
+  /*final List<TextEditingController> scoreControllers = List.generate(
     6,
     (_) => TextEditingController(),
-  );
+  );*/
+  List<TextEditingController> scoreControllers = [];
   final maxController = TextEditingController();
-  final List<TextEditingController> finalScoreControllers = List.generate(
+  /*final List<TextEditingController> finalScoreControllers = List.generate(
     6,
         (_) => TextEditingController(),
-  );
+  );*/
+  List<TextEditingController> finalScoreControllers = [];
 
   ScoresViewModel() {
     initializeDateFormatting();
@@ -54,10 +56,14 @@ class ScoresViewModel with ChangeNotifier {
 
   Future<int> getNumberOfTeams() async {
     final num = await DatabaseService.getNumberOfTeams();
-    scoreControllers.clear();
-    scoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
-    finalScoreControllers.clear();
-    finalScoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
+    if(scoreControllers.isEmpty)
+    {
+      scoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
+    }
+    if(finalScoreControllers.isEmpty)
+    {
+      finalScoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
+    }
     return num;
   }
 
@@ -174,7 +180,7 @@ class ScoresViewModel with ChangeNotifier {
     final maxVal = values.reduce(max);
     for(int i = 0; i <= scoreControllers.length; i++)
     {
-      finalScoreControllers[i].text = (values[i] / maxVal * int.parse(maxController.value.text)).toString();
+      finalScoreControllers[i].text = (values[i] / maxVal * int.parse(maxController.value.text)).round().toString();
     }
   }
 
