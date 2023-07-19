@@ -45,8 +45,8 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                 ? [
                     // review actions
                     IconButton(
-                      onPressed: () {
-                        viewModel.rejectPic(widget.picture);
+                      onPressed: () async {
+                        await viewModel.rejectPic(widget.picture);
                         _showSnackBar('Kép elutasítva!');
                         Navigator.pop(context);
                       },
@@ -56,8 +56,8 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
-                        viewModel.acceptPic(widget.picture);
+                      onPressed: () async {
+                        await viewModel.acceptPic(widget.picture);
                         _showSnackBar('Kép elfogadva!');
                         Navigator.pop(context);
                       },
@@ -70,8 +70,8 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                 : [
                     // simple admin actions
                     IconButton(
-                        onPressed: () {
-                          viewModel.deletePic(widget.picture);
+                        onPressed: () async {
+                          await viewModel.deletePic(widget.picture);
                           _showSnackBar('Kép törölve!');
                           Navigator.pop(context);
                         },

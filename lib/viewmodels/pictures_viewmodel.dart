@@ -88,38 +88,38 @@ class PicturesViewModel extends ChangeNotifier {
     }
   }
 
-  void _uploadPicToReview(String title, String url) {
+  Future<void> _uploadPicToReview(String title, String url) async {
     final key = DateService.dateInMillisAsString();
     final pictureData = Picture(
             url: url,
             title: title,
             author: FirebaseAuth.instance.currentUser!.uid)
         .toJson();
-    reviewPicsRef.child(key).set(pictureData);
+    await reviewPicsRef.child(key).set(pictureData);
   }
 
-  void _removePicFromReview(Picture picture) async {
-    reviewPicsRef.child(picture.key).remove();
+  Future<void> _removePicFromReview(Picture picture) async {
+    await reviewPicsRef.child(picture.key).remove();
   }
 
-  void _uploadPic(Picture picture) {
+  Future<void> _uploadPicToAccepted(Picture picture) async {
     final key = DateService.dateInMillisAsString();
     final pictureData = picture.toJson();
-    picsRef.child(key).set(pictureData);
+    await picsRef.child(key).set(pictureData);
   }
 
-  void acceptPic(Picture picture) {
-    _removePicFromReview(picture);
-    _uploadPic(picture);
+  Future<void> acceptPic(Picture picture) async {
+    await _removePicFromReview(picture);
+    await _uploadPicToAccepted(picture);
   }
 
-  void rejectPic(Picture picture) {
-    _removePicFromReview(picture);
+  Future<void> rejectPic(Picture picture) async {
+    await _removePicFromReview(picture);
   }
 
-  void deletePic(Picture picture) {
+  Future<void> deletePic(Picture picture) async {
     picsRef.child(picture.key).remove();
-    StorageService.deleteImage(picture.url);
+    await StorageService.deleteImage(picture.url);
   }
 
   void uploadPicture(String title, bool notEmpty) async {
