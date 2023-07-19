@@ -1,16 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
-import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'dart:convert' show json, utf8;
 
+import 'package:tiszapp_flutter/services/date_service.dart';
+
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
   static Future<String> uploadImage(XFile file, String title) async {
-    var now = DateTime.now();
-    var formatter = DateFormat('yyyyMMddHHmmssSSS');
-    var key = formatter.format(now);
+    var key = DateService.dateInMillisAsString();
     final images = ref.child('debug/$key.jpg');
     final storage.UploadTask uploadTask = images.putData(
         await file.readAsBytes(),
