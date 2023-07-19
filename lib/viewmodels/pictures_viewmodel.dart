@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +53,7 @@ class PicturesViewModel extends ChangeNotifier {
   ];
 
   XFile? image;
+  bool isValidImage = true;
 
   void getImages(bool isReview) {
     pictures.clear();
@@ -167,6 +171,30 @@ class PicturesViewModel extends ChangeNotifier {
     return (await DatabaseService.getUserData(
             FirebaseAuth.instance.currentUser!.uid))
         .isAdmin;
+  }
+
+  Stream<CachedNetworkImageProvider> getImageProvider(Picture pic) {
+    isValidImage = true;
+    final controller = StreamController<CachedNetworkImageProvider>();
+    final provider = CachedNetworkImageProvider(
+      pic.url,
+      errorListener: () {
+        isValidImage = false;
+        notifyListeners();
+      },
+    );
+    provider.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (info, _) {
+          controller.add(provider);
+        },
+        onError: (exception, stackTrace) {
+          isValidImage = false;
+          notifyListeners();
+        },
+      ),
+    );
+    return controller.stream;
   }
 
   void loadImageData(Picture pic, bool isReview) async {

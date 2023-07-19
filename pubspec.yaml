@@ -95,6 +95,7 @@ flutter:
     - images/bg2_day.png
     - images/bg2_night.png
     - images/logo2_outline.png
+    - images/placeholder.jpg
     - assets/songs/
     - assets/metadata/names.txt
     - assets/wordle/

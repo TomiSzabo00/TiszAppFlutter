@@ -109,36 +109,42 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
               Text('Csapat: ${viewModel.authorDetails.teamNum}',
                   style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FullScreenPage(
-                        dark: true,
-                        url: widget.picture.url,
-                        child: Image(
-                          image: CachedNetworkImageProvider(
-                            widget.picture.url,
-                          ),
+              StreamBuilder<CachedNetworkImageProvider>(
+                  stream: viewModel.getImageProvider(widget.picture),
+                  builder: (context, snapshot) {
+                    return GestureDetector(
+                      onTap: () {
+                        viewModel.isValidImage
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FullScreenPage(
+                                    dark: true,
+                                    url: widget.picture.url,
+                                    child: snapshot.hasData
+                                        ? Image(image: snapshot.data!)
+                                        : Image.asset('images/placeholder.jpg'),
+                                  ),
+                                ),
+                              )
+                            : null;
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl: widget.picture.url,
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
                         ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Boxicons.bxs_error),
                       ),
-                    ),
-                  );
-                },
-                child: CachedNetworkImage(
-                  imageUrl: widget.picture.url,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                    ],
-                  ),
-                ),
-              ),
+                    );
+                  }),
               const SizedBox(height: 20),
               () {
                 if (widget.isReview) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/views/pics/picture_details_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -51,6 +52,7 @@ class PictureItem extends StatelessWidget {
                         CircularProgressIndicator(),
                       ],
                     ),
+                    errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
                   ),
                 ),
                 const Spacer(),
