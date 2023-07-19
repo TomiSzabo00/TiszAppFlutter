@@ -55,7 +55,10 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.3.0
   geolocator: ^9.0.2
   permission_handler: ^10.4.3
-  background_location: ^0.8.1
+  background_location: 
+    git:
+      url: https://github.com/hilalbaig/background_location.git
+      ref: master
   location: ^5.0.0
   battery_info: ^1.1.1
   firebase_messaging: ^14.6.4
