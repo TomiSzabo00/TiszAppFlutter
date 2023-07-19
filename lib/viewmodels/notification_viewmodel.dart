@@ -74,7 +74,6 @@ class NotificationViewModel extends ChangeNotifier {
   Future<List<String>> getTokens() async {
     List<String> tokens = [];
     final allTokens = await NotificationService.getTokensAsMap();
-    print(allTokens);
     allTokens.forEach((key, value) {
       DatabaseService.getUserData(value).then((user) {
         if (user.isAdmin && adminsSwitch) {
@@ -88,9 +87,6 @@ class NotificationViewModel extends ChangeNotifier {
         }
       });
     });
-    print('adminSwitch: ' + adminsSwitch.toString());
-    print('allUsersSwitch: ' + allUsersSwitch.toString());
-    print('switches: ' + switches.toString());
     return tokens;
   }
 
