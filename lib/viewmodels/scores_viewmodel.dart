@@ -163,7 +163,7 @@ class ScoresViewModel with ChangeNotifier {
   void setNone() {
     dev.log("Setting distribution to none");
     chosenDistr = distrType.none;
-    for(int i = 0; i <= scoreControllers.length; i++)
+    for(int i = 0; i < scoreControllers.length; i++)
       {
         finalScoreControllers[i].text = scoreControllers[i].text;
       }
@@ -178,7 +178,7 @@ class ScoresViewModel with ChangeNotifier {
         values.add(int.parse(scoreController.value.text));
       }
     final maxVal = values.reduce(max);
-    for(int i = 0; i <= scoreControllers.length; i++)
+    for(int i = 0; i < scoreControllers.length; i++)
     {
       finalScoreControllers[i].text = (values[i] / maxVal * int.parse(maxController.value.text)).round().toString();
     }
@@ -188,17 +188,18 @@ class ScoresViewModel with ChangeNotifier {
     dev.log("Setting distribution to spread out");
     chosenDistr = distrType.spreadOut;
     final ranks = [];
-    for(int i = 0; i <= scoreControllers.length; i++){
+    for(int i = 0; i < scoreControllers.length; i++){
       int cnt = 0;
-      for(int j = 0; j <= scoreControllers.length; j++) {
+      for(int j = 0; j < scoreControllers.length; j++) {
         if(int.parse(scoreControllers[i].value.text) > int.parse(scoreControllers[j].value.text)) {
           cnt++;
         }
-        ranks.add(cnt);
       }
+      ranks.add(cnt);
     }
-    for(int i = 0; i <= finalScoreControllers.length; i++) {
-      finalScoreControllers[i].text = (int.parse(maxController.value.text) * ranks[i] / finalScoreControllers.length).round().toString();
+    dev.log(ranks.toString());
+    for(int i = 0; i < finalScoreControllers.length; i++) {
+      finalScoreControllers[i].text = (int.parse(maxController.value.text) * (ranks[i] + 1) / finalScoreControllers.length).round().toString();
     }
   }
 
