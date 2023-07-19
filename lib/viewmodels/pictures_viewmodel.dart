@@ -197,33 +197,25 @@ class PicturesViewModel extends ChangeNotifier {
       });
     }
 
-    reactionsRef.onChildAdded.listen((event) {
-      final reaction =
-          Reaction.fromSnapshot(tryCast<Map>(event.snapshot.value) ?? {});
-      RegExp regex = RegExp(r'debug%2F(\d+)\.jpg');
-      RegExpMatch? match = regex.firstMatch(pic.url);
-      final picKey = match?.group(1) ?? '';
-      if (reaction.imageFileName == picKey) {
-        reactions[reaction.reaction] = (reactions[reaction.reaction] ?? -1) + 1;
-      }
-      if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
-          reaction.imageFileName == picKey) {
-        currentReaction = reaction.reaction;
-      }
-      notifyListeners();
-    });
-
-    reactionsRef.onChildRemoved.listen((event) {
-      final reaction =
-          Reaction.fromSnapshot(tryCast<Map>(event.snapshot.value) ?? {});
-      final picKey = pic.key;
-      if (reaction.imageFileName == picKey) {
-        reactions[reaction.reaction] = (reactions[reaction.reaction] ?? 1) - 1;
-      }
-      if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
-          reaction.imageFileName == picKey) {
-        currentReaction = null;
-      }
+    reactionsRef.onValue.listen((event) {
+      reactions = {
+        PicReaction.love: 0,
+        PicReaction.funny: 0,
+        PicReaction.angry: 0,
+        PicReaction.sad: 0,
+      };
+      currentReaction = null;
+      final Map<dynamic, dynamic> values =
+          tryCast<Map>(event.snapshot.value) ?? {};
+      values.forEach((key, value) {
+        final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
+        if (reaction.imageFileName == pic.key) {
+          reactions[reaction.reaction] = reactions[reaction.reaction]! + 1;
+          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid) {
+            currentReaction = reaction.reaction;
+          }
+        }
+      });
       notifyListeners();
     });
 
