@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
@@ -12,6 +13,7 @@ import 'package:tiszapp_flutter/models/pics/reaction_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
+import 'package:tiszapp_flutter/services/notification_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class PicturesViewModel extends ChangeNotifier {
@@ -184,16 +186,16 @@ class PicturesViewModel extends ChangeNotifier {
       },
     );
     provider.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (info, _) {
-          controller.add(provider);
-        },
-        onError: (exception, stackTrace) {
-          isValidImage = false;
-          notifyListeners();
-        },
-      ),
-    );
+          ImageStreamListener(
+            (info, _) {
+              controller.add(provider);
+            },
+            onError: (exception, stackTrace) {
+              isValidImage = false;
+              notifyListeners();
+            },
+          ),
+        );
     return controller.stream;
   }
 
@@ -303,5 +305,22 @@ class PicturesViewModel extends ChangeNotifier {
 
   void choosePic(Picture picture) {
     picsRef.child(picture.key).child('isPicOfTheDay').set(true);
+    NotificationService.getTokensAsMap().then((tokens) {
+      final token = tokens.keys.firstWhere(
+          (element) =>
+              tokens[element] == FirebaseAuth.instance.currentUser!.uid,
+          orElse: () => '');
+      if (token.isNotEmpty) {
+        NotificationService.sendNotification(
+          [token],
+          'Gratulálunk!',
+          'A te képed lett a mai nap képe!',
+        ).then((response) {
+          if (kDebugMode) {
+            debugPrint('PicOfTheDay notification sent: $response');
+          }
+        });
+      }
+    });
   }
 }
