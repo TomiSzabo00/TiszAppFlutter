@@ -308,7 +308,7 @@ class PicturesViewModel extends ChangeNotifier {
     NotificationService.getTokensAsMap().then((tokens) {
       final token = tokens.keys.firstWhere(
           (element) =>
-              tokens[element] == FirebaseAuth.instance.currentUser!.uid,
+              tokens[element] == picture.author,
           orElse: () => '');
       if (token.isNotEmpty) {
         NotificationService.sendNotification(
