@@ -1,16 +1,13 @@
 import 'package:http/http.dart' as http;
-import 'package:firebase_database/firebase_database.dart' as database;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'dart:convert' show json, utf8;
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
-  static uploadImage(XFile file, String title) async {
+  static Future<String> uploadImage(XFile file, String title) async {
     var now = DateTime.now();
     var formatter = DateFormat('yyyyMMddHHmmssSSS');
     var key = formatter.format(now);
@@ -20,16 +17,12 @@ class StorageService {
         storage.SettableMetadata(contentType: 'image/jpeg'));
     final storage.TaskSnapshot downloadUrl = (await uploadTask);
     final String url = (await downloadUrl.ref.getDownloadURL());
-    //return url;
+    return url;
+  }
 
-    final database.DatabaseReference picsRef =
-        database.FirebaseDatabase.instance.ref().child("debug/pics");
-    final pictureData = Picture(
-            url: url,
-            title: title,
-            author: FirebaseAuth.instance.currentUser!.uid)
-        .toJson();
-    picsRef.child(key).set(pictureData);
+  static deleteImage(String url) async {
+    final ref = storage.FirebaseStorage.instance.refFromURL(url);
+    await ref.delete();
   }
 
   static Future<List<Song>> getSongs() async {

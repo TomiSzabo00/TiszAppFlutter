@@ -30,7 +30,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
   void initState() {
     super.initState();
     Provider.of<PicturesViewModel>(context, listen: false)
-        .loadImageData(widget.picture);
+        .loadImageData(widget.picture, widget.isReview);
   }
 
   @override
@@ -46,7 +46,9 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                     // review actions
                     IconButton(
                       onPressed: () {
-                        // TODO: dont allow image
+                        viewModel.rejectPic(widget.picture);
+                        _showSnackBar('Kép elutasítva!');
+                        Navigator.pop(context);
                       },
                       icon: const Icon(
                         Icons.do_disturb,
@@ -55,7 +57,9 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                     ),
                     IconButton(
                       onPressed: () {
-                        // TODO: allow image
+                        viewModel.acceptPic(widget.picture);
+                        _showSnackBar('Kép elfogadva!');
+                        Navigator.pop(context);
                       },
                       icon: const Icon(
                         Icons.check_circle_outline,
@@ -67,7 +71,9 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
                     // simple admin actions
                     IconButton(
                         onPressed: () {
-                          // TODO: delete image
+                          viewModel.deletePic(widget.picture);
+                          _showSnackBar('Kép törölve!');
+                          Navigator.pop(context);
                         },
                         icon: const Icon(
                           Icons.delete,
@@ -228,5 +234,14 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
       case PicReaction.angry:
         return const Color.fromARGB(255, 245, 105, 18);
     }
+  }
+
+  void _showSnackBar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 }

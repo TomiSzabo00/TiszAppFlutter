@@ -53,24 +53,80 @@ class PicturesViewModel extends ChangeNotifier {
 
   void getImages(bool isReview) {
     pictures.clear();
-    final ref = isReview ? reviewPicsRef : picsRef;
-    ref.onValue.listen((event) {
-      final snapshot = event.snapshot;
-      final Map<dynamic, dynamic> values = tryCast<Map>(snapshot.value) ?? {};
-      final List<Picture> pics = [];
-      values.forEach((key, value) {
-        final pic = Picture.fromSnapshot(key, value);
-        pics.add(pic);
+    if (isReview) {
+      reviewPicsRef.onChildAdded.listen((event) {
+        final snapshot = event.snapshot;
+        final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
+        final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
+        pictures.insert(0, pic);
+        notifyListeners();
       });
-      pics.sort((a, b) => b.key.compareTo(a.key));
-      pictures.addAll(pics);
-      notifyListeners();
-    });
+
+      reviewPicsRef.onChildRemoved.listen((event) {
+        final snapshot = event.snapshot;
+        final picIndex =
+            pictures.indexWhere((element) => element.key == snapshot.key);
+        pictures.removeAt(picIndex);
+        notifyListeners();
+      });
+    } else {
+      picsRef.onChildAdded.listen((event) {
+        final snapshot = event.snapshot;
+        final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
+        final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
+        pictures.insert(0, pic);
+        notifyListeners();
+      });
+
+      picsRef.onChildRemoved.listen((event) {
+        final snapshot = event.snapshot;
+        final picIndex =
+            pictures.indexWhere((element) => element.key == snapshot.key);
+        pictures.removeAt(picIndex);
+        notifyListeners();
+      });
+    }
+  }
+
+  void _uploadPicToReview(String title, String url) {
+    final key = DateService.dateInMillisAsString();
+    final pictureData = Picture(
+            url: url,
+            title: title,
+            author: FirebaseAuth.instance.currentUser!.uid)
+        .toJson();
+    reviewPicsRef.child(key).set(pictureData);
+  }
+
+  void _removePicFromReview(Picture picture) async {
+    reviewPicsRef.child(picture.key).remove();
+  }
+
+  void _uploadPic(Picture picture) {
+    final key = DateService.dateInMillisAsString();
+    final pictureData = picture.toJson();
+    picsRef.child(key).set(pictureData);
+  }
+
+  void acceptPic(Picture picture) {
+    _removePicFromReview(picture);
+    _uploadPic(picture);
+  }
+
+  void rejectPic(Picture picture) {
+    _removePicFromReview(picture);
+  }
+
+  void deletePic(Picture picture) {
+    picsRef.child(picture.key).remove();
+    StorageService.deleteImage(picture.url);
   }
 
   void uploadPicture(String title, bool notEmpty) async {
     if (image != null && notEmpty == true) {
-      await StorageService.uploadImage(image!, title);
+      final url = await StorageService.uploadImage(image!, title);
+      _uploadPicToReview(title, url);
+
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(_context!).showSnackBar(
         const SnackBar(
@@ -103,7 +159,7 @@ class PicturesViewModel extends ChangeNotifier {
         .isAdmin;
   }
 
-  void loadImageData(Picture pic) async {
+  void loadImageData(Picture pic, bool isReview) async {
     isAdmin = await _getIsUserAdmin();
     authorDetails = UserData.empty();
     reactions = {
@@ -113,13 +169,23 @@ class PicturesViewModel extends ChangeNotifier {
       PicReaction.sad: 0,
     };
     currentReaction = null;
-    picsRef.child('${pic.key}/author').onValue.listen((event) {
-      DatabaseService.getUserData(event.snapshot.value.toString())
-          .then((value) {
-        authorDetails = value;
-        notifyListeners();
+    if (isReview) {
+      reviewPicsRef.child('${pic.key}/author').once().then((event) {
+        DatabaseService.getUserData(event.snapshot.value.toString())
+            .then((value) {
+          authorDetails = value;
+          notifyListeners();
+        });
       });
-    });
+    } else {
+      picsRef.child('${pic.key}/author').onValue.listen((event) {
+        DatabaseService.getUserData(event.snapshot.value.toString())
+            .then((value) {
+          authorDetails = value;
+          notifyListeners();
+        });
+      });
+    }
 
     reactionsRef.onChildAdded.listen((event) {
       final reaction =
