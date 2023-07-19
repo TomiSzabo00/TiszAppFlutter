@@ -16,6 +16,8 @@ class NotificationViewModel extends ChangeNotifier {
   String get alertTitle => error == null ? 'Sikeres küldés' : 'Hiba történt';
 
   void initSwitches() {
+    adminsSwitch = false;
+    allUsersSwitch = false;
     final database = FirebaseDatabase.instance.ref();
     database.child('number_of_teams').onValue.listen((event) {
       if (event.snapshot.value == null) {
@@ -72,11 +74,12 @@ class NotificationViewModel extends ChangeNotifier {
   Future<List<String>> getTokens() async {
     List<String> tokens = [];
     final allTokens = await NotificationService.getTokensAsMap();
+    print(allTokens);
     allTokens.forEach((key, value) {
       DatabaseService.getUserData(value).then((user) {
         if (user.isAdmin && adminsSwitch) {
           tokens.add(key);
-        } else if (allUsersSwitch) {
+        } else if (allUsersSwitch && !user.isAdmin) {
           tokens.add(key);
         } else if (user.teamNum > 0 &&
             switches.length >= user.teamNum &&
@@ -85,6 +88,9 @@ class NotificationViewModel extends ChangeNotifier {
         }
       });
     });
+    print('adminSwitch: ' + adminsSwitch.toString());
+    print('allUsersSwitch: ' + allUsersSwitch.toString());
+    print('switches: ' + switches.toString());
     return tokens;
   }
 

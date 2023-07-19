@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/main_menu/main_menu_button.dart';
@@ -53,6 +54,15 @@ class MainMenuViewModel extends ChangeNotifier {
           _addAllButtons(event);
         });
         notifyListeners();
+      });
+      FirebaseMessaging.instance.getToken().then((token) {
+        if (FirebaseAuth.instance.currentUser != null && token != null) {
+          FirebaseDatabase.instance
+              .ref()
+              .child("notification_tokens")
+              .child(token)
+              .set(FirebaseAuth.instance.currentUser!.uid);
+        }
       });
     });
 

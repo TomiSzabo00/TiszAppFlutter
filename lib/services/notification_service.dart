@@ -35,6 +35,8 @@ class NotificationService {
   }
 
   static Future<(bool, String)> sendNotification(List<String> tokens, String title, String body) async {
+    bool wasError = false;
+    String error = '';
     AccessCredentials credentials = await NotificationService.obtainCredentials();
     const url =
         "https://fcm.googleapis.com/v1/projects/tiszapp-175fb/messages:send";
@@ -68,20 +70,24 @@ class NotificationService {
           if (kDebugMode) {
             print('notification sent. response: ${response.body}');
           }
-          return (true, '');
         } else {
           if (kDebugMode) {
             print('notification not sent. reason: ${response.body}');
           }
-          return (false, response.body);
+          wasError = true;
+          error = response.body;
         }
       } catch (e) {
         if (kDebugMode) {
           print('error: $e');
         }
-        return (false, e.toString());
+        wasError = true;
+        error = e.toString();
       }
     }
-    return (false, 'NO RESPONSE');
+    if (wasError) {
+      return (false, error);
+    }
+    return (true, '');
   }
 }
