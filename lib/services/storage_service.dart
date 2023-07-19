@@ -4,6 +4,7 @@ import 'package:tiszapp_flutter/models/song_data.dart';
 import 'dart:convert' show json, utf8;
 import 'package:tiszapp_flutter/services/date_service.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 
 class StorageService {

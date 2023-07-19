@@ -57,10 +57,16 @@ class PicturesViewModel extends ChangeNotifier {
   XFile? image;
   bool isValidImage = true;
 
+  final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
+
   void getImages(bool isReview) {
+    for (var element in _subscriptions) {
+      element.cancel();
+    }
+    _subscriptions.clear();
     pictures.clear();
     if (isReview) {
-      reviewPicsRef.onChildAdded.listen((event) {
+      var s1 = reviewPicsRef.onChildAdded.listen((event) {
         final snapshot = event.snapshot;
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
@@ -68,15 +74,19 @@ class PicturesViewModel extends ChangeNotifier {
         notifyListeners();
       });
 
-      reviewPicsRef.onChildRemoved.listen((event) {
+      var s2 = reviewPicsRef.onChildRemoved.listen((event) {
         final snapshot = event.snapshot;
         final picIndex =
             pictures.indexWhere((element) => element.key == snapshot.key);
-        pictures.removeAt(picIndex);
-        notifyListeners();
+        if (picIndex != -1) {
+          pictures.removeAt(picIndex);
+          notifyListeners();
+        }
       });
+      _subscriptions.add(s1);
+      _subscriptions.add(s2);
     } else {
-      picsRef.onChildAdded.listen((event) {
+      var s1 = picsRef.onChildAdded.listen((event) {
         final snapshot = event.snapshot;
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
@@ -84,23 +94,31 @@ class PicturesViewModel extends ChangeNotifier {
         notifyListeners();
       });
 
-      picsRef.onChildRemoved.listen((event) {
+      var s2 = picsRef.onChildRemoved.listen((event) {
         final snapshot = event.snapshot;
         final picIndex =
             pictures.indexWhere((element) => element.key == snapshot.key);
-        pictures.removeAt(picIndex);
-        notifyListeners();
+        if (picIndex != -1) {
+          pictures.removeAt(picIndex);
+          notifyListeners();
+        }
       });
 
-      picsRef.onChildChanged.listen((event) {
+      var s3 = picsRef.onChildChanged.listen((event) {
         final snapshot = event.snapshot;
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
         final picIndex =
             pictures.indexWhere((element) => element.key == snapshot.key);
-        pictures[picIndex] = pic;
-        notifyListeners();
+        if (picIndex != -1 && picIndex < pictures.length) {
+          pictures[picIndex] = pic;
+          notifyListeners();
+        }
       });
+
+      _subscriptions.add(s1);
+      _subscriptions.add(s2);
+      _subscriptions.add(s3);
     }
   }
 
@@ -308,8 +326,7 @@ class PicturesViewModel extends ChangeNotifier {
     picsRef.child(picture.key).child('isPicOfTheDay').set(true);
     NotificationService.getTokensAsMap().then((tokens) {
       final token = tokens.keys.firstWhere(
-          (element) =>
-              tokens[element] == picture.author,
+          (element) => tokens[element] == picture.author,
           orElse: () => '');
       if (token.isNotEmpty) {
         NotificationService.sendNotification(
