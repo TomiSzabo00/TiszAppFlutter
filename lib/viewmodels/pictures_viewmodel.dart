@@ -85,6 +85,16 @@ class PicturesViewModel extends ChangeNotifier {
         pictures.removeAt(picIndex);
         notifyListeners();
       });
+
+      picsRef.onChildChanged.listen((event) {
+        final snapshot = event.snapshot;
+        final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
+        final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
+        final picIndex =
+            pictures.indexWhere((element) => element.key == snapshot.key);
+        pictures[picIndex] = pic;
+        notifyListeners();
+      });
     }
   }
 
@@ -216,6 +226,12 @@ class PicturesViewModel extends ChangeNotifier {
       }
       notifyListeners();
     });
+
+    picsRef.child(pic.key).child('isPicOfTheDay').onValue.listen((event) {
+      final isPicOfTheDay = tryCast<bool>(event.snapshot.value) ?? false;
+      pic.isPicOfTheDay = isPicOfTheDay;
+      notifyListeners();
+    });
   }
 
   bool isSelected(PicReaction reaction) {
@@ -263,5 +279,9 @@ class PicturesViewModel extends ChangeNotifier {
             .set(reactionData.toJson());
       });
     }
+  }
+
+  void choosePic(Picture picture) {
+    picsRef.child(picture.key).child('isPicOfTheDay').set(true);
   }
 }
