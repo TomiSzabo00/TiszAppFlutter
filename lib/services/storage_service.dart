@@ -1,18 +1,29 @@
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
-import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
 import 'dart:convert' show json, utf8;
-
 import 'package:tiszapp_flutter/services/date_service.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class StorageService {
   static storage.Reference ref = storage.FirebaseStorage.instance.ref();
+
   static Future<String> uploadImage(XFile file, String title) async {
+    // compress image
+    final filePath = file.path;
+    final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.path,
+      outPath,
+      quality: 50,
+    );
+
     var key = DateService.dateInMillisAsString();
     final images = ref.child('debug/$key.jpg');
     final storage.UploadTask uploadTask = images.putData(
-        await file.readAsBytes(),
+        await result!.readAsBytes(),
         storage.SettableMetadata(contentType: 'image/jpeg'));
     final storage.TaskSnapshot downloadUrl = (await uploadTask);
     final String url = (await downloadUrl.ref.getDownloadURL());

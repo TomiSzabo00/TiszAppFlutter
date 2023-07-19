@@ -67,6 +67,7 @@ dependencies:
   cached_network_image: ^3.2.3
   dio: ^5.3.0
   super_banners: ^0.0.1
+  flutter_image_compress: ^2.0.3
 
 dev_dependencies:
   flutter_test:
