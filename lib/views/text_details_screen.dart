@@ -51,14 +51,14 @@ class TextDetailsScreenState extends State<TextDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Feltöltő: ${viewModel.text!.author}',
+                        'Feltöltő: aaa',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
                       Text(
-                        'Szöveg:  ${viewModel.text!.text}',
+                        'Szöveg:  sss',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
