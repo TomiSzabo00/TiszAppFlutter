@@ -35,6 +35,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Regisztráció"),
@@ -44,6 +46,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: isDarkTheme
+                      ? const AssetImage("images/bg2_night.png")
+                      : const AssetImage("images/bg2_day.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
               alignment: Alignment.center,
               padding: const EdgeInsets.all(20),
               child: ListView(

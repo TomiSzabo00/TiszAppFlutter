@@ -2,10 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<!-- gal -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Lehetőséged lesz lementeni képeket a telefonodra, ezért szükséges megadnod ezt az engedélyt az alkalmazásnak.</string>
+	<!-- gal -->
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tiszapp Flutter</string>
+	<string>TiszApp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,6 +32,15 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow access to photo library</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -49,5 +66,16 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow access to photo library</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+    	<string>fetch</string>
+    	<string>location</string>
+    </array>
 </dict>
 </plist>

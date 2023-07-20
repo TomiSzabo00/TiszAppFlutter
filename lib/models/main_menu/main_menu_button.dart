@@ -40,6 +40,16 @@ class MainMenuButton {
         return 'Főmenü gombok';
       case MainMenuButtonType.hazasParbaj:
         return 'Házas párbaj';
+      case MainMenuButtonType.ejjeliportya:
+        return 'Éjjeli portya';
+      case MainMenuButtonType.menuButtons:
+        return 'Főmenü gombok';
+      case MainMenuButtonType.notifications:
+        return 'Értesítések';
+      case MainMenuButtonType.slowQuiz:
+        return 'Lassú kvíz';
+      case MainMenuButtonType.reviewPics:
+        return 'Képek ellenőrzése';
     }
   }
 
@@ -73,10 +83,18 @@ class MainMenuButton {
         return Icons.how_to_vote;
       case MainMenuButtonType.wordle:
         return Icons.type_specimen;
+      case MainMenuButtonType.ejjeliportya:
+        return Icons.holiday_village_outlined;
       case MainMenuButtonType.menuButtons:
         return Icons.toggle_on_outlined;
       case MainMenuButtonType.hazasParbaj:
         return Icons.favorite;
+      case MainMenuButtonType.notifications:
+        return Icons.notifications;
+      case MainMenuButtonType.slowQuiz:
+        return Icons.edit_note_rounded;
+      case MainMenuButtonType.reviewPics:
+        return Icons.image_search;
     }
   }
 
