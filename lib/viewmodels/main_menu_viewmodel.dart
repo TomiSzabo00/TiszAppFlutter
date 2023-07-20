@@ -23,6 +23,7 @@ import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
+import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
 import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
 import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -167,6 +168,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.ejjeliportya),
       MainMenuButton(type: MainMenuButtonType.notifications),
       MainMenuButton(type: MainMenuButtonType.menuButtons),
+      MainMenuButton(type: MainMenuButtonType.hazasParbaj),
     ];
 
     buttons.sort((a, b) => order
@@ -204,6 +206,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
+    } else if (key == MainMenuButtonType.hazasParbaj.rawValue) {
+      return MainMenuButtonType.hazasParbaj;
     } else if (key == MainMenuButtonType.ejjeliportya.rawValue) {
       return MainMenuButtonType.ejjeliportya;
     } else if (key == MainMenuButtonType.notifications.rawValue) {
@@ -213,6 +217,7 @@ class MainMenuViewModel extends ChangeNotifier {
     } else if (key == MainMenuButtonType.reviewPics.rawValue) {
       return MainMenuButtonType.reviewPics;
     }
+
     return MainMenuButtonType.none;
   }
 
@@ -322,6 +327,10 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => const MenuButtonsScreen(),
               ),
             );
+
+      case MainMenuButtonType.hazasParbaj:
+        return () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HazasParbajScreen(isAdmin: user.isAdmin)));
       case MainMenuButtonType.notifications:
         return () => Navigator.of(context).push(
               MaterialPageRoute(

@@ -232,8 +232,7 @@ class VotingScreenState extends State<VotingScreen> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title:
-                            Text('${snapshot.data![index]}'),
+                        title: Text('${snapshot.data![index]}'),
                         tileColor: index.isEven ? evenItemColor : oddItemColor,
                       );
                     },

@@ -36,6 +36,10 @@ class MainMenuButton {
         return 'Szavazás';
       case MainMenuButtonType.wordle:
         return 'Wordle';
+      case MainMenuButtonType.menuButtons:
+        return 'Főmenü gombok';
+      case MainMenuButtonType.hazasParbaj:
+        return 'Házas párbaj';
       case MainMenuButtonType.ejjeliportya:
         return 'Éjjeli portya';
       case MainMenuButtonType.menuButtons:
@@ -83,6 +87,8 @@ class MainMenuButton {
         return Icons.holiday_village_outlined;
       case MainMenuButtonType.menuButtons:
         return Icons.toggle_on_outlined;
+      case MainMenuButtonType.hazasParbaj:
+        return Icons.favorite;
       case MainMenuButtonType.notifications:
         return Icons.notifications;
       case MainMenuButtonType.slowQuiz:

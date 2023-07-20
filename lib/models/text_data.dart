@@ -2,9 +2,9 @@ import 'package:firebase_database/firebase_database.dart';
 
 class TextData {
   String key;
-  final String title;
-  final String text;
-  final String author;
+  late final String title;
+  late final String text;
+  late final String author;
 
   TextData(
       {this.key = "0",
