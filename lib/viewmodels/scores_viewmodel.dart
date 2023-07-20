@@ -5,21 +5,18 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/score_data.dart';
+import 'package:tiszapp_flutter/models/scores/distribution_type.dart';
+import 'package:tiszapp_flutter/models/scores/score_data.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
-
-enum distrType {
-  none, proportional, spreadOut
-}
 
 class ScoresViewModel with ChangeNotifier {
   List<Score> scores = [];
 
   int numberOfTeams = 4;
 
-  distrType chosenDistr = distrType.none;
+  DistributionType? chosenDistr;
 
   Score totalScore = Score(
     author: '',
@@ -28,17 +25,10 @@ class ScoresViewModel with ChangeNotifier {
   );
 
   final nameController = TextEditingController();
-  /*final List<TextEditingController> scoreControllers = List.generate(
-    6,
-    (_) => TextEditingController(),
-  );*/
   List<TextEditingController> scoreControllers = [];
   final maxController = TextEditingController();
-  /*final List<TextEditingController> finalScoreControllers = List.generate(
-    6,
-        (_) => TextEditingController(),
-  );*/
   List<TextEditingController> finalScoreControllers = [];
+  bool areAllScoresAdded = false;
 
   ScoresViewModel() {
     initializeDateFormatting();
@@ -56,13 +46,13 @@ class ScoresViewModel with ChangeNotifier {
 
   Future<int> getNumberOfTeams() async {
     final num = await DatabaseService.getNumberOfTeams();
-    if(scoreControllers.isEmpty)
-    {
-      scoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
+    if (scoreControllers.isEmpty) {
+      scoreControllers
+          .addAll(List.generate(num, (_) => TextEditingController()));
     }
-    if(finalScoreControllers.isEmpty)
-    {
-      finalScoreControllers.addAll(List.generate(num, (_) => TextEditingController()));
+    if (finalScoreControllers.isEmpty) {
+      finalScoreControllers
+          .addAll(List.generate(num, (_) => TextEditingController()));
     }
     return num;
   }
@@ -91,7 +81,8 @@ class ScoresViewModel with ChangeNotifier {
     var score = Score(
       author: FirebaseAuth.instance.currentUser!.uid,
       name: nameController.text,
-      scores: _scoresTextToInt(finalScoreControllers.map((e) => e.text).toList()),
+      scores:
+          _scoresTextToInt(finalScoreControllers.map((e) => e.text).toList()),
     );
 
     var ref = FirebaseDatabase.instance.ref().child("debug/scores");
@@ -125,21 +116,25 @@ class ScoresViewModel with ChangeNotifier {
     }).toList();
   }
 
-  getAvailableDistrs() {
+  List<DistributionType> getAvailableDistrs() {
     dev.log("Getting available distributions");
-    return ["Sima", "Arányos", "N-felé osztva"];
+    return [
+      DistributionType.none,
+      DistributionType.proportional,
+      DistributionType.spreadOut
+    ];
   }
 
-  chooseDistr(s) {
+  chooseDistr(DistributionType? s) {
     dev.log("Choosing distribution");
     switch (s) {
-      case "Sima":
+      case DistributionType.none:
         setNone();
         break;
-      case "Arányos":
+      case DistributionType.proportional:
         setProportional();
         break;
-      case "N-felé osztva":
+      case DistributionType.spreadOut:
         setSpreadOut();
         break;
       default:
@@ -147,77 +142,88 @@ class ScoresViewModel with ChangeNotifier {
     }
   }
 
-  bool baseScoresAdded()
-  {
+  void areBaseScoresAdded() {
     dev.log("Checking if base scores are added");
-    for(var element in scoreControllers)
-      {
-        if(element.text.isEmpty)
-          {
-            return false;
-          }
+    for (var element in scoreControllers) {
+      if (element.text.isEmpty) {
+        areAllScoresAdded = false;
+        notifyListeners();
+        return;
       }
-    return true;
+    }
+    areAllScoresAdded = true;
+    notifyListeners();
   }
 
   void setNone() {
     dev.log("Setting distribution to none");
-    chosenDistr = distrType.none;
-    for(int i = 0; i < scoreControllers.length; i++)
-      {
-        finalScoreControllers[i].text = scoreControllers[i].text;
-      }
+    chosenDistr = DistributionType.none;
+    for (int i = 0; i < scoreControllers.length; i++) {
+      finalScoreControllers[i].text = scoreControllers[i].text;
+    }
+    notifyListeners();
   }
 
   void setProportional() {
     dev.log("Setting distribution to proportional");
-    chosenDistr = distrType.proportional;
+    chosenDistr = DistributionType.proportional;
     List<int> values = [];
-    for(var scoreController in scoreControllers)
-      {
-        values.add(int.parse(scoreController.value.text));
-      }
-    final maxVal = values.reduce(max);
-    for(int i = 0; i < scoreControllers.length; i++)
-    {
-      finalScoreControllers[i].text = (values[i] / maxVal * int.parse(maxController.value.text)).round().toString();
+    for (var scoreController in scoreControllers) {
+      values.add(int.parse(scoreController.value.text));
     }
+    final maxVal = values.reduce(max);
+    for (int i = 0; i < scoreControllers.length; i++) {
+      finalScoreControllers[i].text =
+          (values[i] / maxVal * (int.tryParse(maxController.value.text) ?? 100))
+              .round()
+              .toString();
+    }
+    notifyListeners();
   }
 
   void setSpreadOut() {
     dev.log("Setting distribution to spread out");
-    chosenDistr = distrType.spreadOut;
+    chosenDistr = DistributionType.spreadOut;
     final ranks = [];
-    for(int i = 0; i < scoreControllers.length; i++){
+    for (int i = 0; i < scoreControllers.length; i++) {
       int cnt = 0;
-      for(int j = 0; j < scoreControllers.length; j++) {
-        if(int.parse(scoreControllers[i].value.text) > int.parse(scoreControllers[j].value.text)) {
+      for (int j = 0; j < scoreControllers.length; j++) {
+        if (int.parse(scoreControllers[i].value.text) >
+            int.parse(scoreControllers[j].value.text)) {
           cnt++;
         }
       }
       ranks.add(cnt);
     }
     dev.log(ranks.toString());
-    for(int i = 0; i < finalScoreControllers.length; i++) {
-      finalScoreControllers[i].text = (int.parse(maxController.value.text) * (ranks[i] + 1) / finalScoreControllers.length).round().toString();
+    for (int i = 0; i < finalScoreControllers.length; i++) {
+      finalScoreControllers[i].text =
+          ((int.tryParse(maxController.value.text) ?? 100) *
+                  (ranks[i] + 1) /
+                  finalScoreControllers.length)
+              .round()
+              .toString();
     }
+    notifyListeners();
   }
 
   maxChanged() {
     dev.log("Max changed");
-    if(!baseScoresAdded()){
+    if (!areAllScoresAdded) {
       return;
     }
-    switch(chosenDistr) {
-      case distrType.none:
+    switch (chosenDistr) {
+      case DistributionType.none:
         setNone();
         break;
-      case distrType.spreadOut:
+      case DistributionType.spreadOut:
         setSpreadOut();
         break;
-      case distrType.proportional:
+      case DistributionType.proportional:
         setProportional();
         break;
+      default:
+        setNone();
     }
   }
 }
