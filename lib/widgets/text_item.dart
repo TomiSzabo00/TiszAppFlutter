@@ -32,7 +32,7 @@ class TextItem extends StatelessWidget {
               height: (MediaQuery.of(context).size.width - 10) / 5,
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: SelectableText(text.text),
+                child: Text(text.text),
               ),
             ),
             const Divider(
