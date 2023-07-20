@@ -4,8 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/colors.dart';
-
+import 'package:tiszapp_flutter/models/voting_state.dart';
 import '../widgets/hazas_parbaj_tile.dart';
+import 'hazas_parbaj_voting_screen.dart';
 
 class HazasParbajScreen extends StatefulWidget {
   const HazasParbajScreen({super.key, required this.isAdmin});
@@ -116,7 +117,8 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
                       Visibility(
                         visible: widget.isAdmin,
                         child: Button3D(
-                          onPressed: () => null,
+                          onPressed: () =>
+                              _showVotingModalSheet(viewmodel, isDarkTheme),
                           child: Text(
                             'Szavazás indítása',
                             style: TextStyle(
@@ -224,6 +226,14 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
                     Button3D(
                         width: 140,
                         onPressed: () async {
+                          if (vm.name1Controller.text.isEmpty ||
+                              vm.name2Controller.text.isEmpty ||
+                              vm.teamController.text.isEmpty) {
+                            setState(() {
+                              showError = true;
+                            });
+                            return;
+                          }
                           final shouldShowError = await vm.signUp();
                           setState(() {
                             showError = shouldShowError;
@@ -245,5 +255,88 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
         });
       },
     );
+  }
+
+  void _showVotingModalSheet(HazasParbajViewModel vm, bool isDarkTheme) {
+    bool showError = false;
+    int numOfPairs = vm.signedUpPairs.length;
+    showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        isScrollControlled: true,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  top: 20,
+                  left: 20,
+                  right: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      '''Egy szervező (beszéljétek meg, hogy ki) indítsa el a szavazást! Amikor elindul a szavazás, mindenki szavazhat, hogy mely párokat tartja a legrosszabbnak. Ezek után, ugyanaz a szervező, aki elindította a szavazást, zárja le azt.''',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    const SizedBox(height: 20.0),
+                    if (vm.votingState == VotingState.notStarted)
+                      TextField(
+                          controller: vm.num,
+                          decoration: InputDecoration(
+                            labelText: 'Hány párt akartok kiszavazni?',
+                            errorText: showError ? 'Kötelező mező!' : null,
+                            border: const OutlineInputBorder(),
+                          ),
+                          onSubmitted: (value) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          maxLength: 2,
+                          autocorrect: false,
+                          onChanged: (_) {
+                            setState(() {
+                              showError = false;
+                            });
+                          }),
+                    const SizedBox(height: 20.0),
+                    Button3D(
+                        width: 140,
+                        child: Text(
+                          'Szavazás',
+                          style: TextStyle(
+                            color: isDarkTheme
+                                ? CustomColor.btnTextNight
+                                : CustomColor.btnTextDay,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          if (vm.num.text.isEmpty &&
+                              vm.votingState == VotingState.notStarted) {
+                            setState(() {
+                              showError = true;
+                            });
+                            return;
+                          }
+                          if (vm.num.text.isNotEmpty) {
+                            vm.setNumberOfPairsToVoteOff();
+                          }
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HazasParbajVotingScreen(
+                                      numOfPairs: numOfPairs)));
+                          vm.startVoting();
+                        }),
+                    const SizedBox(height: 20.0),
+                  ],
+                ),
+              ),
+            );
+          });
+        });
   }
 }
