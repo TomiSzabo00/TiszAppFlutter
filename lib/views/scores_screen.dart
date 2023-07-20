@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/score_data.dart';
+import 'package:tiszapp_flutter/models/scores/score_data.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/score_item.dart';
 import 'package:provider/provider.dart';
