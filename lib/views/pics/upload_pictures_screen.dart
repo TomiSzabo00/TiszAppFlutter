@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
@@ -37,11 +38,13 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Képek feltöltése"),
       ),
-      body: Center(
+      body: SingleChildScrollView(
           child: Column(
         children: [
           SizedBox(
@@ -59,8 +62,13 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
               key: _formKey,
               child: TextFormField(
                   controller: _titleController,
+                  onTapOutside: (event) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
                   decoration: const InputDecoration(
-                      border: InputBorder.none, hintText: "Cím"),
+                    border: OutlineInputBorder(),
+                    labelText: 'Kép címe',
+                  ),
                   validator: isValid),
             ),
           ),
@@ -75,9 +83,18 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                     _viewModel.uploadPicture(_titleController.text, false);
                   }
                 },
-                child: const Text("Kép feltöltése"),
+                child: Text(
+                  "Kép feltöltése",
+                  style: TextStyle(
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               Button3D(
+                width: 140,
                 onPressed: () async {
                   final ImagePicker picker = ImagePicker();
                   final XFile? image = await picker.pickImage(
@@ -90,7 +107,15 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
                     });
                   }
                 },
-                child: const Text("Kép kiválasztása"),
+                child: Text(
+                  "Kép kiválasztása",
+                  style: TextStyle(
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           )
