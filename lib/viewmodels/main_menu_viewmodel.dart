@@ -206,7 +206,6 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
-
     } else if (key == MainMenuButtonType.hazasParbaj.rawValue) {
       return MainMenuButtonType.hazasParbaj;
     } else if (key == MainMenuButtonType.ejjeliportya.rawValue) {
@@ -330,9 +329,8 @@ class MainMenuViewModel extends ChangeNotifier {
             );
 
       case MainMenuButtonType.hazasParbaj:
-        return () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => HazasParbajScreen(isAdmin: user.isAdmin),
+        return () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HazasParbajScreen(isAdmin: user.isAdmin)));
       case MainMenuButtonType.notifications:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -350,7 +348,6 @@ class MainMenuViewModel extends ChangeNotifier {
               MaterialPageRoute(
                 builder: (context) => const PicturesScreen(isReview: true),
               ),
-            );)
             );
     }
   }
