@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/models/song_data.dart';
-import 'package:tiszapp_flutter/views/songs_detail_screen.dart';
+import 'package:tiszapp_flutter/views/songs/songs_detail_screen.dart';
 
 class SongListItem extends StatelessWidget {
   const SongListItem({Key? key, required this.song}) : super(key: key);

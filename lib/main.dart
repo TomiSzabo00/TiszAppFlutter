@@ -13,7 +13,7 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
-import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/songs/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';

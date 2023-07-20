@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/widgets/songs_list.dart';
-import '../viewmodels/songs_viewmodel.dart';
+import '../../viewmodels/songs/songs_viewmodel.dart';
 
 class SongsSummaryScreen extends StatefulWidget {
   const SongsSummaryScreen({Key? key}) : super(key: key);

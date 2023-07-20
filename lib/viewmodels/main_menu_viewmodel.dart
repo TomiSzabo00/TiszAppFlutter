@@ -16,7 +16,7 @@ import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
-import 'package:tiszapp_flutter/views/songs_screen.dart';
+import 'package:tiszapp_flutter/views/songs/songs_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
