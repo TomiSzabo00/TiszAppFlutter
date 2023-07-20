@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool obscurePassword = true;
 
   AuthenticationViewModel _authenticationViewModel = AuthenticationViewModel();
 
@@ -29,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _authenticationViewModel = value;
       });
     });
+    //obscurePassword = true;
   }
 
   void _showRegisterScreen() {
@@ -45,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Container(
           height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.all(20),
@@ -67,7 +70,59 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 50),
                 _emailField(),
                 const SizedBox(height: 15),
-                _passwordField(),
+                SizedBox(
+                  height: 55,
+                  child: TextField(
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
+                    controller: _passwordController,
+                    obscureText: obscurePassword,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDarkTheme
+                              ? Colors.white.withOpacity(0.7)
+                              : CustomColor.btnTextDay,
+                        ),
+                      ),
+                      labelText: 'Jelszó',
+                      labelStyle: TextStyle(
+                        color: isDarkTheme
+                            ? Colors.white.withOpacity(0.7)
+                            : Colors.black.withOpacity(0.3),
+                      ),
+                      floatingLabelStyle: TextStyle(
+                        color: isDarkTheme
+                            ? Colors.white.withOpacity(0.7)
+                            : CustomColor.btnTextDay,
+                      ),
+                      prefixIcon: const Icon(CupertinoIcons.lock_fill),
+                      prefixIconColor: isDarkTheme
+                          ? Colors.white.withOpacity(0.7)
+                          : CustomColor.btnTextDay,
+                      suffixIcon: IconButton(
+                        icon: obscurePassword
+                            ? const Icon(CupertinoIcons.eye_fill)
+                            : const Icon(CupertinoIcons.eye_slash_fill),
+                        onPressed: () {
+                          setState(() {
+                            obscurePassword = !obscurePassword;
+                          });
+                        },
+                      ),
+                      fillColor: Colors.white.withOpacity(0.5),
+                      filled: true,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 15),
                 Align(
                   alignment: Alignment.centerRight,
@@ -83,19 +138,49 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _emailField() {
-    return InputField(
-      controller: _emailController,
-      placeholder: "Felhasználónév",
-      icon: const Icon(CupertinoIcons.person_fill),
-    );
-  }
-
-  Widget _passwordField() {
-    return InputField(
-      controller: _passwordController,
-      placeholder: "Jelszó",
-      icon: const Icon(CupertinoIcons.lock_fill),
-      obscureText: true,
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return SizedBox(
+      height: 55,
+      child: TextField(
+        controller: _emailController,
+        autocorrect: false,
+        onTapOutside: (event) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.transparent,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDarkTheme
+                  ? Colors.white.withOpacity(0.7)
+                  : CustomColor.btnTextDay,
+            ),
+          ),
+          labelText: 'Felhasználónév',
+          labelStyle: TextStyle(
+            color: isDarkTheme
+                ? Colors.white.withOpacity(0.7)
+                : Colors.black.withOpacity(0.3),
+          ),
+          floatingLabelStyle: TextStyle(
+            color: isDarkTheme
+                ? Colors.white.withOpacity(0.7)
+                : CustomColor.btnTextDay,
+          ),
+          prefixIcon: const Icon(CupertinoIcons.person_fill),
+          prefixIconColor: isDarkTheme
+              ? Colors.white.withOpacity(0.7)
+              : CustomColor.btnTextDay,
+          fillColor: Colors.white.withOpacity(0.5),
+          filled: true,
+        ),
+      ),
     );
   }
 
