@@ -15,7 +15,7 @@ class SongsScreenState extends State<SongsScreen>
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Songs'),
+        title: const Text('Daloskönyv'),
       ),
       body: Container(
         decoration: BoxDecoration(
