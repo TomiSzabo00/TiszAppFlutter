@@ -117,6 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                       ),
+                      suffixIconColor: isDarkTheme
+                          ? Colors.white.withOpacity(0.7)
+                          : CustomColor.btnTextDay,
                       fillColor: Colors.white.withOpacity(0.5),
                       filled: true,
                     ),
