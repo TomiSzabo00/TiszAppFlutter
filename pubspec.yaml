@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.2 <3.0.0'
+  sdk: '>=3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -55,12 +55,23 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.3.0
   geolocator: ^9.0.2
   permission_handler: ^10.4.3
-  background_location: ^0.8.1
+  background_location:
+    git:
+      url: https://github.com/hilalbaig/background_location.git
+      ref: master
   location: ^5.0.0
   battery_info: ^1.1.1
   firebase_messaging: ^14.6.4
   googleapis_auth: ^1.4.1
   wheel_chooser: ^1.1.2
+  material_design_icons_flutter: ^7.0.7296
+  flutter_boxicons: ^3.0.0
+  community_material_icon: ^5.9.55
+  gal: ^1.6.2
+  cached_network_image: ^3.2.3
+  dio: ^5.3.0
+  super_banners: ^0.0.1
+  flutter_image_compress: ^2.0.3
 
 dev_dependencies:
   flutter_test:
@@ -89,6 +100,7 @@ flutter:
     - images/bg2_day.png
     - images/bg2_night.png
     - images/logo2_outline.png
+    - images/placeholder.jpg
     - assets/songs/
     - assets/metadata/names.txt
     - assets/wordle/

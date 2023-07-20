@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/main_menu/main_menu_button.dart';
@@ -10,13 +11,14 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/notification_screen.dart';
-import 'package:tiszapp_flutter/views/pictures_screen.dart';
-import 'package:tiszapp_flutter/views/quiz_screen.dart';
+import 'package:tiszapp_flutter/views/pics/pictures_screen.dart';
+import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
+import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -42,12 +44,25 @@ class MainMenuViewModel extends ChangeNotifier {
 
     FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
       if (firebaseUser == null) {
+        buttons.clear();
         return;
       }
-      DatabaseService.getUserData(firebaseUser!.uid)
-          .then((value) {
+      DatabaseService.getUserData(firebaseUser.uid).then((value) {
+        buttons.clear();
         user = value;
+        database.child('_main_menu').once().then((event) {
+          _addAllButtons(event);
+        });
         notifyListeners();
+      });
+      FirebaseMessaging.instance.getToken().then((token) {
+        if (FirebaseAuth.instance.currentUser != null && token != null) {
+          FirebaseDatabase.instance
+              .ref()
+              .child("notification_tokens")
+              .child(token)
+              .set(FirebaseAuth.instance.currentUser!.uid);
+        }
       });
     });
 
@@ -70,6 +85,7 @@ class MainMenuViewModel extends ChangeNotifier {
           buttonToggles.add(button);
         }
       }
+      notifyListeners();
     });
 
     database.child("_main_menu").onChildChanged.listen((event) {
@@ -110,6 +126,27 @@ class MainMenuViewModel extends ChangeNotifier {
     });
   }
 
+  void _addAllButtons(DatabaseEvent event) {
+    final snapshot = event.snapshot;
+    final values = tryCast<Map>(snapshot.value) ?? {};
+    values.forEach((key, value) {
+      final buttonType = _getButtonFromKey(key);
+      final visibility = _getVisibilityFromKey(value);
+      final button =
+          MainMenuButton(type: buttonType, visibilityType: visibility);
+      if (user.isAdmin || button.isVisible) {
+        if (!buttons.any((element) => element.title == button.title)) {
+          buttons.add(button);
+        }
+      }
+      _reorderButtons();
+      if (!buttonToggles.any((element) => element.title == button.title)) {
+        buttonToggles.add(button);
+      }
+    });
+    notifyListeners();
+  }
+
   void _reorderButtons() {
     List<MainMenuButton> order = [
       MainMenuButton(type: MainMenuButtonType.schedule),
@@ -117,12 +154,14 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.wordle),
       MainMenuButton(type: MainMenuButtonType.songs),
       MainMenuButton(type: MainMenuButtonType.pictures),
+      MainMenuButton(type: MainMenuButtonType.reviewPics),
       MainMenuButton(type: MainMenuButtonType.texts),
       MainMenuButton(type: MainMenuButtonType.pictureUpload),
       MainMenuButton(type: MainMenuButtonType.textUpload),
       MainMenuButton(type: MainMenuButtonType.karaoke),
       MainMenuButton(type: MainMenuButtonType.nappaliPortya),
       MainMenuButton(type: MainMenuButtonType.quizQuick),
+      MainMenuButton(type: MainMenuButtonType.slowQuiz),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
       MainMenuButton(type: MainMenuButtonType.ejjeliportya),
@@ -165,10 +204,14 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.wordle;
     } else if (key == MainMenuButtonType.menuButtons.rawValue) {
       return MainMenuButtonType.menuButtons;
-    } else if(key == MainMenuButtonType.ejjeliportya.rawValue) {
+    } else if (key == MainMenuButtonType.ejjeliportya.rawValue) {
       return MainMenuButtonType.ejjeliportya;
     } else if (key == MainMenuButtonType.notifications.rawValue) {
       return MainMenuButtonType.notifications;
+    } else if (key == MainMenuButtonType.slowQuiz.rawValue) {
+      return MainMenuButtonType.slowQuiz;
+    } else if (key == MainMenuButtonType.reviewPics.rawValue) {
+      return MainMenuButtonType.reviewPics;
     }
     return MainMenuButtonType.none;
   }
@@ -208,7 +251,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.pictures:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const PicturesScreen(),
+                builder: (context) => const PicturesScreen(isReview: false),
               ),
             );
       case MainMenuButtonType.quizQuick:
@@ -267,10 +310,12 @@ class MainMenuViewModel extends ChangeNotifier {
             );
       case MainMenuButtonType.ejjeliportya:
         return () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => user.isAdmin ? const EjjeliPortyaAdminScreen() : const EjjeliPortyaScreen(),
-          ),
-        );
+              MaterialPageRoute(
+                builder: (context) => user.isAdmin
+                    ? const EjjeliPortyaAdminScreen()
+                    : const EjjeliPortyaScreen(),
+              ),
+            );
       case MainMenuButtonType.menuButtons:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -281,6 +326,18 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const NotificationScreen(),
+              ),
+            );
+      case MainMenuButtonType.slowQuiz:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SlowQuizScreen(isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.reviewPics:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const PicturesScreen(isReview: true),
               ),
             );
     }

@@ -32,4 +32,8 @@ class UserData {
         'admin': isAdmin,
         'groupNumber': teamNum,
       };
+
+  factory UserData.empty() {
+    return UserData(uid: '', name: 'ismeretlen', isAdmin: false, teamNum: -1);
+  }
 }

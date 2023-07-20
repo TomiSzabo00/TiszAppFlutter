@@ -38,10 +38,14 @@ class MainMenuButton {
         return 'Wordle';
       case MainMenuButtonType.ejjeliportya:
         return 'Éjjeli portya';
-        case MainMenuButtonType.menuButtons:
+      case MainMenuButtonType.menuButtons:
         return 'Főmenü gombok';
       case MainMenuButtonType.notifications:
         return 'Értesítések';
+      case MainMenuButtonType.slowQuiz:
+        return 'Lassú kvíz';
+      case MainMenuButtonType.reviewPics:
+        return 'Képek ellenőrzése';
     }
   }
 
@@ -81,6 +85,10 @@ class MainMenuButton {
         return Icons.toggle_on_outlined;
       case MainMenuButtonType.notifications:
         return Icons.notifications;
+      case MainMenuButtonType.slowQuiz:
+        return Icons.edit_note_rounded;
+      case MainMenuButtonType.reviewPics:
+        return Icons.image_search;
     }
   }
 
