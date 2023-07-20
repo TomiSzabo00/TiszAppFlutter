@@ -33,6 +33,7 @@ class TextDetailsScreenState extends State<TextDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    Provider.of<TextsViewModel>(context, listen: false).getSelectedText(widget.text);
   }
 
   @override
@@ -51,14 +52,14 @@ class TextDetailsScreenState extends State<TextDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Feltöltő: aaa',
+                        'Feltöltő: ${widget.text.author}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
                       Text(
-                        'Szöveg:  sss',
+                        'Szöveg:  ${widget.text.text}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
