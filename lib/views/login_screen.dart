@@ -4,7 +4,6 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/views/register_screen.dart';
 import 'package:tiszapp_flutter/viewmodels/authentication_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
-import '../widgets/input_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.context});
