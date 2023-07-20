@@ -31,12 +31,6 @@ class TextDetailsScreen extends StatefulWidget {
 
 class TextDetailsScreenState extends State<TextDetailsScreen> {
   @override
-  void initState() {
-    super.initState();
-    Provider.of<TextsViewModel>(context, listen: false).getSelectedText(widget.text);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<TextsViewModel>();
