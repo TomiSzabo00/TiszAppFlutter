@@ -1,16 +1,14 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tiszapp_flutter/models/user_data.dart';
-
-import '../models/text_data.dart';
-import '../viewmodels/texts_viewmodel.dart';
+import 'package:tiszapp_flutter/models/text_data.dart';
+import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 
 class TextDetailsScreen extends StatefulWidget {
-  TextDetailsScreen({super.key, required this.text});
+  const TextDetailsScreen({
+    super.key,
+    required this.text,
+  });
   final TextData text;
-  final UserData authorDetails = UserData.empty();
 
   @override
   State<TextDetailsScreen> createState() => TextDetailsScreenState();
@@ -21,11 +19,12 @@ class TextDetailsScreenState extends State<TextDetailsScreen> {
   void initState() {
     super.initState();
     Provider.of<TextsViewModel>(context, listen: false)
-        .getSelectedText(widget.text, widget.authorDetails);
+        .getSelectedText(widget.text);
   }
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<TextsViewModel>();
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.text.title),
@@ -37,40 +36,37 @@ class TextDetailsScreenState extends State<TextDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        SelectableText(
-                          'Feltöltő: ${widget.authorDetails.name}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Feltöltő: ${viewModel.authorDetails.name}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
-                    const Row(
-                      children: [
-                        Text(
-                          'Szöveg:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(
+                      height: 10,
                     ),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: SelectableText(
-                            widget.text.text,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                overflow: TextOverflow.visible),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Csapat: ${viewModel.authorDetails.teamNum}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      'Szöveg:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SelectableText(
+                      widget.text.text,
+                      style: const TextStyle(
+                          fontSize: 14, overflow: TextOverflow.visible),
                     ),
                   ]),
             )));

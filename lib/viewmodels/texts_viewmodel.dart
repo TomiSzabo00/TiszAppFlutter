@@ -21,8 +21,7 @@ class TextsViewModel with ChangeNotifier {
   final DatabaseReference textsRef =
       FirebaseDatabase.instance.ref().child("debug/texts");
 
-  TextData? text;
-  UserData? authorDetails;
+  UserData authorDetails = UserData.empty();
 
   void _getTexts() async {
     final textsRef = FirebaseDatabase.instance.ref().child("debug/texts");
@@ -51,18 +50,11 @@ class TextsViewModel with ChangeNotifier {
         .set(text.toJson());
   }
 
-  void pickText(TextData text) {
-    this.text = text;
-  }
-
-  void getSelectedText(TextData text, UserData author) async {
+  void getSelectedText(TextData text) async {
     textsRef.child('${text.key}/author').once().then((event) {
       DatabaseService.getUserData(event.snapshot.value.toString())
           .then((value) {
         authorDetails = value;
-        this.text?.title = text.title;
-        this.text?.author = text.author;
-        this.text?.text = text.text;
         notifyListeners();
       });
     });

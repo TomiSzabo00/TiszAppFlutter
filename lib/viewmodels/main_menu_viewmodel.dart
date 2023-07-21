@@ -274,7 +274,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.scoreUpload:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => UploadScoreScreen(),
+                builder: (context) => const UploadScoreScreen(),
               ),
             );
       case MainMenuButtonType.scores:
