@@ -79,22 +79,22 @@ class EjjeliPortyaViewModel with ChangeNotifier {
 
     Location location = Location();
 
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
         log("Service still disabled");
         return;
       }
     }
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
@@ -111,8 +111,8 @@ class EjjeliPortyaViewModel with ChangeNotifier {
         'name': user.name
       });
 
-      if((Platform.isAndroid && ((await BatteryInfoPlugin().androidBatteryInfo)!.batteryLevel! < 45 && (await BatteryInfoPlugin().androidBatteryInfo)!.chargingStatus != ChargingStatus.Charging) ||
-      Platform.isIOS && ((await BatteryInfoPlugin().iosBatteryInfo)!.batteryLevel! < 45 && (await BatteryInfoPlugin().iosBatteryInfo)!.chargingStatus != ChargingStatus.Charging)))
+      if((Platform.isAndroid && ((await BatteryInfoPlugin().androidBatteryInfo)!.batteryLevel! < 25 && (await BatteryInfoPlugin().androidBatteryInfo)!.chargingStatus != ChargingStatus.Charging) ||
+      Platform.isIOS && ((await BatteryInfoPlugin().iosBatteryInfo)!.batteryLevel! < 25 && (await BatteryInfoPlugin().iosBatteryInfo)!.chargingStatus != ChargingStatus.Charging)))
       {
         log("Battery requirements not met");
         locBackGroundOn = false;
@@ -120,6 +120,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
         notifyListeners();
       }
     });
+    location.changeSettings(interval: 15000);
     locSubsInitialized = true;
     locBackGroundOn = true;
     notifyListeners();

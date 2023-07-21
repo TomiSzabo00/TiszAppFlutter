@@ -77,12 +77,27 @@ class ScoresViewModel with ChangeNotifier {
     });
   }
 
+  bool allFinalScoresFilled() {
+    for (var element in finalScoreControllers) {
+      if (element.text.isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void uploadScore() {
-    var score = Score(
+    var score = allFinalScoresFilled() ? Score(
       author: FirebaseAuth.instance.currentUser!.uid,
       name: nameController.text,
       scores:
           _scoresTextToInt(finalScoreControllers.map((e) => e.text).toList()),
+    ) :
+    Score(
+      author: FirebaseAuth.instance.currentUser!.uid,
+      name: nameController.text,
+      scores:
+      _scoresTextToInt(scoreControllers.map((e) => e.text).toList()),
     );
 
     var ref = FirebaseDatabase.instance.ref().child("debug/scores");
