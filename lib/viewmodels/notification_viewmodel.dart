@@ -74,7 +74,6 @@ class NotificationViewModel extends ChangeNotifier {
   Future<List<String>> getTokens() async {
     List<String> tokens = [];
     final allTokens = await NotificationService.getTokensAsMap();
-    final lastToken = allTokens.keys.last;
     await Future.wait([
       for (var entry in allTokens.entries)
         DatabaseService.getUserData(entry.key).then((user) {
