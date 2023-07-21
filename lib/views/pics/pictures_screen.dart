@@ -49,7 +49,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
               crossAxisCount: 2,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              childAspectRatio: 1.2,
+              childAspectRatio: 1.15,
             ),
             itemCount: viewModel.pictures.length,
             itemBuilder: (context, index) {
