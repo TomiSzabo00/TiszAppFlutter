@@ -95,6 +95,7 @@ class VotingViewmodel with ChangeNotifier {
   }
 
   void _removeVotes() {
+    isVoteSent = false;
     ref.child('voting/votes').remove();
   }
 
