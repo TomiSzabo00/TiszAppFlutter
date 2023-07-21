@@ -29,10 +29,12 @@ class SongsViewModel with ChangeNotifier {
   }
 
   String _getNameFromLine(String line) {
+    line = line.trim();
     return line.substring(0, line.length - 4);
   }
 
   String _getAssetPathFromFile(String file) {
+    file = file.trim();
     return 'assets/songs/$file';
   }
 
