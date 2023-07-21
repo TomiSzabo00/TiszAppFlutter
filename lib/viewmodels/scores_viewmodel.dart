@@ -1,4 +1,5 @@
 // ignore_for_file: depend_on_referenced_packages
+import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:math';
 
@@ -29,6 +30,7 @@ class ScoresViewModel with ChangeNotifier {
   final maxController = TextEditingController();
   List<TextEditingController> finalScoreControllers = [];
   bool areAllScoresAdded = false;
+  StreamSubscription<DatabaseEvent>? scoresSubscription;
 
   ScoresViewModel() {
     initializeDateFormatting();
@@ -61,8 +63,9 @@ class ScoresViewModel with ChangeNotifier {
     numberOfTeams = await getNumberOfTeams();
     scores.clear();
     _resetSum();
+    scoresSubscription?.cancel();
     final scoresRef = FirebaseDatabase.instance.ref().child("debug/scores");
-    scoresRef.onChildAdded.listen((event) {
+    scoresSubscription = scoresRef.onChildAdded.listen((event) {
       final score = Score.fromSnapshot(event.snapshot);
 
       if (score.scores.length < numberOfTeams) {
