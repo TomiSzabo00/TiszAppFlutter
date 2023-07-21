@@ -61,8 +61,8 @@ class MainMenuViewModel extends ChangeNotifier {
           FirebaseDatabase.instance
               .ref()
               .child("notification_tokens")
-              .child(token)
-              .set(FirebaseAuth.instance.currentUser!.uid);
+              .child(FirebaseAuth.instance.currentUser!.uid)
+              .set(token);
         }
       });
     });

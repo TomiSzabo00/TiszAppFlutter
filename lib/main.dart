@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/models/hazas_parbaj_data.dart';
 import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';

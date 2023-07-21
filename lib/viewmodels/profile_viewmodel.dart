@@ -32,6 +32,11 @@ class ProfileViewModel {
   }
 
   Future<void> signOut() async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('notification_tokens')
+        .child(args.user.uid)
+        .remove();
     await FirebaseAuth.instance.signOut();
     // ignore: use_build_context_synchronously
     Navigator.of(args.context).pop();

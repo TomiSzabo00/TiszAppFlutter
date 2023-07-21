@@ -75,15 +75,15 @@ class NotificationViewModel extends ChangeNotifier {
     List<String> tokens = [];
     final allTokens = await NotificationService.getTokensAsMap();
     allTokens.forEach((key, value) {
-      DatabaseService.getUserData(value).then((user) {
+      DatabaseService.getUserData(key).then((user) {
         if (user.isAdmin && adminsSwitch) {
-          tokens.add(key);
+          tokens.add(value);
         } else if (allUsersSwitch && !user.isAdmin) {
-          tokens.add(key);
+          tokens.add(value);
         } else if (user.teamNum > 0 &&
             switches.length >= user.teamNum &&
             switches[user.teamNum - 1]) {
-          tokens.add(key);
+          tokens.add(value);
         }
       });
     });
