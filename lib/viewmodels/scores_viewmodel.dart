@@ -106,6 +106,9 @@ class ScoresViewModel with ChangeNotifier {
     for (var element in finalScoreControllers) {
       element.clear();
     }
+    chosenDistr = null;
+    areAllScoresAdded = false;
+    notifyListeners();
   }
 
   List<int> _scoresTextToInt(List<String> scores) {
