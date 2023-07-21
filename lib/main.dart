@@ -24,6 +24,7 @@ import 'widget_tree.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: 'Tiszapp',
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
