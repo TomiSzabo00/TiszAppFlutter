@@ -61,7 +61,7 @@ class _QuizScreenState extends State<QuizScreen> {
           } else if (viewModel.state == QuizState.teammateDidSend) {
             return Colors.yellow;
           } else if (viewModel.state == QuizState.didSend) {
-            return Colors.orange;
+            return Colors.yellow;
           } else {
             return Colors.grey;
           }
