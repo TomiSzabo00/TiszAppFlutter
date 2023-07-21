@@ -17,52 +17,54 @@ class UploadTextsScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              maxLines: 1,
-              decoration: InputDecoration(
-                labelText: "Cím",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  labelText: "Cím",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextField(
-              controller: textController,
-              minLines: 3,
-              maxLines: null,
-              autocorrect: false,
-              keyboardType: TextInputType.multiline,
-              decoration: const InputDecoration(
-                hintText: "Szöveg",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+              const SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: textController,
+                minLines: 3,
+                maxLines: null,
+                autocorrect: false,
+                keyboardType: TextInputType.multiline,
+                decoration: const InputDecoration(
+                  hintText: "Szöveg",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Button3D(
-                  onPressed: () {
-                    _viewModel.uploadText(
-                        titleController.text, textController.text);
-                    _clearFields();
-                    _showDialog(context);
-                  },
-                  child: const Text("Feltöltés"),
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Button3D(
+                    onPressed: () {
+                      _viewModel.uploadText(
+                          titleController.text, textController.text);
+                      _clearFields();
+                      _showDialog(context);
+                    },
+                    child: const Text("Feltöltés"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

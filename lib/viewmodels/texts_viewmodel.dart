@@ -3,12 +3,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:tiszapp_flutter/models/text_data.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../widgets/text_item.dart';
+import '../models/user_data.dart';
+import '../services/database_service.dart';
 
 class TextsViewModel with ChangeNotifier {
   List<TextData> texts = [];
@@ -18,19 +18,11 @@ class TextsViewModel with ChangeNotifier {
     _getTexts();
   }
 
-  TextsViewModel._fromContext(BuildContext context) {
-    _context = context;
-  }
-
-  static Future<TextsViewModel> init(BuildContext context) async {
-    return TextsViewModel._fromContext(context);
-  }
-
-  late BuildContext? _context;
   final DatabaseReference textsRef =
       FirebaseDatabase.instance.ref().child("debug/texts");
 
   TextData? text;
+  UserData? authorDetails;
 
   void _getTexts() async {
     final textsRef = FirebaseDatabase.instance.ref().child("debug/texts");
@@ -63,10 +55,16 @@ class TextsViewModel with ChangeNotifier {
     this.text = text;
   }
 
-  void getSelectedText(TextData text) {
-    this.text?.title = text.title;
-    this.text?.author = text.author;
-    this.text?.text = text.text;
-    notifyListeners();
+  void getSelectedText(TextData text, UserData author) async {
+    textsRef.child('${text.key}/author').once().then((event) {
+      DatabaseService.getUserData(event.snapshot.value.toString())
+          .then((value) {
+        authorDetails = value;
+        this.text?.title = text.title;
+        this.text?.author = text.author;
+        this.text?.text = text.text;
+        notifyListeners();
+      });
+    });
   }
 }

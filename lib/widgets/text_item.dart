@@ -12,11 +12,12 @@ class TextItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print('Tapped');
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TextDetailsScreen(text: text),
+            builder: (context) => TextDetailsScreen(
+              text: text,
+            ),
           ),
         );
       },
