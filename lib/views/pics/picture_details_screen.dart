@@ -40,6 +40,7 @@ class PictureDetailsScreenState extends State<PictureDetailsScreen> {
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<PicturesViewModel>();
+    viewModel.context = context;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.picture.title),

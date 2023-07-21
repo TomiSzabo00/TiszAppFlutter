@@ -12,11 +12,12 @@ class TextItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print('Tapped');
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TextDetailsScreen(text: text),
+            builder: (context) => TextDetailsScreen(
+              text: text,
+            ),
           ),
         );
       },
@@ -32,7 +33,7 @@ class TextItem extends StatelessWidget {
               height: (MediaQuery.of(context).size.width - 10) / 5,
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: SelectableText(text.text),
+                child: Text(text.text),
               ),
             ),
             const Divider(

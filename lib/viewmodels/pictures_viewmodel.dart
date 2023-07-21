@@ -57,6 +57,7 @@ class PicturesViewModel extends ChangeNotifier {
   bool isValidImage = true;
 
   final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
+  BuildContext? context;
 
   void getImages(bool isReview) {
     for (var element in _subscriptions) {
@@ -152,6 +153,7 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   Future<void> deletePic(Picture picture) async {
+    context = null;
     picsRef.child(picture.key).remove();
     await StorageService.deleteImage(picture.url);
   }
@@ -226,6 +228,7 @@ class PicturesViewModel extends ChangeNotifier {
       PicReaction.angry: 0,
       PicReaction.sad: 0,
     };
+    context = null;
     currentReaction = null;
     if (isReview) {
       reviewPicsRef.child('${pic.key}/author').once().then((event) {
@@ -235,6 +238,12 @@ class PicturesViewModel extends ChangeNotifier {
           notifyListeners();
         });
       });
+      reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {
+        if (context != null) {
+          Navigator.pop(context!);
+          context = null;
+        }
+      });
     } else {
       picsRef.child('${pic.key}/author').onValue.listen((event) {
         DatabaseService.getUserData(event.snapshot.value.toString())
@@ -242,6 +251,12 @@ class PicturesViewModel extends ChangeNotifier {
           authorDetails = value;
           notifyListeners();
         });
+      });
+      picsRef.child(pic.key).onChildRemoved.listen((event) {
+        if (context != null) {
+          Navigator.pop(context!);
+          context = null;
+        }
       });
     }
 

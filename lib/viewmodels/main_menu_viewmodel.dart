@@ -61,8 +61,8 @@ class MainMenuViewModel extends ChangeNotifier {
           FirebaseDatabase.instance
               .ref()
               .child("notification_tokens")
-              .child(token)
-              .set(FirebaseAuth.instance.currentUser!.uid);
+              .child(FirebaseAuth.instance.currentUser!.uid)
+              .set(token);
         }
       });
     });
@@ -274,7 +274,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.scoreUpload:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => UploadScoreScreen(),
+                builder: (context) => const UploadScoreScreen(),
               ),
             );
       case MainMenuButtonType.scores:

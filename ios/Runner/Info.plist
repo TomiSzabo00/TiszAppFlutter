@@ -66,12 +66,8 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow access to photo library</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app needs access to location.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>This app needs access to location.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app needs access to location.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+<string>Location permission is required.</string>
     <key>UIBackgroundModes</key>
     <array>
     	<string>fetch</string>

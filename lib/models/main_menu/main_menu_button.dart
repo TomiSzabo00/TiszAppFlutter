@@ -42,8 +42,6 @@ class MainMenuButton {
         return 'Házas párbaj';
       case MainMenuButtonType.ejjeliportya:
         return 'Éjjeli portya';
-      case MainMenuButtonType.menuButtons:
-        return 'Főmenü gombok';
       case MainMenuButtonType.notifications:
         return 'Értesítések';
       case MainMenuButtonType.slowQuiz:

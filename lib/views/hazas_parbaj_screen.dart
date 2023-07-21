@@ -238,6 +238,7 @@ class HazasParbajScreenState extends State<HazasParbajScreen> {
                           setState(() {
                             showError = shouldShowError;
                           });
+                          // ignore: use_build_context_synchronously
                           if (!showError) Navigator.pop(context);
                         },
                         child: Text(

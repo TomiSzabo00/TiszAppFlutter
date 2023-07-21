@@ -50,7 +50,7 @@ class QuizViewModel extends ChangeNotifier {
       final senderUid = tryCast<String>(event.snapshot.value) ?? '';
       final uid = FirebaseAuth.instance.currentUser!.uid;
 
-      if (senderUid == uid) {
+      if (senderUid == uid || state == QuizState.didSend) {
         _updateState(QuizState.didSend);
         return;
       }
@@ -156,6 +156,8 @@ class QuizViewModel extends ChangeNotifier {
           return;
         }
         signals.add({event.snapshot.key!: senderData.teamNum});
+        // sort signals by date
+        signals.sort((a, b) => a.keys.first.compareTo(b.keys.first));
         notifyListeners();
       });
     });
