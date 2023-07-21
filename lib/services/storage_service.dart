@@ -17,12 +17,27 @@ class StorageService {
     final lastIndex = filePath.lastIndexOf(RegExp(fileExtension));
     final splitted = filePath.substring(0, (lastIndex));
     final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
-    // check if file is png or jpg
-    if (fileExtension == '.png' || fileExtension == '.jpg' || fileExtension == '.jpeg') {
+    if (fileExtension == '.jpg' || fileExtension == '.jpeg') {
       var result = await FlutterImageCompress.compressAndGetFile(
         file.path,
         outPath,
         quality: 50,
+      );
+      file = XFile(result!.path);
+    } else if (fileExtension == '.png') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+        format: CompressFormat.png,
+      );
+      file = XFile(result!.path);
+    } else if (fileExtension == '.heic') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+        format: CompressFormat.heic,
       );
       file = XFile(result!.path);
     }
