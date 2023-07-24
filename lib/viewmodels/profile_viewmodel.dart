@@ -41,4 +41,18 @@ class ProfileViewModel {
     // ignore: use_build_context_synchronously
     Navigator.of(args.context).pop();
   }
+
+  Future<void> deleteAccount() async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('notification_tokens')
+        .child(args.user.uid)
+        .remove();
+    await FirebaseDatabase.instance
+        .ref()
+        .child('users')
+        .child(args.user.uid)
+        .remove();
+    await FirebaseAuth.instance.currentUser!.delete();
+  }
 }

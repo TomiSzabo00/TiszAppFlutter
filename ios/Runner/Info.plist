@@ -28,12 +28,14 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Az éjjeli portya során szeretnénk látni, merre jártok a csapatoddal. Ezért kérjük, hogy add meg ezt az engedélyt.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Az éjjeli portya során szeretnénk látni, merre jártok a csapatoddal. Ezért kérjük, hogy add meg ezt az engedélyt.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Lehetőséged lesz lementeni képeket a telefonodra, ezért szükséges megadnod ezt az engedélyt az alkalmazásnak.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access to photo library</string>
+	<string>Ha képeket szeretnél feltölteni az alkalmazásba, akkor meg kell adnond ezt az engedélyt.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

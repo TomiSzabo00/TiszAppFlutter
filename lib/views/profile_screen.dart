@@ -105,9 +105,56 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      showAreYouSureDialog(context);
+                    },
+                    child: const Text(
+                      'Fiók végleges törlése',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 40),
             ],
           ),
         ));
+  }
+
+  void showAreYouSureDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Biztosan törölni szeretnéd a fiókod?'),
+            content: const Text(
+                'Ezután nem fogsz tudni többet bejelentkezni a fiókoddal.'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Mégse')),
+              TextButton(
+                  onPressed: () {
+                    _viewModel.deleteAccount();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Törlés',
+                    style: TextStyle(color: Colors.red),
+                  )),
+            ],
+          );
+        });
   }
 }
