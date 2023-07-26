@@ -34,8 +34,7 @@ class ProfileViewModel {
   Future<void> signOut() async {
     await FirebaseDatabase.instance
         .ref()
-        .child('notification_tokens')
-        .child(args.user.uid)
+        .child('notification_tokens/${FirebaseAuth.instance.currentUser!.uid}')
         .remove();
     await FirebaseAuth.instance.signOut();
     // ignore: use_build_context_synchronously
@@ -45,13 +44,7 @@ class ProfileViewModel {
   Future<void> deleteAccount() async {
     await FirebaseDatabase.instance
         .ref()
-        .child('notification_tokens')
-        .child(args.user.uid)
-        .remove();
-    await FirebaseDatabase.instance
-        .ref()
-        .child('users')
-        .child(args.user.uid)
+        .child('notification_tokens/${FirebaseAuth.instance.currentUser!.uid}')
         .remove();
     await FirebaseAuth.instance.currentUser!.delete();
   }
