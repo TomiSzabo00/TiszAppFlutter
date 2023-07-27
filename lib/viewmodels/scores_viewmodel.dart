@@ -52,15 +52,13 @@ class ScoresViewModel with ChangeNotifier {
       scoreControllers
           .addAll(List.generate(num, (_) => TextEditingController()));
     }
-    if (finalScoreControllers.isEmpty) {
-      finalScoreControllers
-          .addAll(List.generate(num, (_) => TextEditingController()));
-    }
+    numberOfTeams = num;
+    notifyListeners();
     return num;
   }
 
   void getScores() async {
-    numberOfTeams = await getNumberOfTeams();
+    await getNumberOfTeams();
     scores.clear();
     _resetSum();
     scoresSubscription?.cancel();
@@ -90,18 +88,19 @@ class ScoresViewModel with ChangeNotifier {
   }
 
   void uploadScore() {
-    var score = allFinalScoresFilled() ? Score(
-      author: FirebaseAuth.instance.currentUser!.uid,
-      name: nameController.text,
-      scores:
-          _scoresTextToInt(finalScoreControllers.map((e) => e.text).toList()),
-    ) :
-    Score(
-      author: FirebaseAuth.instance.currentUser!.uid,
-      name: nameController.text,
-      scores:
-      _scoresTextToInt(scoreControllers.map((e) => e.text).toList()),
-    );
+    var score = allFinalScoresFilled()
+        ? Score(
+            author: FirebaseAuth.instance.currentUser!.uid,
+            name: nameController.text,
+            scores: _scoresTextToInt(
+                finalScoreControllers.map((e) => e.text).toList()),
+          )
+        : Score(
+            author: FirebaseAuth.instance.currentUser!.uid,
+            name: nameController.text,
+            scores:
+                _scoresTextToInt(scoreControllers.map((e) => e.text).toList()),
+          );
 
     var ref = FirebaseDatabase.instance.ref().child("debug/scores");
     var now = DateTime.now();
