@@ -19,12 +19,12 @@ class TextsViewModel with ChangeNotifier {
   }
 
   final DatabaseReference textsRef =
-      FirebaseDatabase.instance.ref().child("debug/texts");
+      FirebaseDatabase.instance.ref().child("texts");
 
   UserData authorDetails = UserData.empty();
 
   void _getTexts() async {
-    final textsRef = FirebaseDatabase.instance.ref().child("debug/texts");
+    final textsRef = FirebaseDatabase.instance.ref().child("texts");
     textsRef.onChildAdded.listen((event) {
       texts.insert(
           0,
@@ -45,7 +45,7 @@ class TextsViewModel with ChangeNotifier {
         author: FirebaseAuth.instance.currentUser!.uid);
     FirebaseDatabase.instance
         .ref()
-        .child("debug/texts")
+        .child("texts")
         .child(text.key)
         .set(text.toJson());
   }

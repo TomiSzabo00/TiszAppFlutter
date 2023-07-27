@@ -19,7 +19,7 @@ class ScheduleViewModel {
   String currentTitle = "";
 
   Future<void> getFirstDay() async {
-    final snapshot = await ref.child('debug/firstDayOfWeek').get();
+    final snapshot = await ref.child('firstDayOfWeek').get();
     if (snapshot.exists) {
       firstDay = tryCast<String>(snapshot.value) ?? '';
       if (currentTitle.isEmpty) {
