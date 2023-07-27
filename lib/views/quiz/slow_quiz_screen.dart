@@ -375,49 +375,53 @@ class _SlowQuizScreenState extends State<SlowQuizScreen> {
       width: MediaQuery.of(context).size.width - 40,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            () {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: viewModel.controllers.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: TextField(
-                      controller: viewModel.controllers[index],
-                      decoration: InputDecoration(
-                        labelText: '${index + 1}. kérdésre a válaszod',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              () {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: viewModel.controllers.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextField(
+                        controller: viewModel.controllers[index],
+                        decoration: InputDecoration(
+                          labelText: '${index + 1}. kérdésre a válaszod',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  },
+                );
+              }(),
+              const SizedBox(
+                height: 20,
+              ),
+              Button3D(
+                width: 200,
+                onPressed: () {
+                  showAreYouSureSendDialog();
                 },
-              );
-            }(),
-            const SizedBox(
-              height: 20,
-            ),
-            Button3D(
-              width: 200,
-              onPressed: () {
-                showAreYouSureSendDialog();
-              },
-              child: Text(
-                'Válaszok elküldése',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isDarkTheme
-                      ? CustomColor.btnTextNight
-                      : CustomColor.btnTextDay,
+                child: Text(
+                  'Válaszok elküldése',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

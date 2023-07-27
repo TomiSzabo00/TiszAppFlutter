@@ -43,7 +43,7 @@ class StorageService {
     }
 
     var key = DateService.dateInMillisAsString();
-    final images = ref.child('debug/$key.jpg');
+    final images = ref.child('images/$key.jpg');
     final storage.UploadTask uploadTask = images.putData(
         await file.readAsBytes(),
         storage.SettableMetadata(contentType: 'image/jpeg'));

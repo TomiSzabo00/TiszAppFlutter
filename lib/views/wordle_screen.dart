@@ -34,10 +34,10 @@ class WordleScreenState extends State<WordleScreen> {
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<WordleViewModel>();
-    late AnimationController localAnimationController;
+    AnimationController? localAnimationController;
     return WillPopScope(
       onWillPop: () {
-        localAnimationController.reverse();
+          localAnimationController?.reverse();
         return Future.value(true);
       },
       child: Scaffold(
@@ -94,7 +94,8 @@ class WordleScreenState extends State<WordleScreen> {
                           child: SingleChildScrollView(
                             child: Board(
                               board: viewModel.board,
-                              flipCardControllers: viewModel.flipCardControllers,
+                              flipCardControllers:
+                                  viewModel.flipCardControllers,
                               flipped: viewModel.shouldCardBeFlipped,
                             ),
                           ),
