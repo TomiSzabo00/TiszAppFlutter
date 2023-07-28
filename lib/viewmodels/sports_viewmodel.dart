@@ -59,7 +59,7 @@ class SportsViewModel with ChangeNotifier {
     final sportsResult = SportsResult(
         team1, team2,
         int.parse(team1ScoreController.value.text),
-        int.parse(team1ScoreController.value.text),
+        int.parse(team2ScoreController.value.text),
         MVP);
     var ref = FirebaseDatabase.instance.ref().child("sports");
     final key = sportType;
@@ -70,6 +70,10 @@ class SportsViewModel with ChangeNotifier {
   void _clearControllers() {
     team1ScoreController.clear();
     team2ScoreController.clear();
+    initializedTeam1 = false;
+    initializedTeam2 = false;
+    initializedSportType = false;
+    initializedMVP = false;
     notifyListeners();
   }
 
