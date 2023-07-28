@@ -19,6 +19,7 @@ enum MainMenuButtonType {
   ejjeliportya,
   slowQuiz,
   reviewPics,
+  sports,
 }
 
 extension RawValuesExtension on MainMenuButtonType {
@@ -42,6 +43,7 @@ extension RawValuesExtension on MainMenuButtonType {
     MainMenuButtonType.notifications: 'notifications',
     MainMenuButtonType.slowQuiz: 'slow_quiz',
     MainMenuButtonType.reviewPics: 'review_pics',
+    MainMenuButtonType.sports: 'sports',
   };
 
   String get rawValue => rawValues[this] ?? 'error';

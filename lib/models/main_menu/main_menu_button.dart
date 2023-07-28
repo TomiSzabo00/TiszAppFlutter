@@ -48,6 +48,8 @@ class MainMenuButton {
         return 'Lassú kvíz';
       case MainMenuButtonType.reviewPics:
         return 'Képek ellenőrzése';
+      case MainMenuButtonType.sports:
+        return 'Sport Eredmények';
     }
   }
 
@@ -93,6 +95,8 @@ class MainMenuButton {
         return Icons.edit_note_rounded;
       case MainMenuButtonType.reviewPics:
         return Icons.image_search;
+      case MainMenuButtonType.sports:
+        return Icons.sports;
     }
   }
 

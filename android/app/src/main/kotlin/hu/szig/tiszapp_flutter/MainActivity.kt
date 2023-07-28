@@ -1,4 +1,4 @@
-package com.example.tiszapp_flutter
+package hu.szig.tiszapp_flutter
 
 import io.flutter.embedding.android.FlutterActivity
 

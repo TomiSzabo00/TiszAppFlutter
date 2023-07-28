@@ -15,6 +15,7 @@ import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/sports_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
@@ -68,6 +69,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => EjjeliPortyaViewModel()),
       ChangeNotifierProvider(create: (_) => NotificationViewModel()),
       ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
+      ChangeNotifierProvider(create: (_) => SportsViewModel()),
     ], child: const MyApp()),
   );
 }

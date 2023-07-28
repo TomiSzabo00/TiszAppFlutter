@@ -17,6 +17,7 @@ import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
+import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
@@ -170,6 +171,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.notifications),
       MainMenuButton(type: MainMenuButtonType.menuButtons),
       MainMenuButton(type: MainMenuButtonType.hazasParbaj),
+      MainMenuButton(type: MainMenuButtonType.sports),
     ];
 
     buttons.sort((a, b) => order
@@ -217,6 +219,9 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.slowQuiz;
     } else if (key == MainMenuButtonType.reviewPics.rawValue) {
       return MainMenuButtonType.reviewPics;
+    }
+    else if (key == MainMenuButtonType.sports.rawValue) {
+      return MainMenuButtonType.sports;
     }
 
     return MainMenuButtonType.none;
@@ -344,6 +349,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => SlowQuizScreen(isAdmin: user.isAdmin),
               ),
             );
+      case MainMenuButtonType.sports:
+        return () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const SportsScreen(),
+          ),
+        );
       case MainMenuButtonType.reviewPics:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
