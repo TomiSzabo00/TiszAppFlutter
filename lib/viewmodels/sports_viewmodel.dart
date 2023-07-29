@@ -152,6 +152,10 @@ class SportsViewModel with ChangeNotifier {
 
   String getResult(int indexRow, int indexCol, String sport) {
     final results = sportsResults.resultMap[SportsResults.getSportType(sport)];
+    if(indexRow == indexCol)
+      {
+        return "X";
+      }
     for(var result in results!)
       {
         if((result.team1 == indexRow && result.team2 == indexCol))
@@ -163,6 +167,6 @@ class SportsViewModel with ChangeNotifier {
           return "${result.team2Score} - ${result.team1Score}";
         }
       }
-    return "X";
+    return "?";
   }
 }

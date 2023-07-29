@@ -34,7 +34,7 @@ class _SportsResultViewScreenState extends State<SportsResultViewScreen>{
           body:
           TabBarView(
             children:
-            List.generate(viewModel.getAvailableSports().length, (index) =>
+            List.generate(viewModel.initializedResults ? viewModel.sportsResults.resultMap.length : 1, (index) =>
                 FutureBuilder(
                     future: viewModel.getNumberOfTeams(),
                     builder: (context, snapshot) {
@@ -49,16 +49,26 @@ class _SportsResultViewScreenState extends State<SportsResultViewScreen>{
                                     children:
                                     List.generate(snapshot.data! + 1,
                                             (indexCol) =>
-                                        indexCol == 0 ? const Text("") :
-                                        Text(indexCol.toString()))
+                                            TableCell(
+                                                child:
+                                                Container(
+                                                    child: indexCol == 0 ?
+                                                    const Text("") :
+                                                    Text(indexCol.toString()))
+                                            )
+                                    )
                                 ) :
                                 TableRow(
                                     children:
-                                    List.generate(snapshot.data! + 1,
-                                            (indexCol) =>
-                                        indexCol == 0 ?
-                                        Text(indexRow.toString()) :
-                                        Text(viewModel.initializedResults ? viewModel.getResult(indexRow, indexCol, viewModel.getAvailableSports()[index]) : "X")
+                                    List.generate(snapshot.data! + 1, (indexCol) =>
+                                            TableCell(child:
+                                            Container(child:
+                                            indexCol == 0 ?
+                                            Text(indexRow.toString()) :
+                                            Text(viewModel.initializedResults ? viewModel.getResult(indexRow, indexCol, viewModel.getAvailableSports()[index]) : "X"),
+                                              color: indexCol == indexRow ? Colors.black : null,
+                                            )
+                                            )
                                     )
                                 )
                             ));
