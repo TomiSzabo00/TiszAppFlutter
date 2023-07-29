@@ -14,6 +14,10 @@ class SportsScreen extends StatefulWidget {
 }
 
 class SportsScreenState extends State<SportsScreen> {
+
+  late SportsViewModel viewModel;
+  bool initializedViewModel = false;
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +29,8 @@ class SportsScreenState extends State<SportsScreen> {
     final isDarkTheme = Theme
         .of(context)
         .brightness == Brightness.dark;
-    final viewModel = context.watch<SportsViewModel>();
+    viewModel = context.watch<SportsViewModel>();
+    initializedViewModel = true;
     //viewModel.getData();
     return Scaffold(
       appBar: AppBar(
@@ -192,5 +197,14 @@ class SportsScreenState extends State<SportsScreen> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    if(initializedViewModel)
+      {
+        viewModel.clearControllers();
+      }
+    super.dispose();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tiszapp_flutter/models/sports_data.dart';
+import 'package:tiszapp_flutter/services/api_service.dart';
 
 import '../models/user_data.dart';
 import '../services/database_service.dart';
@@ -31,28 +32,26 @@ class SportsViewModel with ChangeNotifier {
   }
 
   Future<void> getTeams() async {
-    await FirebaseDatabase.instance.ref().child("users").get().then((snapshot) {
-      for (DataSnapshot user in snapshot.children) {
-        final name = user.child("userName").value!.toString();
-        final groupNr = int.parse(user.child("groupNumber").value!.toString());
-        if(groupNr == 0)
-          {
-            continue;
-          }
-        if(teams.containsKey(groupNr))
-          {
-            teams[groupNr]!.add("$groupNr - $name");
-          }
-        else
-          {
-            teams[groupNr] = [name];
-          }
-      }
-      for(var entry in teams.entries)
+    final users = await ApiService.getUserInfos();
+    for(var user in users)
+      {
+        if(user.teamNum == 0)
         {
-          teams[entry.key]!.sort();
+          continue;
         }
-    });
+        if(teams.containsKey(user.teamNum))
+        {
+          teams[user.teamNum]!.add("${user.teamNum} - ${user.name}");
+        }
+        else
+        {
+          teams[user.teamNum] = ["${user.teamNum} - ${user.name}"];
+        }
+      }
+    for(var entry in teams.entries)
+    {
+      teams[entry.key]!.sort();
+    }
   }
 
   void uploadResult() {
@@ -60,14 +59,14 @@ class SportsViewModel with ChangeNotifier {
         team1, team2,
         int.parse(team1ScoreController.value.text),
         int.parse(team2ScoreController.value.text),
-        MVP);
+        initializedMVP ? MVP : "");
     var ref = FirebaseDatabase.instance.ref().child("sports");
     final key = sportType;
     ref.child(key).child(sportsResult.id).set(sportsResult.toJson());
-    _clearControllers();
+    clearControllers();
   }
 
-  void _clearControllers() {
+  void clearControllers() {
     team1ScoreController.clear();
     team2ScoreController.clear();
     initializedTeam1 = false;
@@ -118,6 +117,7 @@ class SportsViewModel with ChangeNotifier {
           availableTeams.add(team);
         }
       }
+    availableTeams.sort();
     return availableTeams;
   }
 
