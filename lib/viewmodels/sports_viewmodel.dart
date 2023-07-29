@@ -9,6 +9,7 @@ import '../services/database_service.dart';
 class SportsViewModel with ChangeNotifier {
 
   late SportsResults sportsResults;
+  bool initializedResults = false;
   late String sportType;
   bool initializedSportType = false;
   late int team1;
@@ -17,8 +18,7 @@ class SportsViewModel with ChangeNotifier {
   bool initializedTeam2 = false;
   final team1ScoreController = TextEditingController();
   final team2ScoreController = TextEditingController();
-  late String MVP;
-  bool initializedMVP = false;
+  final MVPController = TextEditingController();
   UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
   Map<int, List<String>> teams = {};
   void getData() async {
@@ -26,6 +26,7 @@ class SportsViewModel with ChangeNotifier {
         'sports');
     databaseref.onValue.listen((event) {
       sportsResults = SportsResults.fromSnapshot(event.snapshot);
+      initializedResults = true;
       getTeams();
       notifyListeners();
     });
@@ -41,11 +42,14 @@ class SportsViewModel with ChangeNotifier {
         }
         if(teams.containsKey(user.teamNum))
         {
-          teams[user.teamNum]!.add("${user.teamNum} - ${user.name}");
+          if(!teams[user.teamNum]!.contains(user.name))
+          {
+            teams[user.teamNum]!.add(user.name);
+          }
         }
         else
         {
-          teams[user.teamNum] = ["${user.teamNum} - ${user.name}"];
+          teams[user.teamNum] = [user.name];
         }
       }
     for(var entry in teams.entries)
@@ -59,7 +63,7 @@ class SportsViewModel with ChangeNotifier {
         team1, team2,
         int.parse(team1ScoreController.value.text),
         int.parse(team2ScoreController.value.text),
-        initializedMVP ? MVP : "");
+        MVPController.value.text);
     var ref = FirebaseDatabase.instance.ref().child("sports");
     final key = sportType;
     ref.child(key).child(sportsResult.id).set(sportsResult.toJson());
@@ -69,10 +73,10 @@ class SportsViewModel with ChangeNotifier {
   void clearControllers() {
     team1ScoreController.clear();
     team2ScoreController.clear();
+    MVPController.clear();
     initializedTeam1 = false;
     initializedTeam2 = false;
     initializedSportType = false;
-    initializedMVP = false;
     notifyListeners();
   }
 
@@ -91,6 +95,7 @@ class SportsViewModel with ChangeNotifier {
       {
         sports.add(SportsResults.getSportName(type));
       }
+    sports.sort();
     return sports;
   }
 
@@ -121,15 +126,6 @@ class SportsViewModel with ChangeNotifier {
     return availableTeams;
   }
 
-  chooseMVP(String? s) {
-    if(s != null)
-    {
-      MVP = s;
-      initializedMVP = true;
-    }
-    notifyListeners();
-  }
-
   List<String> getAvailablePlayers() {
     List<String> players = [];
     if(initializedTeam1)
@@ -152,5 +148,21 @@ class SportsViewModel with ChangeNotifier {
     final num = await DatabaseService.getNumberOfTeams();
     notifyListeners();
     return num;
+  }
+
+  String getResult(int indexRow, int indexCol, String sport) {
+    final results = sportsResults.resultMap[SportsResults.getSportType(sport)];
+    for(var result in results!)
+      {
+        if((result.team1 == indexRow && result.team2 == indexCol))
+          {
+            return "${result.team1Score} - ${result.team2Score}";
+          }
+        else if((result.team2== indexRow && result.team1 == indexCol))
+        {
+          return "${result.team2Score} - ${result.team1Score}";
+        }
+      }
+    return "X";
   }
 }

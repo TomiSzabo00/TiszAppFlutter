@@ -52,6 +52,10 @@ class ScoresViewModel with ChangeNotifier {
       scoreControllers
           .addAll(List.generate(num, (_) => TextEditingController()));
     }
+    if (finalScoreControllers.isEmpty) {
+      finalScoreControllers
+          .addAll(List.generate(num, (_) => TextEditingController()));
+    }
     numberOfTeams = num;
     notifyListeners();
     return num;

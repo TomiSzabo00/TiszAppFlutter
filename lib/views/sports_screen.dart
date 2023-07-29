@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../colors.dart';
 import '../viewmodels/sports_viewmodel.dart';
 import '../widgets/3d_button.dart';
+import '../widgets/autocomplete_textfield.dart';
 import '../widgets/input_field.dart';
 
 class SportsScreen extends StatefulWidget {
@@ -136,17 +137,10 @@ class SportsScreenState extends State<SportsScreen> {
                         width: 200,
                         child: AbsorbPointer(
                           absorbing: !(viewModel.initializedTeam1 && viewModel.initializedTeam2),
-                          child: DropdownButton<String>(
-                            hint: const Text("Válassz játékost"),
-                            onChanged: (s) => viewModel.chooseMVP(s),
-                            items: viewModel.getAvailablePlayers().map((value) {
-                              return DropdownMenuItem(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            value: viewModel.initializedMVP ? viewModel.MVP : null,
-                            isExpanded: true,
+                          child: AutocompleteTextField(
+                            placeholder: "Legjobb játékos",
+                            controller: viewModel.MVPController,
+                            options: viewModel.getAvailablePlayers(),
                           ),
                         ),
                       )

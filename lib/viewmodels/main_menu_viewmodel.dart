@@ -17,6 +17,7 @@ import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
+import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
@@ -352,7 +353,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.sports:
         return () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const SportsScreen(),
+            builder: (context) => user.isAdmin ? const SportsScreen() : const SportsResultViewScreen(),
           ),
         );
       case MainMenuButtonType.reviewPics:
