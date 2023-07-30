@@ -173,6 +173,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.menuButtons),
       MainMenuButton(type: MainMenuButtonType.hazasParbaj),
       MainMenuButton(type: MainMenuButtonType.sports),
+      MainMenuButton(type: MainMenuButtonType.sportResult)
     ];
 
     buttons.sort((a, b) => order
@@ -353,7 +354,13 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.sports:
         return () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => user.isAdmin ? const SportsScreen() : const SportsResultViewScreen(),
+            builder: (context) => const SportsScreen(),
+          ),
+        );
+      case MainMenuButtonType.sportResult:
+        return () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const SportsResultViewScreen(),
           ),
         );
       case MainMenuButtonType.reviewPics:

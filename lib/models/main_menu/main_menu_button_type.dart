@@ -19,7 +19,7 @@ enum MainMenuButtonType {
   ejjeliportya,
   slowQuiz,
   reviewPics,
-  sports,
+  sports, sportResult,
 }
 
 extension RawValuesExtension on MainMenuButtonType {

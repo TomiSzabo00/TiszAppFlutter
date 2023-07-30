@@ -49,6 +49,8 @@ class MainMenuButton {
       case MainMenuButtonType.reviewPics:
         return 'Képek ellenőrzése';
       case MainMenuButtonType.sports:
+        return 'Sport Feltöltés';
+      case MainMenuButtonType.sportResult:
         return 'Sport Eredmények';
     }
   }
@@ -96,7 +98,9 @@ class MainMenuButton {
       case MainMenuButtonType.reviewPics:
         return Icons.image_search;
       case MainMenuButtonType.sports:
-        return Icons.sports;
+        return Icons.sports_soccer;
+      case MainMenuButtonType.sportResult:
+        return Icons.sports_score;
     }
   }
 
