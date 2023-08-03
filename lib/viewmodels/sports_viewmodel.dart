@@ -210,7 +210,7 @@ class SportsViewModel with ChangeNotifier {
         return indexPlace.toString();
       }
     final chosenSport = availableSports.availableSports[sportIndex];
-    final teams_ = allGroups.allGroups[chosenSport]!.groups[groupIndex].teams;
+    final teams_ = List<int>.from(allGroups.allGroups[chosenSport]!.groups[groupIndex].teams);
     final groupStats = {};
     final stats = ["goals_for", "goals_against", "goal_difference", "points"];
     for(var result in sportsResults.resultMap[chosenSport]!)
