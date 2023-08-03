@@ -179,6 +179,10 @@ class MainMenuViewModel extends ChangeNotifier {
     buttons.sort((a, b) => order
         .indexWhere((element) => element.type == a.type)
         .compareTo(order.indexWhere((element) => element.type == b.type)));
+    
+    // remove none type buttons from list
+    buttons.removeWhere((element) => element.type == MainMenuButtonType.none);
+    
     notifyListeners();
   }
 
