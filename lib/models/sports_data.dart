@@ -1,44 +1,29 @@
 import 'package:firebase_database/firebase_database.dart';
 
-enum SportType {
-  soccerGirls,
-  soccerBoys,
-  volleyballMixed
+class AvailableSports {
+
+  late List<String> availableSports;
+
+  AvailableSports.fromSnapshot(DataSnapshot snapshot) {
+    availableSports = [];
+    for(DataSnapshot child in snapshot.children){
+      availableSports.add(child.key.toString());
+    }
+    availableSports.sort();
+  }
 }
 
 class SportsResults {
-  final Map<SportType, List<SportsResult>> resultMap = {};
-
-  static final Map<String, SportType> sportNames = {
-    "Lány Foci": SportType.soccerGirls,
-    "Fiú Foci": SportType.soccerBoys,
-    "Röpi": SportType.volleyballMixed
-  };
-  static final Map<SportType, String> sportTypes = {
-    SportType.soccerGirls: "Lány Foci",
-    SportType.soccerBoys: "Fiú Foci",
-    SportType.volleyballMixed: "Röpi"
-  };
-
-  static String getSportName(SportType sportType)
-  {
-    return sportTypes[sportType]!;
-  }
-
-  static SportType getSportType(String sportName)
-  {
-    return sportNames[sportName]!;
-  }
-
+  final Map<String, List<SportsResult>> resultMap = {};
 
   SportsResults.fromSnapshot(DataSnapshot snapshot)
   {
     for(DataSnapshot child in snapshot.children)
       {
-        resultMap[sportNames[child.key]!] = [];
+        resultMap[child.key.toString()] = [];
         for(DataSnapshot resultChild in child.children)
           {
-            resultMap[sportNames[child.key]!]!.add(SportsResult.fromSnapshot(resultChild));
+            resultMap[child.key.toString()]!.add(SportsResult.fromSnapshot(resultChild));
           }
       }
   }
@@ -91,4 +76,42 @@ class SportsResult {
     'winner': winner,
     'MVP': MVP
   };
+}
+
+class SportsGroup {
+  late List<int> teams;
+
+  SportsGroup.fromSnapshot(DataSnapshot snapshot){
+    teams = [];
+    for(DataSnapshot child in snapshot.children)
+      {
+        final nr = child.key.toString();
+        final team_nr = nr.substring(1, nr.length);
+        teams.add(int.parse(team_nr));
+      }
+  }
+}
+
+class SportsGroups {
+  late List<SportsGroup> groups;
+
+  SportsGroups.fromSnapshot(DataSnapshot snapshot){
+    groups = [];
+    for(DataSnapshot child in snapshot.children)
+    {
+      groups.add(SportsGroup.fromSnapshot(child));
+    }
+  }
+}
+
+class AllGroups {
+  late Map<String, SportsGroups> allGroups;
+
+  AllGroups.fromSnapshot(DataSnapshot snapshot) {
+    allGroups = {};
+    for(DataSnapshot child in snapshot.children)
+    {
+      allGroups[child.key.toString()] = SportsGroups.fromSnapshot(child);
+    }
+  }
 }

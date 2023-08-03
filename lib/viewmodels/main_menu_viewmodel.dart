@@ -221,9 +221,10 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.slowQuiz;
     } else if (key == MainMenuButtonType.reviewPics.rawValue) {
       return MainMenuButtonType.reviewPics;
-    }
-    else if (key == MainMenuButtonType.sports.rawValue) {
+    } else if (key == MainMenuButtonType.sports.rawValue) {
       return MainMenuButtonType.sports;
+    } else if (key == MainMenuButtonType.sportResult.rawValue) {
+      return MainMenuButtonType.sportResult;
     }
 
     return MainMenuButtonType.none;

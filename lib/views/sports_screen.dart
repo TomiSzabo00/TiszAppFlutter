@@ -197,7 +197,7 @@ class SportsScreenState extends State<SportsScreen> {
   void dispose() {
     if(initializedViewModel)
       {
-        viewModel.clearControllers();
+        viewModel.clearControllers(dispose: true);
       }
     super.dispose();
   }

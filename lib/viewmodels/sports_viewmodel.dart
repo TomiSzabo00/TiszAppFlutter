@@ -8,6 +8,10 @@ import '../services/database_service.dart';
 
 class SportsViewModel with ChangeNotifier {
 
+  late AvailableSports availableSports;
+  bool sportsInitialized = false;
+  late AllGroups allGroups;
+  bool groupsInitialized = false;
   late SportsResults sportsResults;
   bool initializedResults = false;
   late String sportType;
@@ -22,12 +26,26 @@ class SportsViewModel with ChangeNotifier {
   UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
   Map<int, List<String>> teams = {};
   void getData() async {
-    final databaseref = FirebaseDatabase.instance.ref().child(
+    final databaseref_sports_results = FirebaseDatabase.instance.ref().child(
         'sports');
-    databaseref.onValue.listen((event) {
+    databaseref_sports_results.onValue.listen((event) {
       sportsResults = SportsResults.fromSnapshot(event.snapshot);
       initializedResults = true;
       getTeams();
+      notifyListeners();
+    });
+    final databaseref_available_sports = FirebaseDatabase.instance.ref().child(
+        'available_sports');
+    databaseref_available_sports.onValue.listen((event) {
+      availableSports = AvailableSports.fromSnapshot(event.snapshot);
+      sportsInitialized = true;
+      notifyListeners();
+    });
+    final databaseref_all_groups = FirebaseDatabase.instance.ref().child(
+        'sport_groups');
+    databaseref_all_groups.onValue.listen((event) {
+      allGroups = AllGroups.fromSnapshot(event.snapshot);
+      groupsInitialized = true;
       notifyListeners();
     });
   }
@@ -35,23 +53,23 @@ class SportsViewModel with ChangeNotifier {
   Future<void> getTeams() async {
     final users = await ApiService.getUserInfos();
     for(var user in users)
+    {
+      if(user.teamNum == 0)
       {
-        if(user.teamNum == 0)
+        continue;
+      }
+      if(teams.containsKey(user.teamNum))
+      {
+        if(!teams[user.teamNum]!.contains(user.name))
         {
-          continue;
-        }
-        if(teams.containsKey(user.teamNum))
-        {
-          if(!teams[user.teamNum]!.contains(user.name))
-          {
-            teams[user.teamNum]!.add(user.name);
-          }
-        }
-        else
-        {
-          teams[user.teamNum] = [user.name];
+          teams[user.teamNum]!.add(user.name);
         }
       }
+      else
+      {
+        teams[user.teamNum] = [user.name];
+      }
+    }
     for(var entry in teams.entries)
     {
       teams[entry.key]!.sort();
@@ -70,31 +88,38 @@ class SportsViewModel with ChangeNotifier {
     clearControllers();
   }
 
-  void clearControllers() {
+  void clearControllers({dispose=false}) {
     team1ScoreController.clear();
     team2ScoreController.clear();
     MVPController.clear();
     initializedTeam1 = false;
     initializedTeam2 = false;
     initializedSportType = false;
-    notifyListeners();
+    sportsInitialized = false;
+    groupsInitialized = false;
+    if(!dispose)
+    {
+      notifyListeners();
+    }
   }
 
   void chooseSport(String? s) {
     if(s != null)
-      {
-        sportType = s;
-        initializedSportType = true;
-      }
+    {
+      sportType = s;
+      initializedSportType = true;
+    }
     notifyListeners();
   }
 
   List<String> getAvailableSports() {
     List<String> sports = [];
-    for(var type in SportType.values)
-      {
-        sports.add(SportsResults.getSportName(type));
-      }
+    if (!sportsInitialized)
+      return [];
+    for(var type in availableSports.availableSports)
+    {
+      sports.add(type);
+    }
     sports.sort();
     return sports;
   }
@@ -117,11 +142,11 @@ class SportsViewModel with ChangeNotifier {
     List<int> availableTeams = [];
     final otherTeam = i == 2 ? initializedTeam1 ? team1 : -1 : initializedTeam2 ? team2 : -1;
     for(var team in teams.keys)
-      {
-        if(team != otherTeam) {
-          availableTeams.add(team);
-        }
+    {
+      if(team != otherTeam) {
+        availableTeams.add(team);
       }
+    }
     availableTeams.sort();
     return availableTeams;
   }
@@ -136,12 +161,12 @@ class SportsViewModel with ChangeNotifier {
       }
     }
     if(initializedTeam2)
+    {
+      for(final player in teams[team2]!)
       {
-        for(final player in teams[team2]!)
-        {
-          players.add(player);
-        }
+        players.add(player);
       }
+    }
     return players;
   }
   Future<int> getNumberOfTeams() async {
@@ -150,23 +175,97 @@ class SportsViewModel with ChangeNotifier {
     return num;
   }
 
-  String getResult(int indexRow, int indexCol, String sport) {
-    final results = sportsResults.resultMap[SportsResults.getSportType(sport)];
+  String getResult(int indexRow, int indexCol, String sport, int groupIndex) {
+    final results = sportsResults.resultMap[sport];
     if(indexRow == indexCol)
+    {
+      return "X";
+    }
+    indexRow = allGroups.allGroups[sport]!.groups[groupIndex].teams[indexRow - 1];
+    indexCol = allGroups.allGroups[sport]!.groups[groupIndex].teams[indexCol - 1];
+    if(results == null || results.isEmpty)
+    {
+      return "?";
+    }
+    for(var result in results)
+    {
+      if((result.team1 == indexRow && result.team2 == indexCol))
       {
-        return "X";
+        return "${result.team1Score} - ${result.team2Score}";
       }
-    for(var result in results!)
+      else if((result.team2== indexRow && result.team1 == indexCol))
       {
-        if((result.team1 == indexRow && result.team2 == indexCol))
-          {
-            return "${result.team1Score} - ${result.team2Score}";
-          }
-        else if((result.team2== indexRow && result.team1 == indexCol))
-        {
-          return "${result.team2Score} - ${result.team1Score}";
+        return "${result.team2Score} - ${result.team1Score}";
+      }
+    }
+    return "?";
+  }
+
+  String getStats(int sportIndex, int groupIndex, int indexPlace, int attrIndex) {
+    if(!initializedResults || !sportsInitialized || !groupsInitialized) {
+      return "?";
+    }
+    if(attrIndex == 0)
+      {
+        return indexPlace.toString();
+      }
+    final chosenSport = availableSports.availableSports[sportIndex];
+    final teams_ = allGroups.allGroups[chosenSport]!.groups[groupIndex].teams;
+    final groupStats = {};
+    final stats = ["goals_for", "goals_against", "goal_difference", "points"];
+    for(var result in sportsResults.resultMap[chosenSport]!)
+    {
+      if(teams_.contains(result.team1) && teams_.contains(result.team2))
+      {
+        if(groupStats.containsKey(result.team1)){
+          groupStats[result.team1]["points"] += result.draw ? 1 : result.team1Score > result.team2Score ? 3 : 0;
+          groupStats[result.team1]["goals_for"] += result.team1Score;
+          groupStats[result.team1]["goals_against"] += result.team2Score;
+          groupStats[result.team1]["goal_difference"] += result.team1Score - result.team2Score;
+        }
+        else {
+          groupStats[result.team1] = {
+            "points": result.draw ? 1 : result.team1Score >
+                result.team2Score ? 3 : 0,
+            "goals_for": result.team1Score,
+            "goals_against": result.team2Score,
+            "goal_difference": result.team1Score - result.team2Score
+          };
+        }
+        if(groupStats.containsKey(result.team2)){
+          groupStats[result.team2]["points"] += result.draw ? 1 : result.team2Score > result.team1Score ? 3 : 0;
+          groupStats[result.team2]["goals_for"] += result.team2Score;
+          groupStats[result.team2]["goals_against"] += result.team1Score;
+          groupStats[result.team2]["goal_difference"] += result.team2Score - result.team1Score;
+        }
+        else{
+          groupStats[result.team2] = {
+            "points": result.draw ? 1 : result.team2Score > result.team1Score ? 3 : 0,
+            "goals_for": result.team2Score,
+            "goals_against": result.team1Score,
+            "goal_difference": result.team2Score - result.team1Score
+          };
         }
       }
-    return "?";
+    }
+    teams_.sort((int team1, int team2) {
+      if(!groupStats.containsKey(team2))
+        {
+          return -1;
+        }
+      else if(!groupStats.containsKey(team1))
+        {
+          return 1;
+        }
+      return -groupStats[team1]["points"].compareTo(groupStats[team2]["points"]);
+    });
+    if(attrIndex == 1){
+      return teams_[indexPlace - 1].toString();
+    }
+    if(!groupStats.containsKey(teams_[indexPlace - 1]))
+      {
+        return "0";
+      }
+    return groupStats[teams_[indexPlace - 1]][stats[attrIndex - 2]].toString();
   }
 }
