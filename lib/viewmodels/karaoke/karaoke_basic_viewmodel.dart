@@ -7,7 +7,7 @@ import 'package:tiszapp_flutter/services/date_service.dart';
 
 class KaraokeBasicViewModel extends ChangeNotifier {
   final List<KaraokeData> signedUpUsers = [];
-  final database = FirebaseDatabase.instance.ref();
+  final database = DatabaseService.database;
   final musicController = TextEditingController();
 
   void subscribeToUserChanges() async {

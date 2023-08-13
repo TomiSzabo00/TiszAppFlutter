@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/quiz/quiz_answer.dart';
@@ -8,7 +7,7 @@ import 'package:tiszapp_flutter/models/quiz/quiz_solution.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
 class SlowQuizViewModel extends ChangeNotifier {
-  final database = FirebaseDatabase.instance.ref();
+  final database = DatabaseService.database;
 
   int numberOfQuestions = 0;
   List<TextEditingController> controllers = [];
@@ -20,19 +19,22 @@ class SlowQuizViewModel extends ChangeNotifier {
 
   List<double> get scores {
     return answersByTeams
-        .map((e) => e.fold<double>(
-            0,
-            (previousValue, element) =>
-                previousValue +
-                element.answers.fold<double>(
-                    0,
-                    (previousValue2, element2) =>
-                        previousValue2 +
-                        (element2.state == QuizAnswerState.correct
-                            ? 1
-                            : element2.state == QuizAnswerState.partiallyCorrect
-                                ? 0.5
-                                : 0))) / e.length)
+        .map((e) =>
+            e.fold<double>(
+                0,
+                (previousValue, element) =>
+                    previousValue +
+                    element.answers.fold<double>(
+                        0,
+                        (previousValue2, element2) =>
+                            previousValue2 +
+                            (element2.state == QuizAnswerState.correct
+                                ? 1
+                                : element2.state ==
+                                        QuizAnswerState.partiallyCorrect
+                                    ? 0.5
+                                    : 0))) /
+            e.length)
         .toList();
   }
 
@@ -73,8 +75,8 @@ class SlowQuizViewModel extends ChangeNotifier {
         didSendAnswers = true;
       }
       final answer = QuizAnswer.fromSnapshot(event.snapshot);
-      final teamIndex = answersByTeams.indexWhere(
-          (element) => element.any((element) => element.teamNum == answer.teamNum));
+      final teamIndex = answersByTeams.indexWhere((element) =>
+          element.any((element) => element.teamNum == answer.teamNum));
       if (teamIndex == -1) {
         answersByTeams.add([answer]);
       } else {

@@ -11,7 +11,7 @@ class QuizViewModel extends ChangeNotifier {
   var state = QuizState.disabled;
 
   bool get canSend => state == QuizState.enabled;
-  final DatabaseReference database = FirebaseDatabase.instance.ref();
+  final DatabaseReference database = DatabaseService.database;
   final List<Map<String, int>> signals = [];
   int numberOfTeams = 4;
 
@@ -26,7 +26,7 @@ class QuizViewModel extends ChangeNotifier {
 
   void subscribeToQuizStateChanges() {
     // read data from firebase
-    DatabaseReference database = FirebaseDatabase.instance.ref();
+    DatabaseReference database = DatabaseService.database;
     database.child('quiz/state').onValue.listen((event) {
       if (event.snapshot.value == null) {
         _updateState(QuizState.disabled);

@@ -37,8 +37,9 @@ class MainMenuViewModel extends ChangeNotifier {
   List<MainMenuButton> buttons = [];
   List<MainMenuButton> buttonToggles = [];
 
+  DatabaseReference database = DatabaseService.database;
+
   void subscribeToButtonEvents() async {
-    DatabaseReference database = FirebaseDatabase.instance.ref();
     if (user.uid.isEmpty) {
       user = await DatabaseService.getUserData(
           FirebaseAuth.instance.currentUser!.uid);
@@ -60,8 +61,7 @@ class MainMenuViewModel extends ChangeNotifier {
       });
       FirebaseMessaging.instance.getToken().then((token) {
         if (FirebaseAuth.instance.currentUser != null && token != null) {
-          FirebaseDatabase.instance
-              .ref()
+          database
               .child("notification_tokens")
               .child(FirebaseAuth.instance.currentUser!.uid)
               .set(token);
@@ -179,10 +179,10 @@ class MainMenuViewModel extends ChangeNotifier {
     buttons.sort((a, b) => order
         .indexWhere((element) => element.type == a.type)
         .compareTo(order.indexWhere((element) => element.type == b.type)));
-    
+
     // remove none type buttons from list
     buttons.removeWhere((element) => element.type == MainMenuButtonType.none);
-    
+
     notifyListeners();
   }
 
@@ -358,16 +358,16 @@ class MainMenuViewModel extends ChangeNotifier {
             );
       case MainMenuButtonType.sports:
         return () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const SportsScreen(),
-          ),
-        );
+              MaterialPageRoute(
+                builder: (context) => const SportsScreen(),
+              ),
+            );
       case MainMenuButtonType.sportResult:
         return () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const SportsResultViewScreen(),
-          ),
-        );
+              MaterialPageRoute(
+                builder: (context) => const SportsResultViewScreen(),
+              ),
+            );
       case MainMenuButtonType.reviewPics:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -390,7 +390,7 @@ class MainMenuViewModel extends ChangeNotifier {
 
   void toggleButtonVisibility(
       {required MainMenuButton button, required bool isVisible}) {
-    DatabaseReference ref = FirebaseDatabase.instance.ref();
+    DatabaseReference ref = DatabaseService.database;
     ref.child('_main_menu/${button.type.rawValue}').set(isVisible ? 1 : 0);
   }
 }
