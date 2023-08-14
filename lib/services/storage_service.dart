@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:tiszapp_flutter/models/song_data.dart';
@@ -8,7 +9,13 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart';
 
 class StorageService {
-  static storage.Reference ref = storage.FirebaseStorage.instance.ref();
+  static get ref {
+    if (kDebugMode) {
+      return storage.FirebaseStorage.instance.ref().child('debug');
+    } else {
+      return storage.FirebaseStorage.instance.ref();
+    }
+  }
 
   static Future<String> uploadImage(XFile file, String title) async {
     // compress image
@@ -59,11 +66,10 @@ class StorageService {
 
   static Future<List<Song>> getSongs() async {
     final data =
-        await storage.FirebaseStorage.instance.ref().child('songs').listAll();
+        await ref.child('songs').listAll();
     final songs = <Song>[];
     for (var item in data.items) {
-      final lyricsLink = await storage.FirebaseStorage.instance
-          .ref()
+      final lyricsLink = await ref
           .child('songs/${item.name}')
           .getDownloadURL();
       final lyrics = await readTextFromURL(lyricsLink);
