@@ -66,7 +66,7 @@ class ScoresViewModel with ChangeNotifier {
     scores.clear();
     _resetSum();
     scoresSubscription?.cancel();
-    final scoresRef = FirebaseDatabase.instance.ref().child("scores");
+    final scoresRef = DatabaseService.database.child("scores");
     scoresSubscription = scoresRef.onChildAdded.listen((event) {
       final score = Score.fromSnapshot(event.snapshot);
 
@@ -106,7 +106,7 @@ class ScoresViewModel with ChangeNotifier {
                 _scoresTextToInt(scoreControllers.map((e) => e.text).toList()),
           );
 
-    var ref = FirebaseDatabase.instance.ref().child("scores");
+    var ref = DatabaseService.database.child("scores");
     var now = DateTime.now();
     var formatter = DateFormat('yyyyMMddHHmmssSSS');
     var key = formatter.format(now);

@@ -8,6 +8,7 @@ import 'package:tiszapp_flutter/models/wordle/letter_status.dart';
 import 'package:tiszapp_flutter/models/wordle/word.dart';
 import 'package:tiszapp_flutter/models/wordle/wordle_game_status.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:tiszapp_flutter/services/database_service.dart';
 
 class WordleViewModel with ChangeNotifier {
   WordleGameStatus gameStatus = WordleGameStatus.inProgress;
@@ -71,7 +72,7 @@ class WordleViewModel with ChangeNotifier {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     var board = List.generate(
         6, (_) => Word(letters: List.generate(5, (_) => Letter.empty())));
-    DatabaseReference ref = FirebaseDatabase.instance.ref();
+    DatabaseReference ref = DatabaseService.database;
     DataSnapshot snapshot = await ref.child('wordle/saves/$uid').get();
     if (snapshot.value == null) {
       return board;
@@ -98,7 +99,7 @@ class WordleViewModel with ChangeNotifier {
 
   void _saveGameState() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    DatabaseReference ref = FirebaseDatabase.instance.ref();
+    DatabaseReference ref = DatabaseService.database;
     ref.child('wordle/saves/$uid').set(_convertBoardToWords());
   }
 
@@ -111,7 +112,7 @@ class WordleViewModel with ChangeNotifier {
   }
 
   Future<String> _getSolution() async {
-    DatabaseReference ref = FirebaseDatabase.instance.ref();
+    DatabaseReference ref = DatabaseService.database;
     DataSnapshot snapshot = await ref.child('wordle/solution').get();
     if (snapshot.value != null) {
       return tryCast<String>(snapshot.value) ?? '';

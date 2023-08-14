@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/schedule_data.dart';
 import 'package:tiszapp_flutter/services/api_service.dart';
+import 'package:tiszapp_flutter/services/database_service.dart';
 
 class ScheduleViewModel {
   final List<String> titleList = [
@@ -14,7 +15,7 @@ class ScheduleViewModel {
     "Vasárnap"
   ];
 
-  DatabaseReference ref = FirebaseDatabase.instance.ref();
+  DatabaseReference ref = DatabaseService.database;
   var firstDay = "";
   String currentTitle = "";
 

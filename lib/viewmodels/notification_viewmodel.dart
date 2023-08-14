@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
@@ -18,7 +17,7 @@ class NotificationViewModel extends ChangeNotifier {
   void initSwitches() {
     adminsSwitch = false;
     allUsersSwitch = false;
-    final database = FirebaseDatabase.instance.ref();
+    final database = DatabaseService.database;
     database.child('number_of_teams').onValue.listen((event) {
       if (event.snapshot.value == null) {
         return;

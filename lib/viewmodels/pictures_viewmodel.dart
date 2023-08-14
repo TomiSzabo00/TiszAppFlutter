@@ -40,11 +40,11 @@ class PicturesViewModel extends ChangeNotifier {
 
   late BuildContext? _context;
   final DatabaseReference picsRef =
-      FirebaseDatabase.instance.ref().child("pics");
+      DatabaseService.database.child("pics");
   final DatabaseReference reviewPicsRef =
-      FirebaseDatabase.instance.ref().child("reviewPics");
+      DatabaseService.database.child("reviewPics");
   final DatabaseReference reactionsRef =
-      FirebaseDatabase.instance.ref().child("reactions");
+      DatabaseService.database.child("reactions");
 
   final availableReactions = [
     PicReaction.love,

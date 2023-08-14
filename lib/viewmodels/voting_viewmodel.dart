@@ -1,14 +1,12 @@
 import 'dart:collection';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/voting_state.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
 
-
 class VotingViewmodel with ChangeNotifier {
-  DatabaseReference ref = FirebaseDatabase.instance.ref();
+  final ref = DatabaseService.database;
   VotingState votingState = VotingState.notStarted;
   bool isVoteSent = false;
   List<int> teams = [];
@@ -55,7 +53,8 @@ class VotingViewmodel with ChangeNotifier {
       final snapshot = event.snapshot;
       if (snapshot.exists) {
         teams.clear();
-        votingState = _getVotingStateValue(from: tryCast<String>(snapshot.value) ?? '');
+        votingState =
+            _getVotingStateValue(from: tryCast<String>(snapshot.value) ?? '');
         notifyListeners();
       }
     });

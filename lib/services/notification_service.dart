@@ -1,15 +1,14 @@
 import 'dart:convert';
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 import 'package:http/http.dart' as http;
 
 class NotificationService {
   static Future<Map<String, String>> getTokensAsMap() async {
-    final database = FirebaseDatabase.instance.ref();
+    final database = DatabaseService.database;
 
     final event = await database.child('notification_tokens').once();
     if (event.snapshot.value == null) {

@@ -11,7 +11,7 @@ class HazasParbajViewModel extends ChangeNotifier {
   final List<HazasParbajData> signedUpPairs = [];
   final List<HazasParbajData> votes = [];
   final List<HazasParbajData> votedAdmins = [];
-  final database = FirebaseDatabase.instance.ref();
+  final database = DatabaseService.database;
   final name1Controller = TextEditingController();
   final name2Controller = TextEditingController();
   final teamController = TextEditingController();
