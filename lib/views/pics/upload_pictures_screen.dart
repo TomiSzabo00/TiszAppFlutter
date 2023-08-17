@@ -20,11 +20,9 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   @override
   void initState() {
     super.initState();
-    PicturesViewModel.init(context).then((value) {
       setState(() {
-        _viewModel = value;
+        _viewModel = PicturesViewModel();
       });
-    });
   }
 
   String? isValid(String? value) {

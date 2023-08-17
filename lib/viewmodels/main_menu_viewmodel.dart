@@ -269,7 +269,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.pictures:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const PicturesScreen(isReview: false),
+                builder: (context) => PicturesScreen(isReview: false),
               ),
             );
       case MainMenuButtonType.quizQuick:
@@ -371,7 +371,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.reviewPics:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const PicturesScreen(isReview: true),
+                builder: (context) => PicturesScreen(isReview: true),
               ),
             );
     }

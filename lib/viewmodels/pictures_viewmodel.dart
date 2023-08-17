@@ -30,17 +30,7 @@ class PicturesViewModel extends ChangeNotifier {
   };
   PicReaction? currentReaction;
 
-  PicturesViewModel._fromContext(BuildContext context) {
-    _context = context;
-  }
-
-  static Future<PicturesViewModel> init(BuildContext context) async {
-    return PicturesViewModel._fromContext(context);
-  }
-
-  late BuildContext? _context;
-  final DatabaseReference picsRef =
-      DatabaseService.database.child("pics");
+  final DatabaseReference picsRef = DatabaseService.database.child("pics");
   final DatabaseReference reviewPicsRef =
       DatabaseService.database.child("reviewPics");
   final DatabaseReference reactionsRef =
@@ -57,14 +47,8 @@ class PicturesViewModel extends ChangeNotifier {
   bool isValidImage = true;
 
   final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
-  BuildContext? context;
 
   void getImages(bool isReview) {
-    for (var element in _subscriptions) {
-      element.cancel();
-    }
-    _subscriptions.clear();
-    pictures.clear();
     if (isReview) {
       var s1 = reviewPicsRef.onChildAdded.listen((event) {
         final snapshot = event.snapshot;
@@ -122,6 +106,14 @@ class PicturesViewModel extends ChangeNotifier {
     }
   }
 
+  void disposeListeners() {
+    for (var element in _subscriptions) {
+      element.cancel();
+    }
+    _subscriptions.clear();
+    pictures.clear();
+  }
+
   Future<void> _uploadPicToReview(String title, String url) async {
     final key = DateService.dateInMillisAsString();
     final pictureData = Picture(
@@ -153,7 +145,6 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   Future<void> deletePic(Picture picture) async {
-    context = null;
     picsRef.child(picture.key).remove();
     await StorageService.deleteImage(picture.url);
   }
@@ -162,27 +153,28 @@ class PicturesViewModel extends ChangeNotifier {
     if (image != null && notEmpty == true) {
       final url = await StorageService.uploadImage(image!, title);
       _uploadPicToReview(title, url);
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(_context!).showSnackBar(
-        const SnackBar(
-          content: Text("Kép feltöltve"),
-        ),
-      );
-      Navigator.pop(_context!);
-    } else if (notEmpty == false) {
-      ScaffoldMessenger.of(_context!).showSnackBar(
-        const SnackBar(
-          content: Text("Nem adtál meg címet"),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(_context!).showSnackBar(
-        const SnackBar(
-          content: Text("Nincs kép kiválasztva"),
-        ),
-      );
     }
+    // ignore: use_build_context_synchronously
+    //   ScaffoldMessenger.of(_context!).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("Kép feltöltve"),
+    //     ),
+    //   );
+    //   Navigator.pop(_context!);
+    // } else if (notEmpty == false) {
+    //   ScaffoldMessenger.of(_context!).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("Nem adtál meg címet"),
+    //     ),
+    //   );
+    // } else {
+    //   ScaffoldMessenger.of(_context!).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("Nincs kép kiválasztva"),
+    //     ),
+    //   );
+    // }
+    // TODO: feedback from upload
   }
 
   void pickImage(XFile image) {
@@ -228,7 +220,6 @@ class PicturesViewModel extends ChangeNotifier {
       PicReaction.angry: 0,
       PicReaction.sad: 0,
     };
-    context = null;
     currentReaction = null;
     if (isReview) {
       reviewPicsRef.child('${pic.key}/author').once().then((event) {
@@ -239,10 +230,6 @@ class PicturesViewModel extends ChangeNotifier {
         });
       });
       reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {
-        if (context != null) {
-          Navigator.pop(context!);
-          context = null;
-        }
       });
     } else {
       picsRef.child('${pic.key}/author').onValue.listen((event) {
@@ -253,10 +240,6 @@ class PicturesViewModel extends ChangeNotifier {
         });
       });
       picsRef.child(pic.key).onChildRemoved.listen((event) {
-        if (context != null) {
-          Navigator.pop(context!);
-          context = null;
-        }
       });
     }
 
