@@ -338,4 +338,31 @@ class PicturesViewModel extends ChangeNotifier {
       }
     });
   }
+
+  String timeStampFromKey(String key) {
+    final currDate = DateTime.now();
+    final date = DateTime(
+      int.parse(key.substring(0, 4)),
+      int.parse(key.substring(4, 6)),
+      int.parse(key.substring(6, 8)),
+      int.parse(key.substring(8, 10)),
+      int.parse(key.substring(10, 12)),
+      int.parse(key.substring(12, 14)),
+      int.parse(key.substring(14, 16)),
+    );
+    final diff = currDate.difference(date);
+    if (diff.inDays > 0) {
+      return '${diff.inDays} napja';
+    } else if (diff.inHours > 0) {
+      return '${diff.inHours} órája';
+    } else if (diff.inMinutes > 0) {
+      return '${diff.inMinutes} perce';
+    } else {
+      return '${diff.inSeconds} másodperce';
+    }
+  }
+
+  Future<UserData> getAuthorDetails(String authorId) async {
+    return await DatabaseService.getUserData(authorId);
+  }
 }

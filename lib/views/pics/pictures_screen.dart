@@ -49,24 +49,15 @@ class _PicturesScreenState extends State<PicturesScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: 1.15,
-            ),
-            itemCount: viewModel.pictures.length,
-            itemBuilder: (context, index) {
-              return PictureItem(
-                pic: viewModel.pictures[index],
-                isReview: widget.isReview,
-                isAdmin: viewModel.isAdmin,
-              );
-            },
-          ),
+        child: ListView.builder(
+          itemCount: viewModel.pictures.length,
+          itemBuilder: (context, index) {
+            return PictureItem(
+              pic: viewModel.pictures[index],
+              isReview: widget.isReview,
+              isAdmin: viewModel.isAdmin,
+            );
+          },
         ),
       ),
     );

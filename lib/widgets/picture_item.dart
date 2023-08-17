@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
-import 'package:tiszapp_flutter/views/pics/picture_details_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:super_banners/super_banners.dart';
+import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
-class PictureItem extends StatelessWidget {
-  const PictureItem({
+class PictureItem extends StatefulWidget {
+  PictureItem({
     super.key,
     required this.pic,
     required this.isReview,
@@ -18,72 +17,68 @@ class PictureItem extends StatelessWidget {
   final bool isAdmin;
 
   @override
+  State<PictureItem> createState() => PictureItemState();
+}
+
+class PictureItemState extends State<PictureItem> {
+  final PicturesViewModel viewModel = PicturesViewModel();
+
+  @override
+  void initState() {
+    super.initState();
+    viewModel.loadImageData(widget.pic, widget.isReview);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                PictureDetailsScreen(picture: pic, isReview: isReview),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        authorData(),
+        CachedNetworkImage(
+          imageUrl: widget.pic.url,
+          fit: BoxFit.fitWidth,
+          placeholder: (context, url) => const Center(
+            heightFactor: 5,
+            child: CircularProgressIndicator(),
           ),
-        );
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
         ),
-        clipBehavior: Clip.hardEdge,
-        child: Stack(
-          alignment: Alignment.topRight,
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Text(widget.pic.title),
+        ),
+      ],
+    );
+  }
+
+  Widget authorData() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FutureBuilder(
+          future: viewModel.getAuthorDetails(widget.pic.author),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(snapshot.data!.name),
+                ],
+              );
+            } else {
+              return const Text('Betöltés...');
+            }
+          },
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 100,
-                  child: CachedNetworkImage(
-                    imageUrl: pic.url,
-                    fit: BoxFit.fitWidth,
-                    placeholder: (context, url) => const Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                      ],
-                    ),
-                    errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
-                  ),
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(pic.title),
-                ),
-                const Spacer(),
-              ],
-            ),
-            () {
-              if (pic.isPicOfTheDay) {
-                return const CornerBanner(
-                  bannerPosition: CornerBannerPosition.topRight,
-                  bannerColor: Colors.red,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                    child: Text(
-                      "Nap képe",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                );
-              } else {
-                return const SizedBox();
-              }
-            }(),
+            Text(viewModel.timeStampFromKey(widget.pic.key)),
           ],
         ),
-      ),
+      ],
     );
   }
 }
