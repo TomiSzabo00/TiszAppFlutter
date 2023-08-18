@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PictureItem extends StatefulWidget {
-  PictureItem({
+  const PictureItem({
     super.key,
     required this.pic,
     required this.isReview,
@@ -51,6 +54,8 @@ class PictureItemState extends State<PictureItem> {
           ),
           errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
         ),
+        likeAndComment(),
+        likeCount(),
         titleData(),
         const SizedBox(height: 20),
       ],
@@ -102,7 +107,7 @@ class PictureItemState extends State<PictureItem> {
 
   Widget titleData() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 0.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,6 +199,51 @@ class PictureItemState extends State<PictureItem> {
           viewModel.deletePic(widget.pic);
         } else if (value == 'download') {
           //viewModel.downloadPicture(widget.pic);
+        }
+      },
+    );
+  }
+
+  Widget likeAndComment() {
+    return Row(
+      children: [
+        IconButton(
+          icon: Icon(
+            MdiIcons.heartOutline,
+            color: Colors.black,
+            size: 30,
+          ),
+          onPressed: () {
+            viewModel.toggleReactionTo(widget.pic);
+          },
+        ),
+        IconButton(
+          icon: const FaIcon(
+            FontAwesomeIcons.comment,
+            color: Colors.black,
+            size: 30,
+          ),
+          onPressed: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget likeCount() {
+    return FutureBuilder(
+      future: viewModel.getLikeText(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            child: Row(
+              children: [
+                HtmlWidget(snapshot.data!),
+              ],
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
         }
       },
     );

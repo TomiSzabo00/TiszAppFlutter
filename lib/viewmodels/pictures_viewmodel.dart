@@ -227,6 +227,40 @@ class PicturesViewModel extends ChangeNotifier {
       pic.isPicOfTheDay = isPicOfTheDay;
       notifyListeners();
     });
+
+    picsRef.child(pic.key).child('likes').onValue.listen((event) {
+      likes.clear();
+      final Map<dynamic, dynamic> value =
+          tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
+      value.forEach((key, value) {
+        if (value != 'none') {
+          likes.add(value.toString());
+        }
+      });
+      notifyListeners();
+    });
+  }
+
+  Future<String?> _getLatestLikerName() async {
+    if (likes.isNotEmpty) {
+      final user = await DatabaseService.getUserData(likes.last);
+      return user.name;
+    } else {
+      return null;
+    }
+  }
+
+  Future<String?> getLikeText() async {
+    final lastLikedBy = await _getLatestLikerName();
+    if (lastLikedBy != null) {
+      if (likes.length == 1) {
+        return '<b>$lastLikedBy</b> kedveli ezt a képet';
+      } else {
+        return '<b>$lastLikedBy</b> és még <b>${likes.length - 1} ember</b> kedveli ezt a képet';
+      }
+    } else {
+      return null;
+    }
   }
 
   void toggleReactionTo(Picture picture) {

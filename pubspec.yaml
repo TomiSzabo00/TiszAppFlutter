@@ -73,8 +73,11 @@ dependencies:
   super_banners: ^0.0.1
   flutter_image_compress: ^2.0.3
   readmore: ^2.2.0
+  font_awesome_flutter: ^10.5.0
+  flutter_widget_from_html: ^0.9.1
 
 dev_dependencies:
+  chewie_audio: ^1.5.0
   flutter_test:
     sdk: flutter
 
