@@ -3,15 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 import '../../viewmodels/pictures_viewmodel.dart';
 
+// ignore: must_be_immutable
 class PicturesScreen extends StatefulWidget {
-  // ignore: prefer_const_constructors_in_immutables
   PicturesScreen({
     super.key,
     required this.isReview,
   });
 
   final bool isReview;
-  late final PicturesViewModel viewModel;
+  PicturesViewModel? viewModel;
   @override
   State<PicturesScreen> createState() => _PicturesScreenState();
 }
@@ -21,12 +21,12 @@ class _PicturesScreenState extends State<PicturesScreen> {
   void initState() {
     super.initState();
     widget.viewModel = Provider.of<PicturesViewModel>(context, listen: false);
-    widget.viewModel.getImages(widget.isReview);
+    widget.viewModel!.getImages(widget.isReview);
   }
 
   @override
   void dispose() {
-    widget.viewModel.disposeListeners();
+    widget.viewModel?.disposeListeners();
     super.dispose();
   }
 

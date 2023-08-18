@@ -35,7 +35,13 @@ class PictureItemState extends State<PictureItem> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        authorData(),
+        Row(
+          children: [
+            authorData(),
+            const Spacer(),
+            moreOptions(),
+          ],
+        ),
         CachedNetworkImage(
           imageUrl: widget.pic.url,
           fit: BoxFit.fitWidth,
@@ -46,65 +52,74 @@ class PictureItemState extends State<PictureItem> {
           errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
         ),
         titleData(),
+        const SizedBox(height: 20),
       ],
     );
   }
 
   Widget authorData() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FutureBuilder(
-            future: viewModel.getAuthorDetails(widget.pic.author),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Row(
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+      child: FutureBuilder(
+        future: viewModel.getAuthorDetails(widget.pic.author),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final authorDetails = snapshot.data!;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      snapshot.data!.name,
+                      authorDetails.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
-                );
-              } else {
-                return const Text('Betöltés...');
-              }
-            },
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(viewModel.authorDetails.teamNumberAsString),
-              dotDivider(),
-              const Text('Meme'),
-              dotDivider(),
-              Text(viewModel.timeStampFromKey(widget.pic.key)),
-            ],
-          ),
-        ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(authorDetails.teamNumberAsString),
+                    dotDivider(),
+                    const Text('Meme'),
+                    dotDivider(),
+                    Text(viewModel.timeStampFromKey(widget.pic.key)),
+                  ],
+                ),
+              ],
+            );
+          } else {
+            return const Text('Betöltés...');
+          }
+        },
       ),
     );
   }
 
   Widget titleData() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            viewModel.authorDetails.name,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          FutureBuilder(
+              future: viewModel.getAuthorDetails(widget.pic.author),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Text('Betöltés...');
+                }
+                return Text(
+                  snapshot.data!.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }),
           const SizedBox(width: 8),
           Expanded(
             child: ReadMoreText(widget.pic.title,
@@ -136,6 +151,47 @@ class PictureItemState extends State<PictureItem> {
           fontSize: 14,
         ),
       ),
+    );
+  }
+
+  Widget moreOptions() {
+    return PopupMenuButton(
+      itemBuilder: (context) {
+        final items = <PopupMenuEntry<String>>[];
+        if (widget.isAdmin) {
+          items.add(
+            const PopupMenuItem(
+              value: 'delete',
+              child: Row(
+                children: [
+                  Icon(Icons.delete),
+                  SizedBox(width: 10),
+                  Text('Törlés'),
+                ],
+              ),
+            ),
+          );
+        }
+        items.add(
+          const PopupMenuItem(
+            value: 'download',
+            child: Row(
+              children: [
+                Icon(Icons.download),
+                SizedBox(width: 10),
+                Text(
+                  'Letöltés',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
+            ),
+          ),
+        );
+        return items;
+      },
+      onSelected: (value) {
+        if (value == 'delete') {}
+      },
     );
   }
 }
