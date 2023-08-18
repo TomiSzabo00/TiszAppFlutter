@@ -32,7 +32,6 @@ class _PicturesScreenState extends State<PicturesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<PicturesViewModel>();
     return Scaffold(
       appBar: AppBar(
@@ -40,25 +39,15 @@ class _PicturesScreenState extends State<PicturesScreen> {
             ? const Text('Képek ellenőrzése')
             : const Text('Képek'),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: isDarkTheme
-                ? const AssetImage('images/bg2_night.png')
-                : const AssetImage('images/bg2_day.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: ListView.builder(
-          itemCount: viewModel.pictures.length,
-          itemBuilder: (context, index) {
-            return PictureItem(
-              pic: viewModel.pictures[index],
-              isReview: widget.isReview,
-              isAdmin: viewModel.isAdmin,
-            );
-          },
-        ),
+      body: ListView.builder(
+        itemCount: viewModel.pictures.length,
+        itemBuilder: (context, index) {
+          return PictureItem(
+            pic: viewModel.pictures[index],
+            isReview: widget.isReview,
+            isAdmin: viewModel.isAdmin,
+          );
+        },
       ),
     );
   }

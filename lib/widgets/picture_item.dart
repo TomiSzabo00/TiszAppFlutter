@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:readmore/readmore.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
@@ -44,41 +45,97 @@ class PictureItemState extends State<PictureItem> {
           ),
           errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
         ),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Text(widget.pic.title),
-        ),
+        titleData(),
       ],
     );
   }
 
   Widget authorData() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FutureBuilder(
-          future: viewModel.getAuthorDetails(widget.pic.author),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(snapshot.data!.name),
-                ],
-              );
-            } else {
-              return const Text('Betöltés...');
-            }
-          },
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FutureBuilder(
+            future: viewModel.getAuthorDetails(widget.pic.author),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      snapshot.data!.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const Text('Betöltés...');
+              }
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(viewModel.authorDetails.teamNumberAsString),
+              dotDivider(),
+              const Text('Meme'),
+              dotDivider(),
+              Text(viewModel.timeStampFromKey(widget.pic.key)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget titleData() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            viewModel.authorDetails.name,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ReadMoreText(widget.pic.title,
+                trimLines: 1,
+                colorClickableText: Colors.grey,
+                trimMode: TrimMode.Line,
+                trimCollapsedText: ' Több',
+                trimExpandedText: ' Kevesebb',
+                moreStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                lessStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                )),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget dotDivider() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      child: Text(
+        '•',
+        style: TextStyle(
+          fontSize: 14,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(viewModel.timeStampFromKey(widget.pic.key)),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }

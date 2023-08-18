@@ -36,4 +36,12 @@ class UserData {
   factory UserData.empty() {
     return UserData(uid: '', name: 'ismeretlen', isAdmin: false, teamNum: -1);
   }
+
+  String get teamNumberAsString {
+    if (teamNum == 0) {
+      return 'Szervező';
+    } else {
+      return '$teamNum. csapat';
+    }
+  }
 }
