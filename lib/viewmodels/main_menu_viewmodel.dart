@@ -263,13 +263,13 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.pictureUpload:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const UploadPicturesScreen(),
+                builder: (context) => UploadPicturesScreen(isAdmin: user.isAdmin),
               ),
             );
       case MainMenuButtonType.pictures:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => PicturesScreen(isReview: false),
+                builder: (context) => PicturesScreen(isReview: false, isAdmin: user.isAdmin),
               ),
             );
       case MainMenuButtonType.quizQuick:
@@ -371,7 +371,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.reviewPics:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => PicturesScreen(isReview: true),
+                builder: (context) => PicturesScreen(isReview: true, isAdmin: user.isAdmin),
               ),
             );
     }

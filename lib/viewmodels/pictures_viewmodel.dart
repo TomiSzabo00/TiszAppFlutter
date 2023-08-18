@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
-import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
-import 'package:tiszapp_flutter/models/pics/reaction_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
@@ -20,15 +18,9 @@ class PicturesViewModel extends ChangeNotifier {
 
   final List<Picture> pictures = [];
 
-  bool isAdmin = false;
   UserData authorDetails = UserData.empty();
-  Map<PicReaction, int> reactions = {
-    PicReaction.love: 0,
-    PicReaction.funny: 0,
-    PicReaction.angry: 0,
-    PicReaction.sad: 0,
-  };
-  PicReaction? currentReaction;
+  List<String> likes = [];
+  bool isLiked = false;
 
   final DatabaseReference picsRef = DatabaseService.database.child("pics");
   final DatabaseReference reviewPicsRef =
@@ -36,19 +28,12 @@ class PicturesViewModel extends ChangeNotifier {
   final DatabaseReference reactionsRef =
       DatabaseService.database.child("reactions");
 
-  final availableReactions = [
-    PicReaction.love,
-    PicReaction.funny,
-    PicReaction.angry,
-    PicReaction.sad,
-  ];
-
   XFile? image;
   bool isValidImage = true;
 
   final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
 
-  void getImages(bool isReview) {
+  void getImages(bool isReview) async {
     if (isReview) {
       var s1 = reviewPicsRef.onChildAdded.listen((event) {
         final snapshot = event.snapshot;
@@ -150,10 +135,17 @@ class PicturesViewModel extends ChangeNotifier {
     await StorageService.deleteImage(picture.url);
   }
 
-  void uploadPicture(String title, bool notEmpty) async {
-    if (image != null && notEmpty == true) {
+  void uploadPicture(String title, bool isAdmin) async {
+    if (image != null) {
       final url = await StorageService.uploadImage(image!, title);
-      _uploadPicToReview(title, url);
+      if (isAdmin) {
+        _uploadPicToAccepted(Picture(
+            url: url,
+            title: title,
+            author: FirebaseAuth.instance.currentUser!.uid));
+      } else {
+        _uploadPicToReview(title, url);
+      }
     }
     // ignore: use_build_context_synchronously
     //   ScaffoldMessenger.of(_context!).showSnackBar(
@@ -182,12 +174,6 @@ class PicturesViewModel extends ChangeNotifier {
     this.image = image;
   }
 
-  static Future<bool> _getIsUserAdmin() async {
-    return (await DatabaseService.getUserData(
-            FirebaseAuth.instance.currentUser!.uid))
-        .isAdmin;
-  }
-
   Stream<CachedNetworkImageProvider> getImageProvider(Picture pic) {
     isValidImage = true;
     final controller = StreamController<CachedNetworkImageProvider>();
@@ -213,15 +199,9 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   void loadImageData(Picture pic, bool isReview) async {
-    isAdmin = await _getIsUserAdmin();
     authorDetails = UserData.empty();
-    reactions = {
-      PicReaction.love: 0,
-      PicReaction.funny: 0,
-      PicReaction.angry: 0,
-      PicReaction.sad: 0,
-    };
-    currentReaction = null;
+    likes.clear();
+    isLiked = false;
     if (isReview) {
       reviewPicsRef.child('${pic.key}/author').once().then((event) {
         DatabaseService.getUserData(event.snapshot.value.toString())
@@ -242,28 +222,6 @@ class PicturesViewModel extends ChangeNotifier {
       picsRef.child(pic.key).onChildRemoved.listen((event) {});
     }
 
-    reactionsRef.onValue.listen((event) {
-      reactions = {
-        PicReaction.love: 0,
-        PicReaction.funny: 0,
-        PicReaction.angry: 0,
-        PicReaction.sad: 0,
-      };
-      currentReaction = null;
-      final Map<dynamic, dynamic> values =
-          tryCast<Map>(event.snapshot.value) ?? {};
-      values.forEach((key, value) {
-        final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-        if (reaction.imageFileName == pic.key) {
-          reactions[reaction.reaction] = reactions[reaction.reaction]! + 1;
-          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid) {
-            currentReaction = reaction.reaction;
-          }
-        }
-      });
-      notifyListeners();
-    });
-
     picsRef.child(pic.key).child('isPicOfTheDay').onValue.listen((event) {
       final isPicOfTheDay = tryCast<bool>(event.snapshot.value) ?? false;
       pic.isPicOfTheDay = isPicOfTheDay;
@@ -271,49 +229,22 @@ class PicturesViewModel extends ChangeNotifier {
     });
   }
 
-  bool isSelected(PicReaction reaction) {
-    return currentReaction == reaction;
-  }
-
-  void toggleReactionTo(Picture picture, PicReaction reaction) {
-    final reactionData = Reaction(
-      userId: FirebaseAuth.instance.currentUser!.uid,
-      imageFileName: picture.key,
-      reaction: reaction,
-    );
-
-    if (currentReaction == null) {
-      reactionsRef
-          .child(DateService.dateInMillisAsString())
-          .set(reactionData.toJson());
-    } else if (currentReaction == reaction) {
-      reactionsRef.once().then((value) {
-        final Map<dynamic, dynamic> values =
-            tryCast<Map>(value.snapshot.value) ?? {};
-        values.forEach((key, value) {
-          final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-          final imageKey = picture.key;
-          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
-              reaction.imageFileName == imageKey) {
-            reactionsRef.child(key).remove();
-          }
-        });
-      });
+  void toggleReactionTo(Picture picture) {
+    if (!isLiked) {
+      picsRef
+          .child(picture.key)
+          .child('likes')
+          .push()
+          .set(FirebaseAuth.instance.currentUser!.uid);
     } else {
-      reactionsRef.once().then((value) {
-        final Map<dynamic, dynamic> values =
-            tryCast<Map>(value.snapshot.value) ?? {};
-        values.forEach((key, value) {
-          final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-          final imageKey = picture.key;
-          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
-              reaction.imageFileName == imageKey) {
-            reactionsRef.child(key).remove();
-          }
-        });
-        reactionsRef
-            .child(DateService.dateInMillisAsString())
-            .set(reactionData.toJson());
+      picsRef
+          .child(picture.key)
+          .child('likes')
+          .orderByValue()
+          .equalTo(FirebaseAuth.instance.currentUser!.uid)
+          .once()
+          .then((event) {
+        event.snapshot.ref.remove();
       });
     }
   }

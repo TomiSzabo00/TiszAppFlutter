@@ -6,6 +6,7 @@ class Picture {
   final String title;
   final String author;
   bool isPicOfTheDay;
+  List<String> likes;
 
   Picture({
     this.key = "0",
@@ -13,6 +14,7 @@ class Picture {
     required this.title,
     required this.author,
     this.isPicOfTheDay = false,
+    this.likes = const ['none'],
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
@@ -22,6 +24,7 @@ class Picture {
       title: snapshot['title'],
       author: snapshot['author'],
       isPicOfTheDay: tryCast<bool>(snapshot['isPicOfTheDay']) ?? false,
+      likes: tryCast<List<String>>(snapshot['likes']) ?? [],
     );
   }
 
@@ -30,5 +33,6 @@ class Picture {
         'title': title,
         'author': author,
         'isPicOfTheDay': isPicOfTheDay,
+        'likes': likes,
       };
 }

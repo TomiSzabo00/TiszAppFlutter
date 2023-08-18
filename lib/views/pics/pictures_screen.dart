@@ -8,9 +8,11 @@ class PicturesScreen extends StatefulWidget {
   PicturesScreen({
     super.key,
     required this.isReview,
+    required this.isAdmin,
   });
 
   final bool isReview;
+  final bool isAdmin;
   PicturesViewModel? viewModel;
   @override
   State<PicturesScreen> createState() => _PicturesScreenState();
@@ -45,7 +47,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
           return PictureItem(
             pic: viewModel.pictures[index],
             isReview: widget.isReview,
-            isAdmin: viewModel.isAdmin,
+            isAdmin: widget.isAdmin,
           );
         },
       ),

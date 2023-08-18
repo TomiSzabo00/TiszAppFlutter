@@ -6,7 +6,12 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
 class UploadPicturesScreen extends StatefulWidget {
-  const UploadPicturesScreen({super.key});
+  const UploadPicturesScreen({
+    super.key,
+    required this.isAdmin,
+  });
+
+  final bool isAdmin;
 
   @override
   State<UploadPicturesScreen> createState() => _UploadPicturesScreenState();
@@ -20,9 +25,9 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   @override
   void initState() {
     super.initState();
-      setState(() {
-        _viewModel = PicturesViewModel();
-      });
+    setState(() {
+      _viewModel = PicturesViewModel();
+    });
   }
 
   String? isValid(String? value) {
@@ -75,11 +80,7 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
             children: [
               Button3D(
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _viewModel.uploadPicture(_titleController.text, true);
-                  } else {
-                    _viewModel.uploadPicture(_titleController.text, false);
-                  }
+                  _viewModel.uploadPicture(_titleController.text, widget.isAdmin);
                 },
                 child: Text(
                   "Kép feltöltése",

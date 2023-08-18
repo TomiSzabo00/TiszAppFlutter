@@ -190,7 +190,11 @@ class PictureItemState extends State<PictureItem> {
         return items;
       },
       onSelected: (value) {
-        if (value == 'delete') {}
+        if (value == 'delete') {
+          viewModel.deletePic(widget.pic);
+        } else if (value == 'download') {
+          //viewModel.downloadPicture(widget.pic);
+        }
       },
     );
   }
