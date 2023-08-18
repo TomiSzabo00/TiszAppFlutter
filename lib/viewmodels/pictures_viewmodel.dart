@@ -75,6 +75,7 @@ class PicturesViewModel extends ChangeNotifier {
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
         pictures.insert(0, pic);
+        pictures.sort((a, b) => b.key.compareTo(a.key));
         notifyListeners();
       });
 
@@ -229,8 +230,7 @@ class PicturesViewModel extends ChangeNotifier {
           notifyListeners();
         });
       });
-      reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {
-      });
+      reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {});
     } else {
       picsRef.child('${pic.key}/author').onValue.listen((event) {
         DatabaseService.getUserData(event.snapshot.value.toString())
@@ -239,8 +239,7 @@ class PicturesViewModel extends ChangeNotifier {
           notifyListeners();
         });
       });
-      picsRef.child(pic.key).onChildRemoved.listen((event) {
-      });
+      picsRef.child(pic.key).onChildRemoved.listen((event) {});
     }
 
     reactionsRef.onValue.listen((event) {
