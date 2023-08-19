@@ -98,7 +98,12 @@ class PictureItemState extends State<PictureItem> {
           },
         ),
         likeAndComment(isLiked),
-        likeCount(),
+        GestureDetector(
+          onTap: () {
+            showLikesSheet();
+          },
+          child: likeCount(),
+        ),
         titleData(),
         const SizedBox(height: 20),
       ],
@@ -302,6 +307,83 @@ class PictureItemState extends State<PictureItem> {
           return const SizedBox.shrink();
         }
       },
+    );
+  }
+
+  void showLikesSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      builder: (_) {
+        return DraggableScrollableSheet(
+          maxChildSize: 0.85,
+          expand: false,
+          builder: (_, controller) {
+            return ListView(
+              controller: controller,
+              children: [
+                Column(
+                  children: [
+                    titleSection('Kedvelések'),
+                    likesSection(),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget likesSection() {
+    return FutureBuilder(
+      future: viewModel.getLikesList(widget.pic),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widget.pic.likes.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: Colors.grey,
+                ),
+                title: Text(snapshot.data![index]),
+              );
+            },
+          );
+        } else {
+          return const Text('Betöltés...');
+        }
+      },
+    );
+  }
+
+  Widget titleSection(String text) {
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Divider(
+          color: (isDarkTheme ? Colors.white : Colors.black).withOpacity(0.4),
+          indent: 20,
+          endIndent: 20,
+        ),
+      ],
     );
   }
 }

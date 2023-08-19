@@ -354,4 +354,13 @@ class PicturesViewModel extends ChangeNotifier {
   Future<UserData> getAuthorDetails(String authorId) async {
     return await DatabaseService.getUserData(authorId);
   }
+
+  Future<List<String>> getLikesList(Picture pic) async {
+    final List<String> likesList = [];
+    for (final like in pic.likes) {
+      final user = await DatabaseService.getUserData(like);
+      likesList.add(user.name);
+    }
+    return likesList;
+  }
 }
