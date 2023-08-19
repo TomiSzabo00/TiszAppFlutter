@@ -17,10 +17,7 @@ class PicturesViewModel extends ChangeNotifier {
   PicturesViewModel();
 
   final List<Picture> pictures = [];
-
   UserData authorDetails = UserData.empty();
-  List<String> likes = [];
-  bool isLiked = false;
 
   final DatabaseReference picsRef = DatabaseService.database.child("pics");
   final DatabaseReference reviewPicsRef =
@@ -200,8 +197,6 @@ class PicturesViewModel extends ChangeNotifier {
 
   void loadImageData(Picture pic, bool isReview) async {
     authorDetails = UserData.empty();
-    likes.clear();
-    isLiked = false;
     if (isReview) {
       reviewPicsRef.child('${pic.key}/author').once().then((event) {
         DatabaseService.getUserData(event.snapshot.value.toString())
@@ -227,82 +222,74 @@ class PicturesViewModel extends ChangeNotifier {
       pic.isPicOfTheDay = isPicOfTheDay;
       notifyListeners();
     });
-
-    picsRef.child(pic.key).child('likes').onValue.listen((event) {
-      likes.clear();
-      final Map<dynamic, dynamic> value =
-          tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
-      value.forEach((key, value) {
-        if (value != 'none') {
-          likes.add(value.toString());
-        }
-      });
-      checkIfAlreadyLiked();
-      notifyListeners();
-    });
   }
 
-  void checkIfAlreadyLiked() {
-    if (likes.contains(FirebaseAuth.instance.currentUser!.uid)) {
-      isLiked = true;
+  bool checkIfAlreadyLiked(Picture pic) {
+    if (pic.likes.contains(FirebaseAuth.instance.currentUser!.uid)) {
+      return true;
     } else {
-      isLiked = false;
+      return false;
     }
-    notifyListeners();
   }
 
   Future<void> getLikesOnce(Picture pic) async {
     await picsRef.child(pic.key).child('likes').once().then((event) {
-      likes.clear();
+      pic.likes.clear();
       final Map<dynamic, dynamic> value =
           tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
       value.forEach((key, value) {
         if (value != 'none') {
-          likes.add(value.toString());
+          pic.likes.add(value.toString());
         }
       });
-      checkIfAlreadyLiked();
       notifyListeners();
     });
   }
 
-  Future<String?> _getLatestLikerName() async {
-    if (likes.isNotEmpty) {
-      final user = await DatabaseService.getUserData(likes.last);
+  Future<String?> _getLatestLikerName(Picture pic) async {
+    if (pic.likes.isNotEmpty) {
+      final user = await DatabaseService.getUserData(pic.likes.last);
       return user.name;
     } else {
       return null;
     }
   }
 
-  Future<String?> getLikeText(Picture pic) async {
+  Future<String?> getLikeText(Picture pic, Function completion) async {
     await getLikesOnce(pic);
-    final lastLikedBy = await _getLatestLikerName();
+    final lastLikedBy = await _getLatestLikerName(pic);
+    completion();
     if (lastLikedBy != null) {
-      if (likes.length == 1) {
+      if (pic.likes.length == 1) {
         return '<b>$lastLikedBy</b> kedveli ezt a képet';
       } else {
-        return '<b>$lastLikedBy</b> és még <b>${likes.length - 1} ember</b> kedveli ezt a képet';
+        return '<b>$lastLikedBy</b> és még <b>${pic.likes.length - 1} ember</b> kedveli ezt a képet';
       }
     } else {
       return null;
     }
   }
 
-  void toggleReactionTo(Picture picture) {
-    if (!isLiked) {
+  void toggleReactionTo(Picture picture, Function completion) {
+    if (!checkIfAlreadyLiked(picture)) {
       picsRef
           .child(picture.key)
           .child('likes')
           .push()
-          .set(FirebaseAuth.instance.currentUser!.uid);
+          .set(FirebaseAuth.instance.currentUser!.uid)
+          .then((value) => completion());
     } else {
       picsRef.child(picture.key).child('likes').once().then((value) {
         final Map<dynamic, dynamic> likes =
             tryCast<Map>(value.snapshot.value) ?? <dynamic, dynamic>{};
         likes.forEach((key, value) {
           if (value == FirebaseAuth.instance.currentUser!.uid) {
-            picsRef.child(picture.key).child('likes').child(key).remove();
+            picsRef
+                .child(picture.key)
+                .child('likes')
+                .child(key)
+                .remove()
+                .then((value) => completion());
           }
         });
       });

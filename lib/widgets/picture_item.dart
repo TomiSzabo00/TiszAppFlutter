@@ -35,6 +35,7 @@ class PictureItemState extends State<PictureItem> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLiked = viewModel.checkIfAlreadyLiked(widget.pic);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -54,7 +55,7 @@ class PictureItemState extends State<PictureItem> {
           ),
           errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
         ),
-        likeAndComment(),
+        likeAndComment(isLiked),
         likeCount(),
         titleData(),
         const SizedBox(height: 20),
@@ -204,17 +205,19 @@ class PictureItemState extends State<PictureItem> {
     );
   }
 
-  Widget likeAndComment() {
+  Widget likeAndComment(bool isLiked) {
     return Row(
       children: [
         IconButton(
           icon: Icon(
-            MdiIcons.heartOutline,
-            color: Colors.black,
+            isLiked ? MdiIcons.heart : MdiIcons.heartOutline,
+            color: isLiked ? Colors.red : Colors.black,
             size: 30,
           ),
           onPressed: () {
-            viewModel.toggleReactionTo(widget.pic);
+            viewModel.toggleReactionTo(widget.pic, () {
+              setState(() {});
+            });
           },
         ),
         IconButton(
@@ -231,7 +234,11 @@ class PictureItemState extends State<PictureItem> {
 
   Widget likeCount() {
     return FutureBuilder(
-      future: viewModel.getLikeText(widget.pic),
+      future: viewModel.getLikeText(widget.pic, () {
+        if (mounted) {
+          setState(() {});
+        }
+      }),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
