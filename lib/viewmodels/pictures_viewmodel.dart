@@ -241,6 +241,20 @@ class PicturesViewModel extends ChangeNotifier {
     });
   }
 
+  Future<void> getLikesOnce(Picture pic) async {
+    await picsRef.child(pic.key).child('likes').once().then((event) {
+      likes.clear();
+      final Map<dynamic, dynamic> value =
+          tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
+      value.forEach((key, value) {
+        if (value != 'none') {
+          likes.add(value.toString());
+        }
+      });
+      notifyListeners();
+    });
+  }
+
   Future<String?> _getLatestLikerName() async {
     if (likes.isNotEmpty) {
       final user = await DatabaseService.getUserData(likes.last);
@@ -250,7 +264,8 @@ class PicturesViewModel extends ChangeNotifier {
     }
   }
 
-  Future<String?> getLikeText() async {
+  Future<String?> getLikeText(Picture pic) async {
+    await getLikesOnce(pic);
     final lastLikedBy = await _getLatestLikerName();
     if (lastLikedBy != null) {
       if (likes.length == 1) {

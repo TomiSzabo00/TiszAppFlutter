@@ -231,7 +231,7 @@ class PictureItemState extends State<PictureItem> {
 
   Widget likeCount() {
     return FutureBuilder(
-      future: viewModel.getLikeText(),
+      future: viewModel.getLikeText(widget.pic),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
