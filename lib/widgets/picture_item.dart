@@ -7,6 +7,7 @@ import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zoom_pinch_overlay/zoom_pinch_overlay.dart';
 
 class PictureItem extends StatefulWidget {
   const PictureItem({
@@ -46,14 +47,23 @@ class PictureItemState extends State<PictureItem> {
             moreOptions(),
           ],
         ),
-        CachedNetworkImage(
-          imageUrl: widget.pic.url,
-          fit: BoxFit.fitWidth,
-          placeholder: (context, url) => const Center(
-            heightFactor: 5,
-            child: CircularProgressIndicator(),
+        ZoomOverlay(
+          modalBarrierColor: Colors.black45,
+          minScale: 1,
+          maxScale: 5.0,
+          animationCurve: Curves.fastOutSlowIn,
+          animationDuration: const Duration(milliseconds: 300),
+          twoTouchOnly: true,
+          child: CachedNetworkImage(
+            imageUrl: widget.pic.url,
+            fit: BoxFit.fitWidth,
+            placeholder: (context, url) => const Center(
+              heightFactor: 5,
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) =>
+                const Icon(Boxicons.bxs_error),
           ),
-          errorWidget: (context, url, error) => const Icon(Boxicons.bxs_error),
         ),
         likeAndComment(isLiked),
         likeCount(),

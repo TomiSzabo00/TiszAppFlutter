@@ -18,13 +18,18 @@ class Picture {
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
+    final rawLikes = snapshot['likes'];
+    List<String> likes = [];
+    if (rawLikes != null && rawLikes is List) {
+      likes = rawLikes.map((e) => e.toString()).toList();
+    }
     return Picture(
       key: key,
       url: snapshot['fileName'],
       title: snapshot['title'],
       author: snapshot['author'],
       isPicOfTheDay: tryCast<bool>(snapshot['isPicOfTheDay']) ?? false,
-      likes: tryCast<List<String>>(snapshot['likes']) ?? [],
+      likes: likes,
     );
   }
 
