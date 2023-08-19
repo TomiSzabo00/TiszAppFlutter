@@ -237,8 +237,18 @@ class PicturesViewModel extends ChangeNotifier {
           likes.add(value.toString());
         }
       });
+      checkIfAlreadyLiked();
       notifyListeners();
     });
+  }
+
+  void checkIfAlreadyLiked() {
+    if (likes.contains(FirebaseAuth.instance.currentUser!.uid)) {
+      isLiked = true;
+    } else {
+      isLiked = false;
+    }
+    notifyListeners();
   }
 
   Future<void> getLikesOnce(Picture pic) async {
@@ -251,6 +261,7 @@ class PicturesViewModel extends ChangeNotifier {
           likes.add(value.toString());
         }
       });
+      checkIfAlreadyLiked();
       notifyListeners();
     });
   }
@@ -286,14 +297,14 @@ class PicturesViewModel extends ChangeNotifier {
           .push()
           .set(FirebaseAuth.instance.currentUser!.uid);
     } else {
-      picsRef
-          .child(picture.key)
-          .child('likes')
-          .orderByValue()
-          .equalTo(FirebaseAuth.instance.currentUser!.uid)
-          .once()
-          .then((event) {
-        event.snapshot.ref.remove();
+      picsRef.child(picture.key).child('likes').once().then((value) {
+        final Map<dynamic, dynamic> likes =
+            tryCast<Map>(value.snapshot.value) ?? <dynamic, dynamic>{};
+        likes.forEach((key, value) {
+          if (value == FirebaseAuth.instance.currentUser!.uid) {
+            picsRef.child(picture.key).child('likes').child(key).remove();
+          }
+        });
       });
     }
   }
