@@ -14,7 +14,7 @@ class Picture {
     required this.title,
     required this.author,
     this.isPicOfTheDay = false,
-    this.likes = const ['none'],
+    this.likes = const [],
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
