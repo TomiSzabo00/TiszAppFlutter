@@ -296,6 +296,17 @@ class PicturesViewModel extends ChangeNotifier {
     }
   }
 
+  void likePicture(Picture picture) {
+    if (checkIfAlreadyLiked(picture)) {
+      return;
+    }
+    picsRef
+        .child(picture.key)
+        .child('likes')
+        .push()
+        .set(FirebaseAuth.instance.currentUser!.uid);
+  }
+
   void choosePic(Picture picture) {
     picsRef.child(picture.key).child('isPicOfTheDay').set(true);
     NotificationService.getTokensAsMap().then((tokens) {
