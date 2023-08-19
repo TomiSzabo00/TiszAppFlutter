@@ -31,6 +31,7 @@ class PicturesViewModel extends ChangeNotifier {
   final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
 
   void getImages(bool isReview) async {
+    pictures.clear();
     if (isReview) {
       var s1 = reviewPicsRef.onChildAdded.listen((event) {
         final snapshot = event.snapshot;
