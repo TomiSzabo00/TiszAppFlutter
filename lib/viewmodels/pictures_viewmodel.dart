@@ -361,6 +361,7 @@ class PicturesViewModel extends ChangeNotifier {
       final user = await DatabaseService.getUserData(like);
       likesList.add(user.name);
     }
+    likesList.sort((a, b) => a.compareTo(b));
     return likesList;
   }
 }
