@@ -248,12 +248,17 @@ class PictureItemState extends State<PictureItem> {
   }
 
   Widget likeAndComment(bool isLiked) {
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         IconButton(
           icon: Icon(
             isLiked ? MdiIcons.heart : MdiIcons.heartOutline,
-            color: isLiked ? Colors.red : Colors.black,
+            color: isLiked
+                ? Colors.red
+                : isDarkTheme
+                    ? Colors.white
+                    : Colors.black,
             size: 30,
           ),
           onPressed: () {
@@ -265,9 +270,9 @@ class PictureItemState extends State<PictureItem> {
           },
         ),
         IconButton(
-          icon: const FaIcon(
+          icon: FaIcon(
             FontAwesomeIcons.comment,
-            color: Colors.black,
+            color: isDarkTheme ? Colors.white : Colors.black,
             size: 25,
           ),
           onPressed: () {},
