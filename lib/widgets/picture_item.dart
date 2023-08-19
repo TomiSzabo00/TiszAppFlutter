@@ -258,7 +258,9 @@ class PictureItemState extends State<PictureItem> {
           ),
           onPressed: () {
             viewModel.toggleReactionTo(widget.pic, () {
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             });
           },
         ),
