@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:gal/gal.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
@@ -290,7 +293,6 @@ class PictureItemState extends State<PictureItem> {
                 SizedBox(width: 10),
                 Text(
                   'Letöltés',
-                  style: TextStyle(color: Colors.black),
                 ),
               ],
             ),
@@ -298,11 +300,16 @@ class PictureItemState extends State<PictureItem> {
         );
         return items;
       },
-      onSelected: (value) {
+      onSelected: (value) async {
         if (value == 'delete') {
           viewModel.deletePic(widget.pic);
         } else if (value == 'download') {
-          //viewModel.downloadPicture(widget.pic);
+          if (await Gal.hasAccess()) {
+          final imagePath = '${Directory.systemTemp.path}/image.jpg';
+          await Dio().download(widget.pic.url, imagePath);
+          await Gal.putImage(imagePath);
+          _showSnackBar('Kép mentve a galériába');
+        }
         }
       },
     );
@@ -548,7 +555,7 @@ class PictureItemState extends State<PictureItem> {
                 FocusManager.instance.primaryFocus?.unfocus();
               } else {
                 Navigator.of(context).pop();
-                showToast('Komment elküldve.');
+                _showSnackBar('Komment elküldve.');
               }
             },
           ),
@@ -579,7 +586,7 @@ class PictureItemState extends State<PictureItem> {
     );
   }
 
-  void showToast(String text) {
+  void _showSnackBar(String text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(text),
