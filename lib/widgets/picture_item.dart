@@ -40,10 +40,10 @@ class PictureItemState extends State<PictureItem> {
     _titleFuture = viewModel.getAuthorDetails(widget.pic.author);
     _authorFuture = viewModel.getAuthorDetails(widget.pic.author);
     _likeCountFuture = viewModel.getLikeText(widget.pic, () {
-        if (mounted) {
-          setState(() {});
-        }
-      });
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -133,45 +133,48 @@ class PictureItemState extends State<PictureItem> {
   }
 
   Widget authorData() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-      child: FutureBuilder(
-        future: _authorFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final authorDetails = snapshot.data!;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      authorDetails.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(authorDetails.teamNumberAsString),
-                    dotDivider(),
-                    const Text('Meme'),
-                    dotDivider(),
-                    Text(viewModel.timeStampFromKey(widget.pic.key)),
-                  ],
-                ),
-              ],
-            );
-          } else {
-            return const Text('Betöltés...');
-          }
-        },
-      ),
+    return FutureBuilder(
+      future: _authorFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final authorDetails = snapshot.data!;
+          return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
+              visualDensity: VisualDensity.compact,
+              leading: const CircleAvatar(
+                backgroundColor: Colors.grey,
+              ),
+              title: Text(
+                authorDetails.name,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              subtitle: Wrap(
+                children: [
+                  Text(
+                    authorDetails.teamNumberAsString,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  dotDivider(),
+                  const Text(
+                    'Meme',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  dotDivider(),
+                  Text(
+                    viewModel.timeStampFromKey(widget.pic.key),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          return const Text('Betöltés...');
+        }
+      },
     );
   }
 
