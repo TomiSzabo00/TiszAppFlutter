@@ -28,6 +28,8 @@ class PicturesViewModel extends ChangeNotifier {
   XFile? image;
   bool isValidImage = true;
 
+  TextEditingController commentController = TextEditingController();
+
   final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
 
   void getImages(bool isReview) async {
@@ -79,7 +81,8 @@ class PicturesViewModel extends ChangeNotifier {
         final picIndex =
             pictures.indexWhere((element) => element.key == snapshot.key);
         if (picIndex != -1 && picIndex < pictures.length) {
-          pic.likes = pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
+          pic.likes =
+              pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
           pictures[picIndex] = pic;
           notifyListeners();
         }
@@ -362,6 +365,36 @@ class PicturesViewModel extends ChangeNotifier {
       likesList[entry.key] = user.name;
     });
     return likesList;
+  }
+
+  Future<List<Map<String, String>>> getCommentsList(Picture pic) async {
+    final List<Map<String, String>> commentsList = [];
+    await Future.forEach(pic.comments, (entry) async {
+      final uid = entry.keys.first;
+      final user = await DatabaseService.getUserData(uid);
+      commentsList.add({user.name: entry.values.first});
+    });
+    return commentsList;
+  }
+
+  void uploadComment(Picture pic) {
+    picsRef
+        .child(pic.key)
+        .child('comments')
+        .push()
+        .set({FirebaseAuth.instance.currentUser!.uid: commentController.text});
+  }
+
+  Future<String?> getCommentCountAsString(Picture pic) async {
+    final count = pic.comments.length;
+    if (count == 0) {
+      return null;
+    }
+    String article = ' a ';
+    if (count == 1 || count == 5 || (count >= 50 && count < 60)) {
+      article = ' az ';
+    }
+    return 'Mind$article$count komment megtekintése';
   }
 }
 

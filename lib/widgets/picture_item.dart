@@ -32,6 +32,8 @@ class PictureItemState extends State<PictureItem> {
   Future _titleFuture = Future.value();
   Future _authorFuture = Future.value();
   Future _likeCountFuture = Future.value();
+  Future _commentCountFuture = Future.value();
+  Future _commentListFuture = Future.value();
 
   @override
   void initState() {
@@ -44,6 +46,8 @@ class PictureItemState extends State<PictureItem> {
         setState(() {});
       }
     });
+    _commentCountFuture = viewModel.getCommentCountAsString(widget.pic);
+    _commentListFuture = viewModel.getCommentsList(widget.pic);
   }
 
   @override
@@ -55,6 +59,11 @@ class PictureItemState extends State<PictureItem> {
           setState(() {});
         }
       });
+      if (viewModel.getCommentCountAsString(widget.pic) !=
+          viewModel.getCommentCountAsString(oldWidget.pic)) {
+        _commentCountFuture = viewModel.getCommentCountAsString(widget.pic);
+        _commentListFuture = viewModel.getCommentsList(widget.pic);
+      }
     }
   }
 
@@ -127,6 +136,7 @@ class PictureItemState extends State<PictureItem> {
           child: likeCount(),
         ),
         titleData(),
+        commentCount(),
         const SizedBox(height: 20),
       ],
     );
@@ -306,7 +316,9 @@ class PictureItemState extends State<PictureItem> {
             color: isDarkTheme ? Colors.white : Colors.black,
             size: 25,
           ),
-          onPressed: () {},
+          onPressed: () {
+            showCommentsSheet(isFromButton: true);
+          },
         ),
       ],
     );
@@ -318,10 +330,36 @@ class PictureItemState extends State<PictureItem> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
             child: Row(
               children: [
                 HtmlWidget(snapshot.data!),
+              ],
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
+
+  Widget commentCount() {
+    return FutureBuilder(
+      future: _commentCountFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            child: Row(
+              children: [
+                Text(
+                  snapshot.data!,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
               ],
             ),
           );
@@ -386,6 +424,108 @@ class PictureItemState extends State<PictureItem> {
           return const Text('Betöltés...');
         }
       },
+    );
+  }
+
+  void showCommentsSheet({required bool isFromButton}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      builder: (context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: DraggableScrollableSheet(
+            maxChildSize: 0.6,
+            expand: false,
+            builder: (_, controller) {
+              return Column(
+                children: [
+                  titleSection('Kommentek'),
+                  commentsSection(),
+                  commnetTextBoxSection(isFromButton),
+                  const SizedBox(height: 30),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget commentsSection() {
+    return FutureBuilder(
+        future: _commentListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Hiba történt a kommentek betöltése közben.');
+          }
+          if (snapshot.hasData) {
+            return Expanded(
+              flex: 100,
+              child: ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 10.0),
+                    visualDensity: VisualDensity.compact,
+                    leading: const CircleAvatar(
+                      backgroundColor: Colors.grey,
+                    ),
+                    title: Text(snapshot.data![index].keys.first,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12)),
+                    subtitle: Text(
+                      snapshot.data![index].values.first,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  );
+                },
+              ),
+            );
+          } else {
+            return const Text('Betöltés...');
+          }
+        });
+  }
+
+  Widget commnetTextBoxSection(bool isFromButton) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: viewModel.commentController,
+              autofocus: isFromButton,
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                hintText: 'Írj egy kommentet...',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              ),
+              onSubmitted: (value) => FocusManager.instance.primaryFocus
+                  ?.unfocus(), // hide keyboard
+              autocorrect: false,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () {
+              viewModel.uploadComment(widget.pic);
+              viewModel.commentController.clear();
+            },
+          ),
+        ],
+      ),
     );
   }
 

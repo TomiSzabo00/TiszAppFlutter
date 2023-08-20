@@ -7,6 +7,7 @@ class Picture {
   final String author;
   bool isPicOfTheDay;
   Map<String, String> likes;
+  List<Map<String, String>> comments = [];
 
   Picture({
     this.key = "0",
@@ -15,6 +16,7 @@ class Picture {
     required this.author,
     this.isPicOfTheDay = false,
     this.likes = const {},
+    this.comments = const [],
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
@@ -23,6 +25,15 @@ class Picture {
     if (rawLikes != null && rawLikes is Map) {
       likes = rawLikes.cast<String, String>();
     }
+    final rawComments = snapshot['comments']?.values.toList();
+    List<Map<String, String>> comments = [];
+    if (rawComments != null) {
+      rawComments.forEach((element) {
+        if (element is Map) {
+          comments.add(element.cast<String, String>());
+        }
+      });
+    }
     return Picture(
       key: key,
       url: snapshot['fileName'],
@@ -30,6 +41,7 @@ class Picture {
       author: snapshot['author'],
       isPicOfTheDay: tryCast<bool>(snapshot['isPicOfTheDay']) ?? false,
       likes: likes,
+      comments: comments,
     );
   }
 
@@ -39,5 +51,6 @@ class Picture {
         'author': author,
         'isPicOfTheDay': isPicOfTheDay,
         'likes': likes,
+        'comments': comments,
       };
 }
