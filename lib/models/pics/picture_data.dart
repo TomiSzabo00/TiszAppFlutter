@@ -1,4 +1,5 @@
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
 class Picture {
   String key;
@@ -25,14 +26,18 @@ class Picture {
     if (rawLikes != null && rawLikes is Map) {
       likes = rawLikes.cast<String, String>();
     }
-    final rawComments = snapshot['comments']?.values.toList();
+    final rawComments = snapshot['comments'];
+    List orderedRawComments = [];
+    if (rawComments != null && rawComments is Map) {
+      orderedRawComments = rawComments.orderByKeys(compareTo: (a, b) => a.compareTo(b)).values.toList();
+    }
     List<Map<String, String>> comments = [];
-    if (rawComments != null) {
-      rawComments.forEach((element) {
+    if (orderedRawComments.isNotEmpty) {
+      for (var element in orderedRawComments) {
         if (element is Map) {
           comments.add(element.cast<String, String>());
         }
-      });
+      }
     }
     return Picture(
       key: key,
