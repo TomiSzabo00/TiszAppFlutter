@@ -303,11 +303,9 @@ class PicturesViewModel extends ChangeNotifier {
     if (checkIfAlreadyLiked(picture)) {
       return;
     }
-    picsRef
-        .child(picture.key)
-        .child('likes')
-        .push()
-        .set(FirebaseAuth.instance.currentUser!.uid);
+    picsRef.child(picture.key).child('likes').push().set({
+      DateService.dateInMillisAsString(): FirebaseAuth.instance.currentUser!.uid
+    });
   }
 
   void choosePic(Picture picture) {
