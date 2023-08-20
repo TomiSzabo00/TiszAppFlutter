@@ -354,7 +354,8 @@ class PictureItemState extends State<PictureItem> {
                 leading: const CircleAvatar(
                   backgroundColor: Colors.grey,
                 ),
-                title: Text(snapshot.data![index]),
+                title: Text(snapshot.data!.values.elementAt(index)),
+                subtitle: Text(viewModel.timeStampFromKey(snapshot.data!.keys.elementAt(index))),
               );
             },
           );

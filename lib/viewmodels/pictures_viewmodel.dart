@@ -79,6 +79,7 @@ class PicturesViewModel extends ChangeNotifier {
         final picIndex =
             pictures.indexWhere((element) => element.key == snapshot.key);
         if (picIndex != -1 && picIndex < pictures.length) {
+          pic.likes = pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
           pictures[picIndex] = pic;
           notifyListeners();
         }
@@ -226,7 +227,7 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   bool checkIfAlreadyLiked(Picture pic) {
-    if (pic.likes.contains(FirebaseAuth.instance.currentUser!.uid)) {
+    if (pic.likes.values.contains(FirebaseAuth.instance.currentUser!.uid)) {
       return true;
     } else {
       return false;
@@ -239,17 +240,19 @@ class PicturesViewModel extends ChangeNotifier {
       final Map<dynamic, dynamic> value =
           tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
       value.forEach((key, value) {
-        if (value != 'none') {
-          pic.likes.add(value.toString());
+        final valueMap = tryCast<Map>(value);
+        if (valueMap != null) {
+          pic.likes[valueMap.keys.first] = valueMap.values.first;
         }
       });
+      pic.likes = pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
       notifyListeners();
     });
   }
 
   Future<String?> _getLatestLikerName(Picture pic) async {
     if (pic.likes.isNotEmpty) {
-      final user = await DatabaseService.getUserData(pic.likes.last);
+      final user = await DatabaseService.getUserData(pic.likes.values.first);
       return user.name;
     } else {
       return null;
@@ -273,18 +276,17 @@ class PicturesViewModel extends ChangeNotifier {
 
   void toggleReactionTo(Picture picture, Function completion) {
     if (!checkIfAlreadyLiked(picture)) {
-      picsRef
-          .child(picture.key)
-          .child('likes')
-          .push()
-          .set(FirebaseAuth.instance.currentUser!.uid)
-          .then((value) => completion());
+      picsRef.child(picture.key).child('likes').push().set({
+        DateService.dateInMillisAsString():
+            FirebaseAuth.instance.currentUser!.uid
+      }).then((value) => completion());
     } else {
       picsRef.child(picture.key).child('likes').once().then((value) {
         final Map<dynamic, dynamic> likes =
             tryCast<Map>(value.snapshot.value) ?? <dynamic, dynamic>{};
         likes.forEach((key, value) {
-          if (value == FirebaseAuth.instance.currentUser!.uid) {
+          final valueMap = tryCast<Map>(value) ?? {};
+          if (valueMap.values.first == FirebaseAuth.instance.currentUser!.uid) {
             picsRef
                 .child(picture.key)
                 .child('likes')
@@ -355,13 +357,27 @@ class PicturesViewModel extends ChangeNotifier {
     return await DatabaseService.getUserData(authorId);
   }
 
-  Future<List<String>> getLikesList(Picture pic) async {
-    final List<String> likesList = [];
-    for (final like in pic.likes) {
-      final user = await DatabaseService.getUserData(like);
-      likesList.add(user.name);
-    }
-    likesList.sort((a, b) => a.compareTo(b));
+  Future<Map<String, String>> getLikesList(Picture pic) async {
+    final Map<String, String> likesList = {};
+    pic.likes.forEach((key, value) async {
+      final user = await DatabaseService.getUserData(value);
+      likesList[key] = user.name;
+    });
     return likesList;
+  }
+}
+
+/// Extensions on [Map] of <[K], [V]>
+extension ExtendsionsOnMapDynamicDynamic<K, V> on Map<K, V> {
+  /// Order by keys
+  Map<K, V> orderByKeys({required int Function(K a, K b) compareTo}) {
+    return Map.fromEntries(
+        entries.toList()..sort((a, b) => compareTo(a.key, b.key)));
+  }
+
+  /// Order by values
+  Map<K, V> orderByValues({required int Function(V a, V b) compareTo}) {
+    return Map.fromEntries(
+        entries.toList()..sort((a, b) => compareTo(a.value, b.value)));
   }
 }
