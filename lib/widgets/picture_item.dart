@@ -29,11 +29,33 @@ class PictureItem extends StatefulWidget {
 class PictureItemState extends State<PictureItem> {
   final PicturesViewModel viewModel = PicturesViewModel();
   bool isAnimating = false;
+  Future _titleFuture = Future.value();
+  Future _authorFuture = Future.value();
+  Future _likeCountFuture = Future.value();
 
   @override
   void initState() {
     super.initState();
     viewModel.loadImageData(widget.pic, widget.isReview);
+    _titleFuture = viewModel.getAuthorDetails(widget.pic.author);
+    _authorFuture = viewModel.getAuthorDetails(widget.pic.author);
+    _likeCountFuture = viewModel.getLikeText(widget.pic, () {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+  }
+
+  @override
+  void didUpdateWidget(covariant PictureItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.pic != widget.pic) {
+      _likeCountFuture = viewModel.getLikeText(widget.pic, () {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
   }
 
   @override
@@ -114,7 +136,7 @@ class PictureItemState extends State<PictureItem> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
       child: FutureBuilder(
-        future: viewModel.getAuthorDetails(widget.pic.author),
+        future: _authorFuture,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final authorDetails = snapshot.data!;
@@ -161,17 +183,18 @@ class PictureItemState extends State<PictureItem> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           FutureBuilder(
-              future: viewModel.getAuthorDetails(widget.pic.author),
+              future: _titleFuture,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.hasData) {
+                  return Text(
+                    snapshot.data!.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                } else {
                   return const Text('Betöltés...');
                 }
-                return Text(
-                  snapshot.data!.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
               }),
           const SizedBox(width: 8),
           Expanded(
@@ -288,11 +311,7 @@ class PictureItemState extends State<PictureItem> {
 
   Widget likeCount() {
     return FutureBuilder(
-      future: viewModel.getLikeText(widget.pic, () {
-        if (mounted) {
-          setState(() {});
-        }
-      }),
+      future: _likeCountFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
@@ -355,7 +374,8 @@ class PictureItemState extends State<PictureItem> {
                   backgroundColor: Colors.grey,
                 ),
                 title: Text(snapshot.data!.values.elementAt(index)),
-                subtitle: Text(viewModel.timeStampFromKey(snapshot.data!.keys.elementAt(index))),
+                subtitle: Text(viewModel
+                    .timeStampFromKey(snapshot.data!.keys.elementAt(index))),
               );
             },
           );

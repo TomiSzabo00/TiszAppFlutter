@@ -359,9 +359,9 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future<Map<String, String>> getLikesList(Picture pic) async {
     final Map<String, String> likesList = {};
-    pic.likes.forEach((key, value) async {
-      final user = await DatabaseService.getUserData(value);
-      likesList[key] = user.name;
+    await Future.forEach(pic.likes.entries, (entry) async {
+      final user = await DatabaseService.getUserData(entry.value);
+      likesList[entry.key] = user.name;
     });
     return likesList;
   }
