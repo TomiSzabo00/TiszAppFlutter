@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -9,6 +11,7 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tiszapp_flutter/widgets/heart_animation_widget.dart';
 import 'package:zoom_pinch_overlay/zoom_pinch_overlay.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class PictureItem extends StatefulWidget {
   const PictureItem({
@@ -33,7 +36,9 @@ class PictureItemState extends State<PictureItem> {
   Future _authorFuture = Future.value();
   Future _likeCountFuture = Future.value();
   Future _commentCountFuture = Future.value();
-  Future _commentListFuture = Future.value();
+
+  late StreamSubscription<bool> keyboardSubscription;
+  late KeyboardVisibilityController keyboardVisibilityController;
 
   @override
   void initState() {
@@ -47,7 +52,18 @@ class PictureItemState extends State<PictureItem> {
       }
     });
     _commentCountFuture = viewModel.getCommentCountAsString(widget.pic);
-    _commentListFuture = viewModel.getCommentsList(widget.pic);
+
+    keyboardVisibilityController = KeyboardVisibilityController();
+    keyboardSubscription =
+        keyboardVisibilityController.onChange.listen((bool visible) {
+      debugPrint('Keyboard visibility update. Is visible: $visible');
+    });
+  }
+
+  @override
+  void dispose() {
+    keyboardSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -62,7 +78,6 @@ class PictureItemState extends State<PictureItem> {
       if (viewModel.getCommentCountAsString(widget.pic) !=
           viewModel.getCommentCountAsString(oldWidget.pic)) {
         _commentCountFuture = viewModel.getCommentCountAsString(widget.pic);
-        _commentListFuture = viewModel.getCommentsList(widget.pic);
       }
     }
   }
@@ -136,7 +151,12 @@ class PictureItemState extends State<PictureItem> {
           child: likeCount(),
         ),
         titleData(),
-        commentCount(),
+        GestureDetector(
+          onTap: () {
+            showCommentsSheet(isFromButton: false);
+          },
+          child: commentCount(),
+        ),
         const SizedBox(height: 20),
       ],
     );
@@ -436,31 +456,33 @@ class PictureItemState extends State<PictureItem> {
         borderRadius: BorderRadius.circular(20.0),
       ),
       builder: (context) {
-        return Padding(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: DraggableScrollableSheet(
-            maxChildSize: 0.6,
-            expand: false,
-            builder: (_, controller) {
-              return Column(
-                children: [
-                  titleSection('Kommentek'),
-                  commentsSection(),
-                  commnetTextBoxSection(isFromButton),
-                  const SizedBox(height: 30),
-                ],
-              );
-            },
-          ),
-        );
+        return StatefulBuilder(builder: (context, setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: DraggableScrollableSheet(
+              maxChildSize: 0.6,
+              expand: false,
+              builder: (_, controller) {
+                return Column(
+                  children: [
+                    titleSection('Kommentek'),
+                    commentsSection(),
+                    commnetTextBoxSection(isFromButton),
+                    const SizedBox(height: 30),
+                  ],
+                );
+              },
+            ),
+          );
+        });
       },
     );
   }
 
   Widget commentsSection() {
     return FutureBuilder(
-        future: _commentListFuture,
+        future: viewModel.getCommentsList(widget.pic),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Text('Hiba történt a kommentek betöltése közben.');
@@ -522,6 +544,12 @@ class PictureItemState extends State<PictureItem> {
             onPressed: () {
               viewModel.uploadComment(widget.pic);
               viewModel.commentController.clear();
+              if (keyboardVisibilityController.isVisible) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              } else {
+                Navigator.of(context).pop();
+                showToast('Komment elküldve.');
+              }
             },
           ),
         ],
@@ -548,6 +576,15 @@ class PictureItemState extends State<PictureItem> {
           endIndent: 20,
         ),
       ],
+    );
+  }
+
+  void showToast(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 }

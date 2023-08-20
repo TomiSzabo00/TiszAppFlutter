@@ -76,6 +76,7 @@ dependencies:
   font_awesome_flutter: ^10.5.0
   flutter_widget_from_html: ^0.9.1
   zoom_pinch_overlay: ^1.4.1+3
+  flutter_keyboard_visibility: ^5.4.1
 
 dev_dependencies:
   chewie_audio: ^1.5.0
