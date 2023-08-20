@@ -18,7 +18,7 @@ class Picture {
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
-    final rawLikes = snapshot['likes'].values.toList();
+    final rawLikes = snapshot['likes']?.values.toList();
     Map<String, String> likes = {};
     if (rawLikes != null && rawLikes is Map) {
       likes = rawLikes.cast<String, String>();
