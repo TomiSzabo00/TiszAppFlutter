@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gal/gal.dart';
+import 'package:info_popup/info_popup.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
@@ -103,23 +104,54 @@ class PictureItemState extends State<PictureItem> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              ZoomOverlay(
-                modalBarrierColor: Colors.black45,
-                minScale: 1,
-                maxScale: 5.0,
-                animationCurve: Curves.fastOutSlowIn,
-                animationDuration: const Duration(milliseconds: 300),
-                twoTouchOnly: true,
-                child: CachedNetworkImage(
-                  imageUrl: widget.pic.url,
-                  fit: BoxFit.fitWidth,
-                  placeholder: (context, url) => const Center(
-                    heightFactor: 5,
-                    child: CircularProgressIndicator(),
+              Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  ZoomOverlay(
+                    modalBarrierColor: Colors.black45,
+                    minScale: 1,
+                    maxScale: 5.0,
+                    animationCurve: Curves.fastOutSlowIn,
+                    animationDuration: const Duration(milliseconds: 300),
+                    twoTouchOnly: true,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.pic.url,
+                      fit: BoxFit.fitWidth,
+                      placeholder: (context, url) => const Center(
+                        heightFactor: 5,
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Boxicons.bxs_error),
+                    ),
                   ),
-                  errorWidget: (context, url, error) =>
-                      const Icon(Boxicons.bxs_error),
-                ),
+                  () {
+                    if (widget.pic.isPicOfTheDay) {
+                      return const Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: InfoPopupWidget(
+                          contentTitle: 'Ez a kép a nap képe lett!',
+                          arrowTheme: InfoPopupArrowTheme(
+                            color: Colors.white,
+                          ),
+                          contentTheme: InfoPopupContentTheme(
+                              infoTextStyle: TextStyle(fontSize: 16)),
+                          dismissTriggerBehavior:
+                              PopupDismissTriggerBehavior.anyWhere,
+                          //areaBackgroundColor: Colors.black12,
+                          enableHighlight: true,
+                          child: Icon(
+                            FontAwesomeIcons.award,
+                            color: Colors.yellow,
+                            size: 40,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }(),
+                ],
               ),
               Opacity(
                 opacity: isAnimating ? 1 : 0,
