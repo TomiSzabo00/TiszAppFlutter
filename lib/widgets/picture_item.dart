@@ -316,6 +316,18 @@ class PictureItemState extends State<PictureItem> {
               ),
             ),
           );
+          items.add(
+            const PopupMenuItem(
+              value: 'markPicOfTheDay',
+              child: Row(
+                children: [
+                  Icon(FontAwesomeIcons.award),
+                  SizedBox(width: 10),
+                  Text('Nap képének választás'),
+                ],
+              ),
+            ),
+          );
         }
         items.add(
           const PopupMenuItem(
@@ -343,6 +355,8 @@ class PictureItemState extends State<PictureItem> {
             await Gal.putImage(imagePath);
             _showSnackBar('Kép mentve a galériába');
           }
+        } else if (value == 'markPicOfTheDay') {
+          viewModel.choosePic(widget.pic);
         }
       },
     );
