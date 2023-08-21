@@ -58,9 +58,7 @@ class PictureItemState extends State<PictureItem> {
 
     keyboardVisibilityController = KeyboardVisibilityController();
     keyboardSubscription =
-        keyboardVisibilityController.onChange.listen((bool visible) {
-      debugPrint('Keyboard visibility update. Is visible: $visible');
-    });
+        keyboardVisibilityController.onChange.listen((bool visible) {});
   }
 
   @override
