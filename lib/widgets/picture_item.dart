@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -173,13 +174,22 @@ class PictureItemState extends State<PictureItem> {
             ],
           ),
           onDoubleTap: () {
+            if (widget.isReview) {
+              return;
+            }
             viewModel.likePicture(widget.pic);
             setState(() {
               isAnimating = true;
             });
           },
         ),
-        likeAndComment(isLiked),
+        () {
+          if (widget.isReview) {
+            return const SizedBox.shrink();
+          } else {
+            return likeAndComment(isLiked);
+          }
+        }(),
         GestureDetector(
           onTap: () {
             showLikesSheet();
@@ -187,6 +197,13 @@ class PictureItemState extends State<PictureItem> {
           child: likeCount(),
         ),
         titleData(),
+        () {
+          if (widget.isReview) {
+            return reviewButtons();
+          } else {
+            return const SizedBox.shrink();
+          }
+        }(),
         GestureDetector(
           onTap: () {
             showCommentsSheet(isFromButton: false);
@@ -194,6 +211,52 @@ class PictureItemState extends State<PictureItem> {
           child: commentCount(),
         ),
         const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget reviewButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        IconButton(
+          onPressed: () {
+            _showAreYouSureDialog(ActionType.accept, () async {
+              viewModel.acceptPic(widget.pic);
+              _showSnackBar('Kép elfogadva!');
+            });
+          },
+          icon: const Row(
+            children: [
+              Icon(
+                Icons.check_circle_outline_rounded,
+                color: Colors.green,
+                size: 25,
+              ),
+              SizedBox(width: 5),
+              Text('Elfogad', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            _showAreYouSureDialog(ActionType.reject, () async {
+              viewModel.rejectPic(widget.pic);
+              _showSnackBar('Kép elutasítva!');
+            });
+          },
+          icon: const Row(
+            children: [
+              Icon(
+                CommunityMaterialIcons.close_circle_outline,
+                color: Colors.red,
+                size: 25,
+              ),
+              SizedBox(width: 5),
+              Text('Elutasít', style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -246,7 +309,7 @@ class PictureItemState extends State<PictureItem> {
 
   Widget titleData() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 0.0),
+      padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,7 +366,7 @@ class PictureItemState extends State<PictureItem> {
     return PopupMenuButton(
       itemBuilder: (context) {
         final items = <PopupMenuEntry<String>>[];
-        if (widget.isAdmin) {
+        if (widget.isAdmin && !widget.isReview) {
           items.add(
             const PopupMenuItem(
               value: 'delete',
@@ -405,7 +468,7 @@ class PictureItemState extends State<PictureItem> {
         if (snapshot.hasData) {
           return Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+                const EdgeInsets.symmetric(horizontal: 14.0, vertical: 0.0),
             child: Row(
               children: [
                 HtmlWidget(snapshot.data!),
@@ -655,6 +718,57 @@ class PictureItemState extends State<PictureItem> {
           curve: Curves.easeOut,
         );
       }
+    }
+  }
+
+  void _showAreYouSureDialog(ActionType type, Future<void> Function() onYes) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: type == ActionType.choose
+              ? const Text(
+                  'Biztos vagy benne, hogy ezt a képet akarod nap képének választani?')
+              : Text('Biztos vagy benne, hogy ${type.name} akarod a képet?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Mégse'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                onYes();
+              },
+              child: const Text('Igen'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+enum ActionType {
+  delete,
+  accept,
+  reject,
+  choose,
+}
+
+extension NameExtension on ActionType {
+  String get name {
+    switch (this) {
+      case ActionType.delete:
+        return 'törölni';
+      case ActionType.accept:
+        return 'elfogadni';
+      case ActionType.reject:
+        return 'elutasítani';
+      case ActionType.choose:
+        return '';
     }
   }
 }
