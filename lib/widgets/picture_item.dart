@@ -410,7 +410,10 @@ class PictureItemState extends State<PictureItem> {
       },
       onSelected: (value) async {
         if (value == 'delete') {
-          viewModel.deletePic(widget.pic);
+          _showAreYouSureDialog(ActionType.delete, () async {
+            viewModel.deletePic(widget.pic);
+            _showSnackBar('Kép törölve!');
+          });
         } else if (value == 'download') {
           if (await Gal.hasAccess()) {
             final imagePath = '${Directory.systemTemp.path}/image.jpg';
@@ -419,7 +422,10 @@ class PictureItemState extends State<PictureItem> {
             _showSnackBar('Kép mentve a galériába');
           }
         } else if (value == 'markPicOfTheDay') {
-          viewModel.choosePic(widget.pic);
+          _showAreYouSureDialog(ActionType.choose, () async {
+            viewModel.choosePic(widget.pic);
+            _showSnackBar('Kép kiválasztva nap képének! Értesítés elküldve a feltöltőnek!');
+          });
         }
       },
     );
