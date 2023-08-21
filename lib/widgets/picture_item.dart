@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gal/gal.dart';
@@ -39,6 +40,8 @@ class PictureItemState extends State<PictureItem> {
   Future _authorFuture = Future.value();
   Future _likeCountFuture = Future.value();
   Future _commentCountFuture = Future.value();
+
+  final ScrollController _commentsScrollController = ScrollController();
 
   late StreamSubscription<bool> keyboardSubscription;
   late KeyboardVisibilityController keyboardVisibilityController;
@@ -303,11 +306,11 @@ class PictureItemState extends State<PictureItem> {
           viewModel.deletePic(widget.pic);
         } else if (value == 'download') {
           if (await Gal.hasAccess()) {
-          final imagePath = '${Directory.systemTemp.path}/image.jpg';
-          await Dio().download(widget.pic.url, imagePath);
-          await Gal.putImage(imagePath);
-          _showSnackBar('Kép mentve a galériába');
-        }
+            final imagePath = '${Directory.systemTemp.path}/image.jpg';
+            await Dio().download(widget.pic.url, imagePath);
+            await Gal.putImage(imagePath);
+            _showSnackBar('Kép mentve a galériába');
+          }
         }
       },
     );
@@ -493,9 +496,13 @@ class PictureItemState extends State<PictureItem> {
             return const Text('Hiba történt a kommentek betöltése közben.');
           }
           if (snapshot.hasData) {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              _scrollDown();
+            });
             return Expanded(
               flex: 100,
               child: ListView.builder(
+                controller: _commentsScrollController,
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return ListTile(
@@ -591,5 +598,17 @@ class PictureItemState extends State<PictureItem> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  void _scrollDown() {
+    if (widget.pic.comments.isNotEmpty) {
+      if (_commentsScrollController.hasClients) {
+        _commentsScrollController.animateTo(
+          _commentsScrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        );
+      }
+    }
   }
 }
