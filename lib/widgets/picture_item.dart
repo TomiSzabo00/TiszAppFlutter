@@ -11,6 +11,7 @@ import 'package:gal/gal.dart';
 import 'package:info_popup/info_popup.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:readmore/readmore.dart';
+import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
@@ -287,9 +288,9 @@ class PictureItemState extends State<PictureItem> {
                     style: const TextStyle(fontSize: 14),
                   ),
                   dotDivider(),
-                  const Text(
-                    'Meme',
-                    style: TextStyle(fontSize: 14),
+                  Text(
+                    widget.pic.category.displayName,
+                    style: const TextStyle(fontSize: 14),
                   ),
                   dotDivider(),
                   Text(

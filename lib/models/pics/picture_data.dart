@@ -1,4 +1,5 @@
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
 class Picture {
@@ -9,6 +10,7 @@ class Picture {
   bool isPicOfTheDay;
   Map<String, String> likes;
   List<Map<String, String>> comments = [];
+  PictureCategory category = PictureCategory.general;
 
   Picture({
     this.key = "0",
@@ -18,6 +20,7 @@ class Picture {
     this.isPicOfTheDay = false,
     this.likes = const {},
     this.comments = const [],
+    this.category = PictureCategory.general,
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
@@ -47,6 +50,7 @@ class Picture {
       isPicOfTheDay: tryCast<bool>(snapshot['isPicOfTheDay']) ?? false,
       likes: likes,
       comments: comments,
+      category: snapshot['category'].toString().toCategory,
     );
   }
 
@@ -57,5 +61,6 @@ class Picture {
         'isPicOfTheDay': isPicOfTheDay,
         'likes': likes,
         'comments': comments,
+        'category': category.name,
       };
 }
