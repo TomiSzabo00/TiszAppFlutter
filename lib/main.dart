@@ -48,8 +48,6 @@ Future<void> main() async {
     sound: true,
   );
 
-  await Gal.requestAccess();
-
   if (kDebugMode) {
     print('User granted permission: ${settings.authorizationStatus}');
   }
