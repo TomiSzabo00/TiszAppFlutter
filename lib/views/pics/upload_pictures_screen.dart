@@ -20,6 +20,7 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   bool _isMultipleSelection = false;
   AssetPathEntity? _path;
   AssetEntity? _selectedImage;
+  int _selectedImageIndex = 0;
 
   Future<List<AssetPathEntity>> _categoryFuture = Future.value([]);
 
@@ -108,20 +109,34 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
             childrenDelegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final AssetEntity entity = snapshot.data![index];
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedImage = entity;
-                    });
-                  },
-                  child: Image(
-                    image: AssetEntityImageProvider(
-                      entity,
-                      isOriginal: false,
-                      thumbnailSize: const ThumbnailSize(200, 200),
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned.fill(
+                      child: Image(
+                        image: AssetEntityImageProvider(
+                          entity,
+                          isOriginal: false,
+                          thumbnailSize: const ThumbnailSize(200, 200),
+                        ),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    fit: BoxFit.cover,
-                  ),
+                    Material(
+                      color: _selectedImageIndex == index
+                          ? Colors.blue.withOpacity(0.4)
+                          : Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedImage = entity;
+                            _selectedImageIndex = index;
+                          });
+                        },
+                        splashColor: Colors.blue.withOpacity(0.2),
+                      ),
+                    ),
+                  ],
                 );
               },
               childCount: snapshot.data!.length,
