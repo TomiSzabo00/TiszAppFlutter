@@ -27,7 +27,23 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   @override
   void initState() {
     super.initState();
-    _categoryFuture = PhotoManager.getAssetPathList();
+    _categoryFuture = PhotoManager.getAssetPathList(
+      filterOption: FilterOptionGroup(
+        imageOption: const FilterOption(
+          sizeConstraint: SizeConstraint(
+            minWidth: 100,
+            minHeight: 100,
+            maxWidth: 10000,
+            maxHeight: 10000,
+          ),
+        ),
+        videoOption: const FilterOption(
+          durationConstraint: DurationConstraint(
+            max: Duration(seconds: 0),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
