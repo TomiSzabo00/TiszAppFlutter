@@ -126,22 +126,34 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
               });
             });
           }
-          return DropdownButton<AssetPathEntity>(
-            hint: const Text('Album'),
-            value: _path,
-            onChanged: (AssetPathEntity? newValue) {
-              setState(() {
-                _path = newValue;
-              });
-            },
-            items: snapshot.data!.map<DropdownMenuItem<AssetPathEntity>>(
-                (AssetPathEntity value) {
-              return DropdownMenuItem<AssetPathEntity>(
-                value: value,
-                child: Text(value.name),
-              );
-            }).toList(),
-          );
+          return DropdownMenu<AssetPathEntity>(
+              label: const Text('Album'),
+              width: MediaQuery.of(context).size.width * 0.4,
+              dropdownMenuEntries: [
+                for (final path in snapshot.data!)
+                  DropdownMenuEntry(
+                    label: path.name,
+                    value: path,
+                  ),
+              ],
+              initialSelection: _path,
+              onSelected: (value) {
+                setState(() {
+                  _path = value;
+                });
+              },
+              textStyle: const TextStyle(fontSize: 12),
+              menuHeight: MediaQuery.of(context).size.height * 0.3,
+              menuStyle: const MenuStyle(
+                visualDensity: VisualDensity.compact,
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                  isDense: true,
+                  constraints: const BoxConstraints(maxHeight: 40),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: const EdgeInsets.only(left: 10)));
         } else {
           return const Text('Betöltés...');
         }
@@ -163,19 +175,9 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
       focusColor: Colors.transparent,
       highlightColor: Colors.blue.withOpacity(0.3),
       hoverColor: Colors.transparent,
-      icon: Row(
-        children: [
-          Icon(
-            MdiIcons.checkboxMultipleBlankOutline,
-            color: _isMultipleSelection ? Colors.blue : Colors.grey,
-          ),
-          Text(
-            'Több kiválasztása',
-            style: TextStyle(
-              color: _isMultipleSelection ? Colors.blue : Colors.grey,
-            ),
-          ),
-        ],
+      icon: Icon(
+        MdiIcons.checkboxMultipleBlankOutline,
+        color: _isMultipleSelection ? Colors.blue : Colors.grey,
       ),
       onPressed: () {
         setState(() {
