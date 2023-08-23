@@ -23,7 +23,7 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -281,7 +281,7 @@ class MainMenuViewModel extends ChangeNotifier {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
-                              UploadPicturesScreen(isAdmin: user.isAdmin),
+                              SelectPicturesScreen(isAdmin: user.isAdmin),
                         ),
                       );
                     },
@@ -301,7 +301,7 @@ class MainMenuViewModel extends ChangeNotifier {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) =>
-                    UploadPicturesScreen(isAdmin: user.isAdmin),
+                    SelectPicturesScreen(isAdmin: user.isAdmin),
               ),
             );
           }

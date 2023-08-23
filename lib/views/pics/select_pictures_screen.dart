@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
-class UploadPicturesScreen extends StatefulWidget {
-  const UploadPicturesScreen({
+class SelectPicturesScreen extends StatefulWidget {
+  const SelectPicturesScreen({
     super.key,
     required this.isAdmin,
   });
@@ -12,11 +11,10 @@ class UploadPicturesScreen extends StatefulWidget {
   final bool isAdmin;
 
   @override
-  State<UploadPicturesScreen> createState() => _UploadPicturesScreenState();
+  State<SelectPicturesScreen> createState() => _SelectPicturesScreenState();
 }
 
-class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
-  //PicturesViewModel _viewModel = PicturesViewModel();
+class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
   bool _isMultipleSelection = false;
   AssetPathEntity? _path;
   AssetEntity? _selectedImage;
