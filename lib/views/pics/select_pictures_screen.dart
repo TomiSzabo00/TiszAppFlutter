@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:tiszapp_flutter/views/pics/upload_picture_screen.dart';
 
 class SelectPicturesScreen extends StatefulWidget {
   const SelectPicturesScreen({
@@ -53,7 +54,21 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
           if (_selectedImage != null)
             IconButton(
               icon: Icon(MdiIcons.arrowRight),
-              onPressed: () {},
+              onPressed: () async {
+                final file = await _selectedImage!.file;
+                if (file == null) {
+                  return;
+                }
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UploadPictureScreen(
+                      isAdmin: widget.isAdmin,
+                      image: file,
+                    ),
+                  ),
+                );
+              },
             ),
         ],
       ),
