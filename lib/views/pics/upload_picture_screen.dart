@@ -5,6 +5,7 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+import 'package:tiszapp_flutter/widgets/alert_widget.dart';
 
 class UploadPictureScreen extends StatefulWidget {
   const UploadPictureScreen({
@@ -115,6 +116,10 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 10),
+          const AlertWidget(
+              message:
+                  'A feltöltött kép nem kerül egyből a többi kép közé, először át kell essen egy elleőrzésen. Amint ezt valamelyik szervező megtette, a kép látható lesz az alkalmazásban.'),
           const SizedBox(height: 10),
           Row(
             children: [
