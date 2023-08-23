@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
@@ -17,7 +19,7 @@ class StorageService {
     }
   }
 
-  static Future<String> uploadImage(XFile file, String title) async {
+  static Future<String> uploadImage(File file, String title) async {
     // compress image
     final filePath = file.path;
     final fileExtension = extension(filePath);
@@ -30,7 +32,7 @@ class StorageService {
         outPath,
         quality: 50,
       );
-      file = XFile(result!.path);
+      file = File(result!.path);
     } else if (fileExtension == '.png') {
       var result = await FlutterImageCompress.compressAndGetFile(
         file.path,
@@ -38,7 +40,7 @@ class StorageService {
         quality: 50,
         format: CompressFormat.png,
       );
-      file = XFile(result!.path);
+      file = File(result!.path);
     } else if (fileExtension == '.heic') {
       var result = await FlutterImageCompress.compressAndGetFile(
         file.path,
@@ -46,7 +48,7 @@ class StorageService {
         quality: 50,
         format: CompressFormat.heic,
       );
-      file = XFile(result!.path);
+      file = File(result!.path);
     }
 
     var key = DateService.dateInMillisAsString();

@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/pics/picture_category.dart';
+import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
 class UploadPictureScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class UploadPictureScreen extends StatefulWidget {
 }
 
 class _UploadPictureScreenState extends State<UploadPictureScreen> {
+  final PicturesViewModel viewModel = PicturesViewModel();
   final _titleController = TextEditingController();
   PictureCategory? _category;
 
@@ -26,6 +29,7 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Adatok megadása"),
@@ -116,17 +120,67 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
             children: [
               const SizedBox(width: 20),
               Button3D(
-                onPressed: () {
+                width: MediaQuery.of(context).size.width * 0.35,
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    showLoadingDialog();
+                    await viewModel.uploadPicture(
+                      widget.image,
+                      _titleController.text,
+                      _category!,
+                      widget.isAdmin,
+                    );
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop(); // pop loading dialog
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context)
+                        .popUntil((route) => route.isFirst); // pop to main menu
+
+                    // show snackbar with success message
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Kép feltöltve!"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                   }
                 },
-                child: const Text("Kép feltöltése"),
+                child: Text(
+                  "Kép feltöltése",
+                  style: TextStyle(
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  void showLoadingDialog() {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(width: 20),
+          Container(
+              margin: const EdgeInsets.only(left: 7),
+              child: const Text("Feltöltés folyamatban...")),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

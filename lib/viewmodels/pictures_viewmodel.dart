@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
@@ -24,9 +24,6 @@ class PicturesViewModel extends ChangeNotifier {
       DatabaseService.database.child("reviewPics");
   final DatabaseReference reactionsRef =
       DatabaseService.database.child("reactions");
-
-  XFile? image;
-  bool isValidImage = true;
 
   TextEditingController commentController = TextEditingController();
 
@@ -137,67 +134,21 @@ class PicturesViewModel extends ChangeNotifier {
     await StorageService.deleteImage(picture.url);
   }
 
-  void uploadPicture(String title, bool isAdmin) async {
-    if (image != null) {
-      final url = await StorageService.uploadImage(image!, title);
-      if (isAdmin) {
-        _uploadPicToAccepted(Picture(
-            url: url,
-            title: title,
-            author: FirebaseAuth.instance.currentUser!.uid));
-      } else {
-        _uploadPicToReview(title, url);
-      }
+  Future uploadPicture(
+      File image, String title, PictureCategory category, bool isAdmin) async {
+    final url = await StorageService.uploadImage(image, title);
+    if (isAdmin) {
+      await _uploadPicToAccepted(
+        Picture(
+          url: url,
+          title: title,
+          author: FirebaseAuth.instance.currentUser!.uid,
+          category: category,
+        ),
+      );
+    } else {
+      await _uploadPicToReview(title, url);
     }
-    // ignore: use_build_context_synchronously
-    //   ScaffoldMessenger.of(_context!).showSnackBar(
-    //     const SnackBar(
-    //       content: Text("Kép feltöltve"),
-    //     ),
-    //   );
-    //   Navigator.pop(_context!);
-    // } else if (notEmpty == false) {
-    //   ScaffoldMessenger.of(_context!).showSnackBar(
-    //     const SnackBar(
-    //       content: Text("Nem adtál meg címet"),
-    //     ),
-    //   );
-    // } else {
-    //   ScaffoldMessenger.of(_context!).showSnackBar(
-    //     const SnackBar(
-    //       content: Text("Nincs kép kiválasztva"),
-    //     ),
-    //   );
-    // }
-    // TODO: feedback from upload
-  }
-
-  void pickImage(XFile image) {
-    this.image = image;
-  }
-
-  Stream<CachedNetworkImageProvider> getImageProvider(Picture pic) {
-    isValidImage = true;
-    final controller = StreamController<CachedNetworkImageProvider>();
-    final provider = CachedNetworkImageProvider(
-      pic.url,
-      errorListener: () {
-        isValidImage = false;
-        notifyListeners();
-      },
-    );
-    provider.resolve(const ImageConfiguration()).addListener(
-          ImageStreamListener(
-            (info, _) {
-              controller.add(provider);
-            },
-            onError: (exception, stackTrace) {
-              isValidImage = false;
-              notifyListeners();
-            },
-          ),
-        );
-    return controller.stream;
   }
 
   void loadImageData(Picture pic, bool isReview) async {
