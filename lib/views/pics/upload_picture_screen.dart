@@ -35,135 +35,137 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
       appBar: AppBar(
         title: const Text("Adatok megadása"),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: SizedBox(
-              height: 100,
-              child: Row(
-                children: [
-                  Image.file(widget.image),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      maxLines: 3,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      textAlignVertical: TextAlignVertical.top,
-                      controller: _titleController,
-                      decoration: const InputDecoration(
-                        labelText: "Cím vagy leírás...",
-                        alignLabelWithHint: true,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 0.5),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: SizedBox(
+                height: 100,
+                child: Row(
+                  children: [
+                    Image.file(widget.image),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        maxLines: 3,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        textAlignVertical: TextAlignVertical.top,
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                          labelText: "Cím vagy leírás...",
+                          alignLabelWithHint: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 0.5),
+                          ),
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.all(10),
                         ),
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.all(10),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Kategrória:', style: TextStyle(fontSize: 16)),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.45,
-                    child: DropdownButtonFormField<PictureCategory>(
-                      items: PictureCategory.values
-                          .map(
-                            (e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e.displayName),
-                            ),
-                          )
-                          .toList(),
-                      decoration: const InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 0.5),
-                        ),
-                        border: OutlineInputBorder(),
-                        hintText: 'Válassz kategóriát...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
-                        isDense: true,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _category = value;
-                        });
-                        _formKey.currentState!.validate();
-                      },
-                      validator: (value) =>
-                          value == null ? "Ez kötelező" : null,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const AlertWidget(
-              message:
-                  'A feltöltött kép nem kerül egyből a többi kép közé, először át kell essen egy elleőrzésen. Amint ezt valamelyik szervező megtette, a kép látható lesz az alkalmazásban.'),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const SizedBox(width: 20),
-              Button3D(
-                width: MediaQuery.of(context).size.width * 0.35,
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    showLoadingDialog();
-                    await viewModel.uploadPicture(
-                      widget.image,
-                      _titleController.text,
-                      _category!,
-                      widget.isAdmin,
-                    );
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop(); // pop loading dialog
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context)
-                        .popUntil((route) => route.isFirst); // pop to main menu
-
-                    // show snackbar with success message
-                    // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Kép feltöltve!"),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  "Kép feltöltése",
-                  style: TextStyle(
-                    color: isDarkTheme
-                        ? CustomColor.btnTextNight
-                        : CustomColor.btnTextDay,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Kategrória:', style: TextStyle(fontSize: 16)),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      child: DropdownButtonFormField<PictureCategory>(
+                        items: PictureCategory.values
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e.displayName),
+                              ),
+                            )
+                            .toList(),
+                        decoration: const InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 0.5),
+                          ),
+                          border: OutlineInputBorder(),
+                          hintText: 'Válassz kategóriát...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                          isDense: true,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _category = value;
+                          });
+                          _formKey.currentState!.validate();
+                        },
+                        validator: (value) =>
+                            value == null ? "Ez kötelező" : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const AlertWidget(
+                message:
+                    'A feltöltött kép nem kerül egyből a többi kép közé, először át kell essen egy elleőrzésen. Amint ezt valamelyik szervező megtette, a kép látható lesz az alkalmazásban.'),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Button3D(
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      showLoadingDialog();
+                      await viewModel.uploadPicture(
+                        widget.image,
+                        _titleController.text,
+                        _category!,
+                        widget.isAdmin,
+                      );
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop(); // pop loading dialog
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).popUntil(
+                          (route) => route.isFirst); // pop to main menu
+
+                      // show snackbar with success message
+                      // ignore: use_build_context_synchronously
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Kép feltöltve!"),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    "Kép feltöltése",
+                    style: TextStyle(
+                      color: isDarkTheme
+                          ? CustomColor.btnTextNight
+                          : CustomColor.btnTextDay,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

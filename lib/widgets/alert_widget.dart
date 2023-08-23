@@ -33,13 +33,18 @@ class AlertWidget extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 2.0),
-                      child: Expanded(
-                        child: Text(
-                          message,
-                          style: const TextStyle(
-                            color: Colors.grey,
+                      child: Flex(
+                        direction: Axis.horizontal,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              message,
+                              style: const TextStyle(
+                                color: Colors.grey,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
