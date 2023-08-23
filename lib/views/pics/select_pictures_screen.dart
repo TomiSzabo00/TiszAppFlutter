@@ -19,7 +19,7 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
   bool _isMultipleSelection = false;
   AssetPathEntity? _path;
   AssetEntity? _selectedImage;
-  int _selectedImageIndex = 0;
+  List<int> _selectedImageIndexes = [];
 
   Future<List<AssetPathEntity>> _categoryFuture = Future.value([]);
 
@@ -145,6 +145,9 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
             childrenDelegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final AssetEntity entity = snapshot.data![index];
+                if (_selectedImageIndexes.isEmpty) {
+                  toggleSelection(0);
+                }
                 return Stack(
                   alignment: Alignment.center,
                   children: [
@@ -159,14 +162,15 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
                       ),
                     ),
                     Material(
-                      color: _selectedImageIndex == index
+                      color: _selectedImageIndexes.contains(index)
                           ? Colors.blue.withOpacity(0.4)
                           : Colors.transparent,
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                            _selectedImage = entity;
-                            _selectedImageIndex = index;
+                            toggleSelection(index);
+                            _selectedImage =
+                                snapshot.data![_selectedImageIndexes.last];
                           });
                         },
                         splashColor: Colors.blue.withOpacity(0.2),
@@ -272,8 +276,26 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
       onPressed: () {
         setState(() {
           _isMultipleSelection = !_isMultipleSelection;
+          if (!_isMultipleSelection) {
+            toggleSelection(_selectedImageIndexes.last);
+          }
         });
       },
     );
+  }
+
+  void toggleSelection(int index) {
+    if (!_isMultipleSelection) {
+      _selectedImageIndexes.clear();
+      _selectedImageIndexes.add(index);
+      return;
+    } else {
+      if (_selectedImageIndexes.contains(index) &&
+          _selectedImageIndexes.length > 1) {
+        _selectedImageIndexes.remove(index);
+      } else {
+        _selectedImageIndexes.add(index);
+      }
+    }
   }
 }
