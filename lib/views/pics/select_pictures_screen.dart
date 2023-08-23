@@ -48,7 +48,14 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Képek feltöltése"),
+        title: const Text("Kép kiválasztása"),
+        actions: [
+          if (_selectedImage != null)
+            IconButton(
+              icon: Icon(MdiIcons.arrowRight),
+              onPressed: () {},
+            ),
+        ],
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
