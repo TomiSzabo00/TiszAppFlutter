@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
 class UploadPicturesScreen extends StatefulWidget {
