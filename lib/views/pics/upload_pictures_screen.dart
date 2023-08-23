@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
 class UploadPicturesScreen extends StatefulWidget {
@@ -76,16 +77,13 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
             childrenDelegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final AssetEntity entity = snapshot.data![index];
-                return AssetEntityImage(
-                  entity,
-                  thumbnailSize: const ThumbnailSize.square(200),
+                return Image(
+                  image: AssetEntityImageProvider(
+                    entity,
+                    isOriginal: false,
+                    thumbnailSize: const ThumbnailSize(200, 200),
+                  ),
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
                 );
               },
               childCount: snapshot.data!.length,
