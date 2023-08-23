@@ -19,6 +19,7 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
   //PicturesViewModel _viewModel = PicturesViewModel();
   bool _isMultipleSelection = false;
   AssetPathEntity? _path;
+  AssetEntity? _selectedImage;
 
   Future<List<AssetPathEntity>> _categoryFuture = Future.value([]);
 
@@ -37,9 +38,33 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          const Expanded(
+          Expanded(
             flex: 4,
-            child: Text('asd'),
+            child: () {
+              if (_selectedImage == null) {
+                return const Center(
+                  child: Text(
+                    'Képek betöltése...',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                );
+              } else {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox.expand(
+                      child: Container(color: Colors.black.withOpacity(0.8)),
+                    ),
+                    Image(
+                      image: AssetEntityImageProvider(
+                        _selectedImage!,
+                      ),
+                      fit: BoxFit.contain,
+                    ),
+                  ],
+                );
+              }
+            }(),
           ),
           Expanded(
             flex: 5,
@@ -67,6 +92,13 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
       ),
       builder: (context, AsyncSnapshot<List<AssetEntity>> snapshot) {
         if (snapshot.hasData) {
+          if (_selectedImage == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              setState(() {
+                _selectedImage = snapshot.data!.first;
+              });
+            });
+          }
           return GridView.custom(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
@@ -76,13 +108,20 @@ class _UploadPicturesScreenState extends State<UploadPicturesScreen> {
             childrenDelegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final AssetEntity entity = snapshot.data![index];
-                return Image(
-                  image: AssetEntityImageProvider(
-                    entity,
-                    isOriginal: false,
-                    thumbnailSize: const ThumbnailSize(200, 200),
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _selectedImage = entity;
+                    });
+                  },
+                  child: Image(
+                    image: AssetEntityImageProvider(
+                      entity,
+                      isOriginal: false,
+                      thumbnailSize: const ThumbnailSize(200, 200),
+                    ),
+                    fit: BoxFit.cover,
                   ),
-                  fit: BoxFit.cover,
                 );
               },
               childCount: snapshot.data!.length,
