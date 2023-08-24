@@ -98,7 +98,7 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
               children: [
                 const SizedBox(width: 20),
                 Button3D(
-                  width: MediaQuery.of(context).size.width * 0.35,
+                  width: 180,
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       showLoadingDialog();
@@ -118,14 +118,14 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
                       // ignore: use_build_context_synchronously
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Kép feltöltve!"),
+                          content: Text("Kép(ek) feltöltve!"),
                           duration: Duration(seconds: 2),
                         ),
                       );
                     }
                   },
                   child: Text(
-                    "Kép feltöltése",
+                    "Kép(ek) feltöltése",
                     style: TextStyle(
                       color: isDarkTheme
                           ? CustomColor.btnTextNight
