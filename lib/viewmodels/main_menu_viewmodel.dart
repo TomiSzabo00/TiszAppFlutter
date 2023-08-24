@@ -1,9 +1,9 @@
-import 'dart:developer';
-
+// ignore_for_file: use_build_context_synchronously
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/main_menu/main_menu_button.dart';
 import 'package:tiszapp_flutter/models/main_menu/main_menu_button_type.dart';
@@ -22,7 +22,7 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/pics/upload_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -263,15 +263,53 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.nappaliPortya:
         return () => _launchURL();
       case MainMenuButtonType.pictureUpload:
-        return () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const UploadPicturesScreen(),
+        return () async {
+          final PermissionState ps =
+              await PhotoManager.requestPermissionExtend();
+          if (!ps.isAuth) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Figyelem'),
+                content: const Text(
+                    'A legjobb élmény érdekében kérlek engedélyezd az összes képhez való hozzáférést! Ezt utólag is megteheted a beállításokban.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SelectPicturesScreen(isAdmin: user.isAdmin),
+                        ),
+                      );
+                    },
+                    child: const Text('Nem engedélyezem'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await PhotoManager.openSetting();
+                    },
+                    child: const Text('Engedélyezem a beállításokban'),
+                  ),
+                ],
               ),
             );
+          } else {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>
+                    SelectPicturesScreen(isAdmin: user.isAdmin),
+              ),
+            );
+          }
+        };
       case MainMenuButtonType.pictures:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const PicturesScreen(isReview: false),
+                builder: (context) =>
+                    PicturesScreen(isReview: false, isAdmin: user.isAdmin),
               ),
             );
       case MainMenuButtonType.quizQuick:
@@ -373,7 +411,8 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.reviewPics:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const PicturesScreen(isReview: true),
+                builder: (context) =>
+                    PicturesScreen(isReview: true, isAdmin: user.isAdmin),
               ),
             );
     }

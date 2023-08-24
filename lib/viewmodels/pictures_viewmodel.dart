@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
-import 'package:tiszapp_flutter/models/pics/picture_reaction.dart';
-import 'package:tiszapp_flutter/models/pics/reaction_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
@@ -16,54 +14,20 @@ import 'package:tiszapp_flutter/services/notification_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class PicturesViewModel extends ChangeNotifier {
-  PicturesViewModel();
-
   final List<Picture> pictures = [];
-
-  bool isAdmin = false;
   UserData authorDetails = UserData.empty();
-  Map<PicReaction, int> reactions = {
-    PicReaction.love: 0,
-    PicReaction.funny: 0,
-    PicReaction.angry: 0,
-    PicReaction.sad: 0,
-  };
-  PicReaction? currentReaction;
 
-  PicturesViewModel._fromContext(BuildContext context) {
-    _context = context;
-  }
-
-  static Future<PicturesViewModel> init(BuildContext context) async {
-    return PicturesViewModel._fromContext(context);
-  }
-
-  late BuildContext? _context;
-  final DatabaseReference picsRef =
-      DatabaseService.database.child("pics");
+  final DatabaseReference picsRef = DatabaseService.database.child("pics");
   final DatabaseReference reviewPicsRef =
       DatabaseService.database.child("reviewPics");
   final DatabaseReference reactionsRef =
       DatabaseService.database.child("reactions");
 
-  final availableReactions = [
-    PicReaction.love,
-    PicReaction.funny,
-    PicReaction.angry,
-    PicReaction.sad,
-  ];
-
-  XFile? image;
-  bool isValidImage = true;
+  TextEditingController commentController = TextEditingController();
 
   final List<StreamSubscription<DatabaseEvent>> _subscriptions = [];
-  BuildContext? context;
 
-  void getImages(bool isReview) {
-    for (var element in _subscriptions) {
-      element.cancel();
-    }
-    _subscriptions.clear();
+  void getImages(bool isReview) async {
     pictures.clear();
     if (isReview) {
       var s1 = reviewPicsRef.onChildAdded.listen((event) {
@@ -91,6 +55,7 @@ class PicturesViewModel extends ChangeNotifier {
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
         pictures.insert(0, pic);
+        pictures.sort((a, b) => b.key.compareTo(a.key));
         notifyListeners();
       });
 
@@ -111,6 +76,8 @@ class PicturesViewModel extends ChangeNotifier {
         final picIndex =
             pictures.indexWhere((element) => element.key == snapshot.key);
         if (picIndex != -1 && picIndex < pictures.length) {
+          pic.likes =
+              pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
           pictures[picIndex] = pic;
           notifyListeners();
         }
@@ -122,10 +89,18 @@ class PicturesViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _uploadPicToReview(String title, String url) async {
+  void disposeListeners() {
+    for (var element in _subscriptions) {
+      element.cancel();
+    }
+    _subscriptions.clear();
+    pictures.clear();
+  }
+
+  Future<void> _uploadPicToReview(String title, List<String> urls) async {
     final key = DateService.dateInMillisAsString();
     final pictureData = Picture(
-            url: url,
+            urls: urls,
             title: title,
             author: FirebaseAuth.instance.currentUser!.uid)
         .toJson();
@@ -149,87 +124,33 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future<void> rejectPic(Picture picture) async {
     await _removePicFromReview(picture);
-    await StorageService.deleteImage(picture.url);
+    await StorageService.deleteImage(picture.urls);
   }
 
   Future<void> deletePic(Picture picture) async {
-    context = null;
     picsRef.child(picture.key).remove();
-    await StorageService.deleteImage(picture.url);
+    await StorageService.deleteImage(picture.urls);
   }
 
-  void uploadPicture(String title, bool notEmpty) async {
-    if (image != null && notEmpty == true) {
-      final url = await StorageService.uploadImage(image!, title);
-      _uploadPicToReview(title, url);
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(_context!).showSnackBar(
-        const SnackBar(
-          content: Text("Kép feltöltve"),
-        ),
-      );
-      Navigator.pop(_context!);
-    } else if (notEmpty == false) {
-      ScaffoldMessenger.of(_context!).showSnackBar(
-        const SnackBar(
-          content: Text("Nem adtál meg címet"),
+  Future uploadPicture(List<File> image, String title, PictureCategory category,
+      bool isAdmin) async {
+    final urls = await StorageService.uploadImage(image, title);
+    if (isAdmin) {
+      await _uploadPicToAccepted(
+        Picture(
+          urls: urls,
+          title: title,
+          author: FirebaseAuth.instance.currentUser!.uid,
+          category: category,
         ),
       );
     } else {
-      ScaffoldMessenger.of(_context!).showSnackBar(
-        const SnackBar(
-          content: Text("Nincs kép kiválasztva"),
-        ),
-      );
+      await _uploadPicToReview(title, urls);
     }
   }
 
-  void pickImage(XFile image) {
-    this.image = image;
-  }
-
-  static Future<bool> _getIsUserAdmin() async {
-    return (await DatabaseService.getUserData(
-            FirebaseAuth.instance.currentUser!.uid))
-        .isAdmin;
-  }
-
-  Stream<CachedNetworkImageProvider> getImageProvider(Picture pic) {
-    isValidImage = true;
-    final controller = StreamController<CachedNetworkImageProvider>();
-    final provider = CachedNetworkImageProvider(
-      pic.url,
-      errorListener: () {
-        isValidImage = false;
-        notifyListeners();
-      },
-    );
-    provider.resolve(const ImageConfiguration()).addListener(
-          ImageStreamListener(
-            (info, _) {
-              controller.add(provider);
-            },
-            onError: (exception, stackTrace) {
-              isValidImage = false;
-              notifyListeners();
-            },
-          ),
-        );
-    return controller.stream;
-  }
-
   void loadImageData(Picture pic, bool isReview) async {
-    isAdmin = await _getIsUserAdmin();
     authorDetails = UserData.empty();
-    reactions = {
-      PicReaction.love: 0,
-      PicReaction.funny: 0,
-      PicReaction.angry: 0,
-      PicReaction.sad: 0,
-    };
-    context = null;
-    currentReaction = null;
     if (isReview) {
       reviewPicsRef.child('${pic.key}/author').once().then((event) {
         DatabaseService.getUserData(event.snapshot.value.toString())
@@ -238,12 +159,7 @@ class PicturesViewModel extends ChangeNotifier {
           notifyListeners();
         });
       });
-      reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {
-        if (context != null) {
-          Navigator.pop(context!);
-          context = null;
-        }
-      });
+      reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {});
     } else {
       picsRef.child('${pic.key}/author').onValue.listen((event) {
         DatabaseService.getUserData(event.snapshot.value.toString())
@@ -252,35 +168,8 @@ class PicturesViewModel extends ChangeNotifier {
           notifyListeners();
         });
       });
-      picsRef.child(pic.key).onChildRemoved.listen((event) {
-        if (context != null) {
-          Navigator.pop(context!);
-          context = null;
-        }
-      });
+      picsRef.child(pic.key).onChildRemoved.listen((event) {});
     }
-
-    reactionsRef.onValue.listen((event) {
-      reactions = {
-        PicReaction.love: 0,
-        PicReaction.funny: 0,
-        PicReaction.angry: 0,
-        PicReaction.sad: 0,
-      };
-      currentReaction = null;
-      final Map<dynamic, dynamic> values =
-          tryCast<Map>(event.snapshot.value) ?? {};
-      values.forEach((key, value) {
-        final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-        if (reaction.imageFileName == pic.key) {
-          reactions[reaction.reaction] = reactions[reaction.reaction]! + 1;
-          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid) {
-            currentReaction = reaction.reaction;
-          }
-        }
-      });
-      notifyListeners();
-    });
 
     picsRef.child(pic.key).child('isPicOfTheDay').onValue.listen((event) {
       final isPicOfTheDay = tryCast<bool>(event.snapshot.value) ?? false;
@@ -289,51 +178,86 @@ class PicturesViewModel extends ChangeNotifier {
     });
   }
 
-  bool isSelected(PicReaction reaction) {
-    return currentReaction == reaction;
+  bool checkIfAlreadyLiked(Picture pic) {
+    if (pic.likes.values.contains(FirebaseAuth.instance.currentUser!.uid)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  void toggleReactionTo(Picture picture, PicReaction reaction) {
-    final reactionData = Reaction(
-      userId: FirebaseAuth.instance.currentUser!.uid,
-      imageFileName: picture.key,
-      reaction: reaction,
-    );
-
-    if (currentReaction == null) {
-      reactionsRef
-          .child(DateService.dateInMillisAsString())
-          .set(reactionData.toJson());
-    } else if (currentReaction == reaction) {
-      reactionsRef.once().then((value) {
-        final Map<dynamic, dynamic> values =
-            tryCast<Map>(value.snapshot.value) ?? {};
-        values.forEach((key, value) {
-          final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-          final imageKey = picture.key;
-          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
-              reaction.imageFileName == imageKey) {
-            reactionsRef.child(key).remove();
-          }
-        });
+  Future<void> getLikesOnce(Picture pic) async {
+    await picsRef.child(pic.key).child('likes').once().then((event) {
+      pic.likes.clear();
+      final Map<dynamic, dynamic> value =
+          tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
+      value.forEach((key, value) {
+        final valueMap = tryCast<Map>(value);
+        if (valueMap != null) {
+          pic.likes[valueMap.keys.first] = valueMap.values.first;
+        }
       });
+      pic.likes = pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
+      notifyListeners();
+    });
+  }
+
+  Future<String?> _getLatestLikerName(Picture pic) async {
+    if (pic.likes.isNotEmpty) {
+      final user = await DatabaseService.getUserData(pic.likes.values.first);
+      return user.name;
     } else {
-      reactionsRef.once().then((value) {
-        final Map<dynamic, dynamic> values =
-            tryCast<Map>(value.snapshot.value) ?? {};
-        values.forEach((key, value) {
-          final reaction = Reaction.fromSnapshot(tryCast<Map>(value) ?? {});
-          final imageKey = picture.key;
-          if (reaction.userId == FirebaseAuth.instance.currentUser!.uid &&
-              reaction.imageFileName == imageKey) {
-            reactionsRef.child(key).remove();
+      return null;
+    }
+  }
+
+  Future<String?> getLikeText(Picture pic, Function completion) async {
+    await getLikesOnce(pic);
+    final lastLikedBy = await _getLatestLikerName(pic);
+    completion();
+    if (lastLikedBy != null) {
+      if (pic.likes.length == 1) {
+        return '<b>$lastLikedBy</b> kedveli ezt a képet';
+      } else {
+        return '<b>$lastLikedBy</b> és még <b>${pic.likes.length - 1} ember</b> kedveli ezt a képet';
+      }
+    } else {
+      return null;
+    }
+  }
+
+  void toggleReactionTo(Picture picture, Function completion) {
+    if (!checkIfAlreadyLiked(picture)) {
+      picsRef.child(picture.key).child('likes').push().set({
+        DateService.dateInMillisAsString():
+            FirebaseAuth.instance.currentUser!.uid
+      }).then((value) => completion());
+    } else {
+      picsRef.child(picture.key).child('likes').once().then((value) {
+        final Map<dynamic, dynamic> likes =
+            tryCast<Map>(value.snapshot.value) ?? <dynamic, dynamic>{};
+        likes.forEach((key, value) {
+          final valueMap = tryCast<Map>(value) ?? {};
+          if (valueMap.values.first == FirebaseAuth.instance.currentUser!.uid) {
+            picsRef
+                .child(picture.key)
+                .child('likes')
+                .child(key)
+                .remove()
+                .then((value) => completion());
           }
         });
-        reactionsRef
-            .child(DateService.dateInMillisAsString())
-            .set(reactionData.toJson());
       });
     }
+  }
+
+  void likePicture(Picture picture) {
+    if (checkIfAlreadyLiked(picture)) {
+      return;
+    }
+    picsRef.child(picture.key).child('likes').push().set({
+      DateService.dateInMillisAsString(): FirebaseAuth.instance.currentUser!.uid
+    });
   }
 
   void choosePic(Picture picture) {
@@ -354,5 +278,92 @@ class PicturesViewModel extends ChangeNotifier {
         });
       }
     });
+  }
+
+  String timeStampFromKey(String key) {
+    final currDate = DateTime.now();
+    final date = DateTime(
+      int.parse(key.substring(0, 4)),
+      int.parse(key.substring(4, 6)),
+      int.parse(key.substring(6, 8)),
+      int.parse(key.substring(8, 10)),
+      int.parse(key.substring(10, 12)),
+      int.parse(key.substring(12, 14)),
+      int.parse(key.substring(14, 16)),
+    );
+    final diff = currDate.difference(date);
+    if (diff.inDays > 0) {
+      return '${diff.inDays} napja';
+    } else if (diff.inHours > 0) {
+      return '${diff.inHours} órája';
+    } else if (diff.inMinutes > 0) {
+      return '${diff.inMinutes} perce';
+    } else {
+      return '${diff.inSeconds} másodperce';
+    }
+  }
+
+  Future<UserData> getAuthorDetails(String authorId) async {
+    return await DatabaseService.getUserData(authorId);
+  }
+
+  Future<Map<String, String>> getLikesList(Picture pic) async {
+    final Map<String, String> likesList = {};
+    await Future.forEach(pic.likes.entries, (entry) async {
+      final user = await DatabaseService.getUserData(entry.value);
+      likesList[entry.key] = user.name;
+    });
+    return likesList;
+  }
+
+  Future<List<Map<String, String>>> getCommentsList(Picture pic) async {
+    final List<Map<String, String>> commentsList = [];
+    await Future.forEach(pic.comments, (entry) async {
+      final uid = entry.keys.first;
+      final user = await DatabaseService.getUserData(uid);
+      commentsList.add({user.name: entry.values.first});
+    });
+    return commentsList;
+  }
+
+  void uploadComment(Picture pic) {
+    picsRef
+        .child(pic.key)
+        .child('comments')
+        .push()
+        .set({FirebaseAuth.instance.currentUser!.uid: commentController.text});
+  }
+
+  Future<String?> getCommentCountAsString(Picture pic) async {
+    final count = pic.comments.length;
+    if (count == 0) {
+      return null;
+    }
+    String article = ' a ';
+    if (count == 1 || count == 5 || (count >= 50 && count < 60)) {
+      article = ' az ';
+    }
+    return 'Mind$article$count komment megtekintése';
+  }
+    static Future getMaxNumberOfImages(Function(int?) callback) async {
+    final ref = DatabaseService.database;
+    ref.child('_settings/max_number_of_images').once().then((DatabaseEvent event) {
+      callback(tryCast<int>(event.snapshot.value));
+    });
+  }
+}
+
+/// Extensions on [Map] of <[K], [V]>
+extension ExtendsionsOnMapDynamicDynamic<K, V> on Map<K, V> {
+  /// Order by keys
+  Map<K, V> orderByKeys({required int Function(K a, K b) compareTo}) {
+    return Map.fromEntries(
+        entries.toList()..sort((a, b) => compareTo(a.key, b.key)));
+  }
+
+  /// Order by values
+  Map<K, V> orderByValues({required int Function(V a, V b) compareTo}) {
+    return Map.fromEntries(
+        entries.toList()..sort((a, b) => compareTo(a.value, b.value)));
   }
 }
