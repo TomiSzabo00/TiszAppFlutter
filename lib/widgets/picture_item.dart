@@ -309,6 +309,9 @@ class PictureItemState extends State<PictureItem> {
   }
 
   Widget titleData() {
+    if (widget.pic.title.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 10.0),
       child: Row(
