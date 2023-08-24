@@ -24,6 +24,8 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
   final List<int> _selectedImageIndexes = [];
   List<AssetEntity> _images = [];
 
+  final _maxNumberOfImages = 10;
+
   Future<List<AssetPathEntity>> _categoryFuture = Future.value([]);
 
   @override
@@ -372,6 +374,10 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
       _selectedImageIndexes.add(index);
       return;
     } else {
+      if (_selectedImageIndexes.length == _maxNumberOfImages &&
+          !_selectedImageIndexes.contains(index)) {
+        return;
+      }
       if (_selectedImageIndexes.contains(index) &&
           _selectedImageIndexes.length > 1) {
         _selectedImageIndexes.remove(index);
