@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tiszapp_flutter/widgets/heart_animation_widget.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class PictureItem extends StatefulWidget {
   const PictureItem({
@@ -46,6 +46,7 @@ class PictureItemState extends State<PictureItem> {
 
   final ScrollController _commentsScrollController = ScrollController();
   final _scaleStateController = PhotoViewScaleStateController();
+  int _currentIndex = 0;
 
   late StreamSubscription<bool> keyboardSubscription;
   late KeyboardVisibilityController keyboardVisibilityController;
@@ -104,13 +105,19 @@ class PictureItemState extends State<PictureItem> {
           ],
         ),
         image(),
-        () {
-          if (widget.isReview) {
-            return const SizedBox.shrink();
-          } else {
-            return likeAndComment(isLiked);
-          }
-        }(),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            () {
+              if (widget.isReview) {
+                return const SizedBox.shrink();
+              } else {
+                return likeAndComment(isLiked);
+              }
+            }(),
+            pageIndicator(),
+          ],
+        ),
         GestureDetector(
           onTap: () {
             showLikesSheet();
@@ -237,7 +244,31 @@ class PictureItemState extends State<PictureItem> {
         backgroundDecoration: BoxDecoration(
           color: Colors.grey.withOpacity(isDarkTheme ? 0.25 : 1),
         ),
-        onPageChanged: (int index) {},
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget pageIndicator() {
+    if (widget.pic.urls.length == 1) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: AnimatedSmoothIndicator(
+        activeIndex: _currentIndex,
+        count: widget.pic.urls.length,
+        effect: ScrollingDotsEffect(
+          dotHeight: 6,
+          dotWidth: 6,
+          activeDotColor: Theme.of(context).appBarTheme.foregroundColor ??
+              Theme.of(context).primaryColor,
+          dotColor: Colors.grey.withOpacity(0.4),
+        ),
       ),
     );
   }
