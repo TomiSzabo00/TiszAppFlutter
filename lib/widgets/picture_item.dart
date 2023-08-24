@@ -102,88 +102,7 @@ class PictureItemState extends State<PictureItem> {
             moreOptions(),
           ],
         ),
-        GestureDetector(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Stack(
-                alignment: Alignment.topRight,
-                children: [
-                  ZoomOverlay(
-                    modalBarrierColor: Colors.black45,
-                    minScale: 1,
-                    maxScale: 5.0,
-                    animationCurve: Curves.fastOutSlowIn,
-                    animationDuration: const Duration(milliseconds: 300),
-                    twoTouchOnly: true,
-                    child: CachedNetworkImage(
-                      imageUrl: widget.pic.urls.first,
-                      fit: BoxFit.fitWidth,
-                      placeholder: (context, url) => const Center(
-                        heightFactor: 5,
-                        child: CircularProgressIndicator(),
-                      ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Boxicons.bxs_error),
-                    ),
-                  ),
-                  () {
-                    if (widget.pic.isPicOfTheDay) {
-                      return const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: InfoPopupWidget(
-                          contentTitle: 'Ez a kép a nap képe lett!',
-                          arrowTheme: InfoPopupArrowTheme(
-                            color: Colors.white,
-                          ),
-                          contentTheme: InfoPopupContentTheme(
-                              infoTextStyle: TextStyle(fontSize: 16)),
-                          dismissTriggerBehavior:
-                              PopupDismissTriggerBehavior.anyWhere,
-                          //areaBackgroundColor: Colors.black12,
-                          enableHighlight: true,
-                          child: Icon(
-                            FontAwesomeIcons.award,
-                            color: Colors.yellow,
-                            size: 40,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }(),
-                ],
-              ),
-              Opacity(
-                opacity: isAnimating ? 1 : 0,
-                child: HeartAnimationWidget(
-                  isAnimating: isAnimating,
-                  duration: const Duration(milliseconds: 300),
-                  onEnd: () {
-                    setState(() {
-                      isAnimating = false;
-                    });
-                  },
-                  child: Icon(
-                    MdiIcons.heart,
-                    color: Colors.white,
-                    size: 100,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          onDoubleTap: () {
-            if (widget.isReview) {
-              return;
-            }
-            viewModel.likePicture(widget.pic);
-            setState(() {
-              isAnimating = true;
-            });
-          },
-        ),
+        image(),
         () {
           if (widget.isReview) {
             return const SizedBox.shrink();
@@ -213,6 +132,91 @@ class PictureItemState extends State<PictureItem> {
         ),
         const SizedBox(height: 20),
       ],
+    );
+  }
+
+  Widget image() {
+    return GestureDetector(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Stack(
+            alignment: Alignment.topRight,
+            children: [
+              ZoomOverlay(
+                modalBarrierColor: Colors.black45,
+                minScale: 1,
+                maxScale: 5.0,
+                animationCurve: Curves.fastOutSlowIn,
+                animationDuration: const Duration(milliseconds: 300),
+                twoTouchOnly: true,
+                child: CachedNetworkImage(
+                  imageUrl: widget.pic.urls.first,
+                  fit: BoxFit.fitWidth,
+                  placeholder: (context, url) => const Center(
+                    heightFactor: 5,
+                    child: CircularProgressIndicator(),
+                  ),
+                  errorWidget: (context, url, error) =>
+                      const Icon(Boxicons.bxs_error),
+                ),
+              ),
+              () {
+                if (widget.pic.isPicOfTheDay) {
+                  return const Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: InfoPopupWidget(
+                      contentTitle: 'Ez a kép a nap képe lett!',
+                      arrowTheme: InfoPopupArrowTheme(
+                        color: Colors.white,
+                      ),
+                      contentTheme: InfoPopupContentTheme(
+                          infoTextStyle: TextStyle(fontSize: 16)),
+                      dismissTriggerBehavior:
+                          PopupDismissTriggerBehavior.anyWhere,
+                      //areaBackgroundColor: Colors.black12,
+                      enableHighlight: true,
+                      child: Icon(
+                        FontAwesomeIcons.award,
+                        color: Colors.yellow,
+                        size: 40,
+                      ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }(),
+            ],
+          ),
+          Opacity(
+            opacity: isAnimating ? 1 : 0,
+            child: HeartAnimationWidget(
+              isAnimating: isAnimating,
+              duration: const Duration(milliseconds: 300),
+              onEnd: () {
+                setState(() {
+                  isAnimating = false;
+                });
+              },
+              child: Icon(
+                MdiIcons.heart,
+                color: Colors.white,
+                size: 100,
+              ),
+            ),
+          ),
+        ],
+      ),
+      onDoubleTap: () {
+        if (widget.isReview) {
+          return;
+        }
+        viewModel.likePicture(widget.pic);
+        setState(() {
+          isAnimating = true;
+        });
+      },
     );
   }
 
