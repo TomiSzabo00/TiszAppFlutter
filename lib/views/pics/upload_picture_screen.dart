@@ -103,7 +103,7 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
                     if (_formKey.currentState!.validate()) {
                       showLoadingDialog();
                       await viewModel.uploadPicture(
-                        widget.images.first,
+                        widget.images,
                         _titleController.text,
                         _category!,
                         widget.isAdmin,

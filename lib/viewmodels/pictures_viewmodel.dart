@@ -99,10 +99,10 @@ class PicturesViewModel extends ChangeNotifier {
     pictures.clear();
   }
 
-  Future<void> _uploadPicToReview(String title, String url) async {
+  Future<void> _uploadPicToReview(String title, List<String> urls) async {
     final key = DateService.dateInMillisAsString();
     final pictureData = Picture(
-            url: url,
+            urls: urls,
             title: title,
             author: FirebaseAuth.instance.currentUser!.uid)
         .toJson();
@@ -126,28 +126,28 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future<void> rejectPic(Picture picture) async {
     await _removePicFromReview(picture);
-    await StorageService.deleteImage(picture.url);
+    await StorageService.deleteImage(picture.urls);
   }
 
   Future<void> deletePic(Picture picture) async {
     picsRef.child(picture.key).remove();
-    await StorageService.deleteImage(picture.url);
+    await StorageService.deleteImage(picture.urls);
   }
 
   Future uploadPicture(
-      File image, String title, PictureCategory category, bool isAdmin) async {
-    final url = await StorageService.uploadImage(image, title);
+      List<File> image, String title, PictureCategory category, bool isAdmin) async {
+    final urls = await StorageService.uploadImage(image, title);
     if (isAdmin) {
       await _uploadPicToAccepted(
         Picture(
-          url: url,
+          urls: urls,
           title: title,
           author: FirebaseAuth.instance.currentUser!.uid,
           category: category,
         ),
       );
     } else {
-      await _uploadPicToReview(title, url);
+      await _uploadPicToReview(title, urls);
     }
   }
 

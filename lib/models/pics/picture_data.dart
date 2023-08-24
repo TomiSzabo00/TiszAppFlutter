@@ -4,7 +4,7 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 
 class Picture {
   String key;
-  final String url;
+  final List<String> urls;
   final String title;
   final String author;
   bool isPicOfTheDay;
@@ -14,7 +14,7 @@ class Picture {
 
   Picture({
     this.key = "0",
-    required this.url,
+    required this.urls,
     required this.title,
     required this.author,
     this.isPicOfTheDay = false,
@@ -24,11 +24,18 @@ class Picture {
   });
 
   factory Picture.fromSnapshot(String key, Map<dynamic, dynamic> snapshot) {
+    final rawUrls = snapshot['imageUrls']?.toList();
+    List<String> urls = [];
+    if (rawUrls != null && rawUrls is List) {
+      urls = rawUrls.cast<String>();
+    }
+
     final rawLikes = snapshot['likes']?.values.toList();
     Map<String, String> likes = {};
     if (rawLikes != null && rawLikes is Map) {
       likes = rawLikes.cast<String, String>();
     }
+
     final rawComments = snapshot['comments'];
     List orderedRawComments = [];
     if (rawComments != null && rawComments is Map) {
@@ -44,7 +51,7 @@ class Picture {
     }
     return Picture(
       key: key,
-      url: snapshot['fileName'],
+      urls: urls,
       title: snapshot['title'],
       author: snapshot['author'],
       isPicOfTheDay: tryCast<bool>(snapshot['isPicOfTheDay']) ?? false,
@@ -55,7 +62,7 @@ class Picture {
   }
 
   Map<String, dynamic> toJson() => {
-        'fileName': url,
+        'imageUrls': urls,
         'title': title,
         'author': author,
         'isPicOfTheDay': isPicOfTheDay,

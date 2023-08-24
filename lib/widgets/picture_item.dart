@@ -117,7 +117,7 @@ class PictureItemState extends State<PictureItem> {
                     animationDuration: const Duration(milliseconds: 300),
                     twoTouchOnly: true,
                     child: CachedNetworkImage(
-                      imageUrl: widget.pic.url,
+                      imageUrl: widget.pic.urls.first,
                       fit: BoxFit.fitWidth,
                       placeholder: (context, url) => const Center(
                         heightFactor: 5,
@@ -421,7 +421,7 @@ class PictureItemState extends State<PictureItem> {
         } else if (value == 'download') {
           if (await Gal.hasAccess()) {
             final imagePath = '${Directory.systemTemp.path}/image.jpg';
-            await Dio().download(widget.pic.url, imagePath);
+            await Dio().download(widget.pic.urls.first, imagePath);
             await Gal.putImage(imagePath);
             _showSnackBar('Kép mentve a galériába');
           }

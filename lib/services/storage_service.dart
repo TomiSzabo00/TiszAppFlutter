@@ -19,61 +19,65 @@ class StorageService {
     }
   }
 
-  static Future<String> uploadImage(File file, String title) async {
-    // compress image
-    final filePath = file.path;
-    final fileExtension = extension(filePath);
-    final lastIndex = filePath.lastIndexOf(RegExp(fileExtension));
-    final splitted = filePath.substring(0, (lastIndex));
-    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
-    if (fileExtension == '.jpg' || fileExtension == '.jpeg') {
-      var result = await FlutterImageCompress.compressAndGetFile(
-        file.path,
-        outPath,
-        quality: 50,
-      );
-      file = File(result!.path);
-    } else if (fileExtension == '.png') {
-      var result = await FlutterImageCompress.compressAndGetFile(
-        file.path,
-        outPath,
-        quality: 50,
-        format: CompressFormat.png,
-      );
-      file = File(result!.path);
-    } else if (fileExtension == '.heic') {
-      var result = await FlutterImageCompress.compressAndGetFile(
-        file.path,
-        outPath,
-        quality: 50,
-        format: CompressFormat.heic,
-      );
-      file = File(result!.path);
-    }
+  static Future<List<String>> uploadImage(List<File> files, String title) async {
+    List<String> urls = [];
 
-    var key = DateService.dateInMillisAsString();
-    final images = ref.child('images/$key.jpg');
-    final storage.UploadTask uploadTask = images.putData(
-        await file.readAsBytes(),
-        storage.SettableMetadata(contentType: 'image/jpeg'));
-    final storage.TaskSnapshot downloadUrl = (await uploadTask);
-    final String url = (await downloadUrl.ref.getDownloadURL());
-    return url;
+    await Future.forEach(files, (file) async {
+      final filePath = file.path;
+      final fileExtension = extension(filePath);
+      final lastIndex = filePath.lastIndexOf(RegExp(fileExtension));
+      final splitted = filePath.substring(0, (lastIndex));
+      final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+      if (fileExtension == '.jpg' || fileExtension == '.jpeg') {
+        var result = await FlutterImageCompress.compressAndGetFile(
+          file.path,
+          outPath,
+          quality: 50,
+        );
+        file = File(result!.path);
+      } else if (fileExtension == '.png') {
+        var result = await FlutterImageCompress.compressAndGetFile(
+          file.path,
+          outPath,
+          quality: 50,
+          format: CompressFormat.png,
+        );
+        file = File(result!.path);
+      } else if (fileExtension == '.heic') {
+        var result = await FlutterImageCompress.compressAndGetFile(
+          file.path,
+          outPath,
+          quality: 50,
+          format: CompressFormat.heic,
+        );
+        file = File(result!.path);
+      }
+
+      var key = DateService.dateInMillisAsString();
+      final images = ref.child('images/$key.jpg');
+      final storage.UploadTask uploadTask = images.putData(
+          await file.readAsBytes(),
+          storage.SettableMetadata(contentType: 'image/jpeg'));
+      final storage.TaskSnapshot downloadUrl = (await uploadTask);
+      final String url = (await downloadUrl.ref.getDownloadURL());
+      urls.add(url);
+    });
+
+    return urls;
   }
 
-  static deleteImage(String url) async {
-    final ref = storage.FirebaseStorage.instance.refFromURL(url);
-    await ref.delete();
+  static deleteImage(List<String> urls) async {
+    await Future.forEach(urls, (url) async {
+      final ref = storage.FirebaseStorage.instance.refFromURL(url);
+      await ref.delete();
+    });
   }
 
   static Future<List<Song>> getSongs() async {
-    final data =
-        await ref.child('songs').listAll();
+    final data = await ref.child('songs').listAll();
     final songs = <Song>[];
     for (var item in data.items) {
-      final lyricsLink = await ref
-          .child('songs/${item.name}')
-          .getDownloadURL();
+      final lyricsLink = await ref.child('songs/${item.name}').getDownloadURL();
       final lyrics = await readTextFromURL(lyricsLink);
       final song = Song(
         name: item.name.substring(0, item.name.length - 4).toUpperCase(),
