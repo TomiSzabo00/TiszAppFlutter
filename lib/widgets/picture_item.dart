@@ -194,6 +194,9 @@ class PictureItemState extends State<PictureItem> {
                 MdiIcons.heart,
                 color: Colors.white,
                 size: 100,
+                shadows: <Shadow>[
+                  Shadow(color: Colors.black.withOpacity(0.3), blurRadius: 15.0)
+                ],
               ),
             ),
           ),
