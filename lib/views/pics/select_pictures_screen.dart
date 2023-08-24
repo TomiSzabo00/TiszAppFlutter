@@ -177,18 +177,86 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
                     ),
                     Material(
                       color: _selectedImageIndexes.contains(index)
-                          ? Colors.blue.withOpacity(0.4)
+                          ? Colors.white.withOpacity(0.5)
                           : Colors.transparent,
                       child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            toggleSelection(index);
-                            _shownImage =
-                                snapshot.data![_selectedImageIndexes.last];
-                          });
-                        },
-                        splashColor: Colors.blue.withOpacity(0.2),
-                      ),
+                          onTap: () {
+                            setState(() {
+                              toggleSelection(index);
+                              _shownImage =
+                                  snapshot.data![_selectedImageIndexes.last];
+                            });
+                          },
+                          splashColor: Colors.blue.withOpacity(0.2),
+                          child: () {
+                            if (!_isMultipleSelection) {
+                              return const SizedBox(
+                                width: 200,
+                                height: 200,
+                              );
+                            }
+                            return SizedBox(
+                              height: 200,
+                              width: 200,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: _selectedImageIndexes
+                                                .contains(index)
+                                            ? Colors.blue
+                                            : Colors.white.withOpacity(0.5),
+                                        radius: 10,
+                                      ),
+                                      Container(
+                                          margin: const EdgeInsets.all(5),
+                                          padding: const EdgeInsets.all(0),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.white)),
+                                          child: () {
+                                            if (_selectedImageIndexes
+                                                .contains(index)) {
+                                              return SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child: AspectRatio(
+                                                  aspectRatio: 1,
+                                                  child: Center(
+                                                    child: Text(
+                                                      (_selectedImageIndexes
+                                                                  .indexOf(
+                                                                      index) +
+                                                              1)
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              return const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                              );
+                                            }
+                                          }()),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }()),
                     ),
                   ],
                 );
