@@ -178,7 +178,7 @@ class QuizViewModel extends ChangeNotifier {
   }
 
   void setNumberOfTeams() {
-    database.child('number_of_teams').onValue.listen((event) {
+    database.child('_settings/number_of_teams').onValue.listen((event) {
       if (event.snapshot.value == null) {
         return;
       }

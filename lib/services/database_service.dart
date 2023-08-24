@@ -16,7 +16,7 @@ class DatabaseService {
   }
 
   static Future<int> getNumberOfTeams() async {
-    final snapshot = await database.child('number_of_teams').get();
+    final snapshot = await database.child('_settings/number_of_teams').get();
     if (snapshot.exists) {
       return tryCast<int>(snapshot.value) ?? 4;
     }

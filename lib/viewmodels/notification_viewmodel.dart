@@ -18,7 +18,7 @@ class NotificationViewModel extends ChangeNotifier {
     adminsSwitch = false;
     allUsersSwitch = false;
     final database = DatabaseService.database;
-    database.child('number_of_teams').onValue.listen((event) {
+    database.child('_settings/number_of_teams').onValue.listen((event) {
       if (event.snapshot.value == null) {
         return;
       }
