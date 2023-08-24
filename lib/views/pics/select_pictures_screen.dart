@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/views/pics/upload_picture_screen.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
@@ -24,7 +25,7 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
   final List<int> _selectedImageIndexes = [];
   List<AssetEntity> _images = [];
 
-  final _maxNumberOfImages = 10;
+  int _maxNumberOfImages = 10;
 
   Future<List<AssetPathEntity>> _categoryFuture = Future.value([]);
 
@@ -48,6 +49,14 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
         ),
       ),
     );
+
+    PicturesViewModel.getMaxNumberOfImages((value) {
+      if (value != null) {
+        setState(() {
+          _maxNumberOfImages = value;
+        });
+      }
+    });
   }
 
   @override

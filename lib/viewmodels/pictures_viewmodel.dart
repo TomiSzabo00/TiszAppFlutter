@@ -14,8 +14,6 @@ import 'package:tiszapp_flutter/services/notification_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class PicturesViewModel extends ChangeNotifier {
-  PicturesViewModel();
-
   final List<Picture> pictures = [];
   UserData authorDetails = UserData.empty();
 
@@ -134,8 +132,8 @@ class PicturesViewModel extends ChangeNotifier {
     await StorageService.deleteImage(picture.urls);
   }
 
-  Future uploadPicture(
-      List<File> image, String title, PictureCategory category, bool isAdmin) async {
+  Future uploadPicture(List<File> image, String title, PictureCategory category,
+      bool isAdmin) async {
     final urls = await StorageService.uploadImage(image, title);
     if (isAdmin) {
       await _uploadPicToAccepted(
@@ -346,6 +344,12 @@ class PicturesViewModel extends ChangeNotifier {
       article = ' az ';
     }
     return 'Mind$article$count komment megtekintése';
+  }
+    static Future getMaxNumberOfImages(Function(int?) callback) async {
+    final ref = DatabaseService.database;
+    ref.child('_settings/max_number_of_images').once().then((DatabaseEvent event) {
+      callback(tryCast<int>(event.snapshot.value));
+    });
   }
 }
 
