@@ -421,14 +421,17 @@ class PictureItemState extends State<PictureItem> {
         } else if (value == 'download') {
           if (await Gal.hasAccess()) {
             final imagePath = '${Directory.systemTemp.path}/image.jpg';
-            await Dio().download(widget.pic.urls.first, imagePath);
-            await Gal.putImage(imagePath);
-            _showSnackBar('Kép mentve a galériába');
+            await Future.forEach(widget.pic.urls, (url) async {
+              await Dio().download(url, imagePath);
+              await Gal.putImage(imagePath);
+            });
+            _showSnackBar('Kép(ek) mentve a galériába');
           }
         } else if (value == 'markPicOfTheDay') {
           _showAreYouSureDialog(ActionType.choose, () async {
             viewModel.choosePic(widget.pic);
-            _showSnackBar('Kép kiválasztva nap képének! Értesítés elküldve a feltöltőnek!');
+            _showSnackBar(
+                'Kép kiválasztva nap képének! Értesítés elküldve a feltöltőnek!');
           });
         }
       },
