@@ -1,5 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
-
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -421,8 +421,11 @@ class MainMenuViewModel extends ChangeNotifier {
 
   _launchURL() async {
     final Uri url = Uri.parse(await _getDriveURL());
-    if (await canLaunchUrl(url)) {
+    try {
       launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+    catch(e) {
+      throw FlutterError("Web page not available");
     }
   }
 
