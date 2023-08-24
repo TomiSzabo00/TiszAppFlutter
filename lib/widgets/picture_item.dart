@@ -17,7 +17,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tiszapp_flutter/widgets/heart_animation_widget.dart';
-import 'package:zoom_pinch_overlay/zoom_pinch_overlay.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class PictureItem extends StatefulWidget {
@@ -143,23 +142,15 @@ class PictureItemState extends State<PictureItem> {
           Stack(
             alignment: Alignment.topRight,
             children: [
-              ZoomOverlay(
-                modalBarrierColor: Colors.black45,
-                minScale: 1,
-                maxScale: 5.0,
-                animationCurve: Curves.fastOutSlowIn,
-                animationDuration: const Duration(milliseconds: 300),
-                twoTouchOnly: true,
-                child: CachedNetworkImage(
-                  imageUrl: widget.pic.urls.first,
-                  fit: BoxFit.fitWidth,
-                  placeholder: (context, url) => const Center(
-                    heightFactor: 5,
-                    child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) =>
-                      const Icon(Boxicons.bxs_error),
+              CachedNetworkImage(
+                imageUrl: widget.pic.urls.first,
+                fit: BoxFit.fitWidth,
+                placeholder: (context, url) => const Center(
+                  heightFactor: 5,
+                  child: CircularProgressIndicator(),
                 ),
+                errorWidget: (context, url, error) =>
+                    const Icon(Boxicons.bxs_error),
               ),
               () {
                 if (widget.pic.isPicOfTheDay) {
