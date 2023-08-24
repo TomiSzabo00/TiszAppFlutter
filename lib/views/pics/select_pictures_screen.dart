@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:tiszapp_flutter/views/pics/upload_picture_screen.dart';
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 
 class SelectPicturesScreen extends StatefulWidget {
   const SelectPicturesScreen({
@@ -18,8 +20,9 @@ class SelectPicturesScreen extends StatefulWidget {
 class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
   bool _isMultipleSelection = false;
   AssetPathEntity? _path;
-  AssetEntity? _selectedImage;
-  List<int> _selectedImageIndexes = [];
+  AssetEntity? _shownImage;
+  final List<int> _selectedImageIndexes = [];
+  List<AssetEntity> _images = [];
 
   Future<List<AssetPathEntity>> _categoryFuture = Future.value([]);
 
@@ -51,12 +54,16 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
       appBar: AppBar(
         title: const Text("Kép kiválasztása"),
         actions: [
-          if (_selectedImage != null)
+          if (_shownImage != null)
             IconButton(
               icon: Icon(MdiIcons.arrowRight),
               onPressed: () async {
-                final file = await _selectedImage!.file;
-                if (file == null) {
+                final nullableFiles =
+                    await Future.wait(_selectedImageIndexes.map(
+                  (index) => _images[index].file,
+                ));
+                final files = nullableFiles.whereNotNull().toList();
+                if (files.isEmpty) {
                   return;
                 }
                 // ignore: use_build_context_synchronously
@@ -64,7 +71,7 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
                   MaterialPageRoute(
                     builder: (context) => UploadPictureScreen(
                       isAdmin: widget.isAdmin,
-                      image: file,
+                      images: files,
                     ),
                   ),
                 );
@@ -78,7 +85,7 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
           Expanded(
             flex: 4,
             child: () {
-              if (_selectedImage == null) {
+              if (_shownImage == null) {
                 return const Center(
                   child: Text(
                     'Képek betöltése...',
@@ -94,7 +101,7 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
                     ),
                     Image(
                       image: AssetEntityImageProvider(
-                        _selectedImage!,
+                        _shownImage!,
                       ),
                       fit: BoxFit.contain,
                     ),
@@ -129,10 +136,17 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
       ),
       builder: (context, AsyncSnapshot<List<AssetEntity>> snapshot) {
         if (snapshot.hasData) {
-          if (_selectedImage == null) {
+          if (_shownImage == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               setState(() {
-                _selectedImage = snapshot.data!.first;
+                _shownImage = snapshot.data!.first;
+              });
+            });
+          }
+          if (_images.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _images = snapshot.data!;
               });
             });
           }
@@ -169,7 +183,7 @@ class _SelectPicturesScreenState extends State<SelectPicturesScreen> {
                         onTap: () {
                           setState(() {
                             toggleSelection(index);
-                            _selectedImage =
+                            _shownImage =
                                 snapshot.data![_selectedImageIndexes.last];
                           });
                         },

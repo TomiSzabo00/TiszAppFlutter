@@ -11,11 +11,11 @@ class UploadPictureScreen extends StatefulWidget {
   const UploadPictureScreen({
     Key? key,
     required this.isAdmin,
-    required this.image,
+    required this.images,
   }) : super(key: key);
 
   final bool isAdmin;
-  final File image;
+  final List<File> images;
 
   @override
   State<UploadPictureScreen> createState() => _UploadPictureScreenState();
@@ -39,36 +39,8 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                height: 100,
-                child: Row(
-                  children: [
-                    Image.file(widget.image),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        maxLines: 3,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.done,
-                        textAlignVertical: TextAlignVertical.top,
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                          labelText: "Cím vagy leírás...",
-                          alignLabelWithHint: true,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.grey, width: 0.5),
-                          ),
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.all(10),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                padding: const EdgeInsets.all(20),
+                child: imagesWithTitleInput()),
             Form(
               key: _formKey,
               child: Padding(
@@ -131,7 +103,7 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
                     if (_formKey.currentState!.validate()) {
                       showLoadingDialog();
                       await viewModel.uploadPicture(
-                        widget.image,
+                        widget.images.first,
                         _titleController.text,
                         _category!,
                         widget.isAdmin,
@@ -168,6 +140,79 @@ class _UploadPictureScreenState extends State<UploadPictureScreen> {
         ),
       ),
     );
+  }
+
+  Widget imagesWithTitleInput() {
+    if (widget.images.length == 1) {
+      final image = widget.images.first;
+      return SizedBox(
+        height: 100,
+        child: Row(
+          children: [
+            Image.file(image),
+            const SizedBox(width: 10),
+            Expanded(
+              child: TextField(
+                maxLines: 3,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                textAlignVertical: TextAlignVertical.top,
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: "Cím vagy leírás...",
+                  alignLabelWithHint: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey, width: 0.5),
+                  ),
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(10),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 220,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: widget.images.length,
+                itemBuilder: (context, index) {
+                  final image = widget.images[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Image.file(image),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: TextField(
+                maxLines: 3,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                textAlignVertical: TextAlignVertical.top,
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: "Cím vagy leírás...",
+                  alignLabelWithHint: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey, width: 0.5),
+                  ),
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(10),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void showLoadingDialog() {
