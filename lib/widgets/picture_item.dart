@@ -5,11 +5,12 @@ import 'package:community_material_icon/community_material_icon.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:gal/gal.dart';
 import 'package:info_popup/info_popup.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:readmore/readmore.dart';
 import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
@@ -44,6 +45,7 @@ class PictureItemState extends State<PictureItem> {
   Future _commentCountFuture = Future.value();
 
   final ScrollController _commentsScrollController = ScrollController();
+  final _scaleStateController = PhotoViewScaleStateController();
 
   late StreamSubscription<bool> keyboardSubscription;
   late KeyboardVisibilityController keyboardVisibilityController;
@@ -142,16 +144,7 @@ class PictureItemState extends State<PictureItem> {
           Stack(
             alignment: Alignment.topRight,
             children: [
-              CachedNetworkImage(
-                imageUrl: widget.pic.urls.first,
-                fit: BoxFit.fitWidth,
-                placeholder: (context, url) => const Center(
-                  heightFactor: 5,
-                  child: CircularProgressIndicator(),
-                ),
-                errorWidget: (context, url, error) =>
-                    const Icon(Boxicons.bxs_error),
-              ),
+              photoGallery(),
               () {
                 if (widget.pic.isPicOfTheDay) {
                   return const Padding(
@@ -208,6 +201,44 @@ class PictureItemState extends State<PictureItem> {
           isAnimating = true;
         });
       },
+    );
+  }
+
+  Widget photoGallery() {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
+      height: MediaQuery.of(context).size.width,
+      child: PhotoViewGallery.builder(
+        scrollPhysics: const BouncingScrollPhysics(),
+        builder: (BuildContext context, int index) {
+          return PhotoViewGalleryPageOptions(
+              imageProvider: CachedNetworkImageProvider(widget.pic.urls[index]),
+              initialScale: PhotoViewComputedScale.contained,
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered * 3,
+              scaleStateController: _scaleStateController,
+              onScaleEnd: (context, details, controllerValue) {
+                _scaleStateController.scaleState = PhotoViewScaleState.initial;
+              });
+        },
+        itemCount: widget.pic.urls.length,
+        loadingBuilder: (context, progress) => Center(
+          child: SizedBox(
+            width: 20.0,
+            height: 20.0,
+            child: CircularProgressIndicator(
+              value: progress == null
+                  ? null
+                  : progress.cumulativeBytesLoaded /
+                      (progress.expectedTotalBytes?.toInt() ?? 1),
+            ),
+          ),
+        ),
+        backgroundDecoration: BoxDecoration(
+          color: Colors.grey.withOpacity(isDarkTheme ? 0.25 : 1),
+        ),
+        onPageChanged: (int index) {},
+      ),
     );
   }
 
