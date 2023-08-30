@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:tiszapp_flutter/models/pics/filter.dart';
+import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/widgets/picture_item.dart';
 import '../../viewmodels/pictures_viewmodel.dart';
 
@@ -24,6 +27,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
     super.initState();
     widget.viewModel = Provider.of<PicturesViewModel>(context, listen: false);
     widget.viewModel!.getImages(widget.isReview);
+    widget.viewModel!.getNumberOfTeams();
   }
 
   @override
@@ -58,6 +62,98 @@ class _PicturesScreenState extends State<PicturesScreen> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showFiltersBottomSheet();
+        },
+        label: const Text('Szűrő'),
+        icon: Stack(
+          children: <Widget>[
+            Icon(MdiIcons.filter),
+            Positioned(
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(1),
+                decoration: BoxDecoration(
+                  color: viewModel.filters.isEmpty
+                      ? Colors.transparent
+                      : Colors.red,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 12,
+                  minHeight: 12,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showFiltersBottomSheet() {
+    showModalBottomSheet(
+      showDragHandle: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  child: Text(
+                    'Szűrők',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                ExpansionTile(
+                  title: const Text('Csapat'),
+                  children: List.generate(widget.viewModel?.numberOfTeams ?? 0,
+                      (index) {
+                    return CheckboxListTile(
+                      title: Text('${index + 1}. csapat'),
+                      value: widget.viewModel!.filters
+                          .contains(Filter(teamNum: index + 1)),
+                      onChanged: (value) {
+                        widget.viewModel!.toggleTeamFilter(teamNum: index + 1);
+                        setState(() {});
+                      },
+                    );
+                  }),
+                ),
+                ExpansionTile(
+                  title: const Text('Kategória'),
+                  children: List.generate(
+                    PictureCategory.values.length,
+                    (index) {
+                      return CheckboxListTile(
+                        title: Text(PictureCategory.values[index].displayName),
+                        value: widget.viewModel!.filters.contains(
+                            Filter(category: PictureCategory.values[index])),
+                        onChanged: (value) {
+                          widget.viewModel!.toggleCategoryFilter(
+                              category: PictureCategory.values[index]);
+                          setState(() {});
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

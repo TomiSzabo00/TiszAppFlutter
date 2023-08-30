@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/pics/filter.dart';
 import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
@@ -15,6 +16,8 @@ import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   final List<Picture> pictures = [];
+  final List<Filter> filters = [];
+  int numberOfTeams = 4;
   UserData authorDetails = UserData.empty();
 
   final DatabaseReference picsRef = DatabaseService.database.child("pics");
@@ -345,11 +348,38 @@ class PicturesViewModel extends ChangeNotifier {
     }
     return 'Mind$article$count komment megtekintése';
   }
-    static Future getMaxNumberOfImages(Function(int?) callback) async {
+
+  static Future getMaxNumberOfImages(Function(int?) callback) async {
     final ref = DatabaseService.database;
-    ref.child('_settings/max_number_of_images').once().then((DatabaseEvent event) {
+    ref
+        .child('_settings/max_number_of_images')
+        .once()
+        .then((DatabaseEvent event) {
       callback(tryCast<int>(event.snapshot.value));
     });
+  }
+
+  void toggleTeamFilter({required int teamNum}) {
+    if (filters.contains(Filter(teamNum: teamNum))) {
+      filters.remove(Filter(teamNum: teamNum));
+    } else {
+      filters.add(Filter(teamNum: teamNum));
+    }
+    notifyListeners();
+  }
+
+  void toggleCategoryFilter({required PictureCategory category}) {
+    if (filters.contains(Filter(category: category))) {
+      filters.remove(Filter(category: category));
+    } else {
+      filters.add(Filter(category: category));
+    }
+    notifyListeners();
+  }
+
+  void getNumberOfTeams() async {
+    numberOfTeams = await DatabaseService.getNumberOfTeams();
+    notifyListeners();
   }
 }
 
