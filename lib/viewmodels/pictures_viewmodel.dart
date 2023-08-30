@@ -401,7 +401,7 @@ class PicturesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void filterPictures() async {
+  Future filterPictures() async {
     filteredPictures = [];
     if (filters.isEmpty) {
       filteredPictures = pictures;
@@ -409,10 +409,10 @@ class PicturesViewModel extends ChangeNotifier {
       for (var pic in pictures) {
         if (await isFiltered(pic)) {
           filteredPictures.add(pic);
+          notifyListeners();
         }
       }
     }
-    notifyListeners();
   }
 
   Future<bool> isFiltered(Picture pic) async {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/pics/filter.dart';
@@ -29,6 +28,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
     widget.viewModel = Provider.of<PicturesViewModel>(context, listen: false);
     widget.viewModel!.getImages(widget.isReview);
     widget.viewModel!.getNumberOfTeams();
+    widget.viewModel!.filterPictures();
   }
 
   @override
@@ -40,9 +40,6 @@ class _PicturesScreenState extends State<PicturesScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<PicturesViewModel>();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      viewModel.filterPictures();
-    });
     bool isDarkTheme =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
@@ -126,17 +123,29 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     ),
                   ),
                   children: List.generate(widget.viewModel?.numberOfTeams ?? 0,
-                      (index) {
-                    return CheckboxListTile(
-                      title: Text('${index + 1}. csapat'),
-                      value: widget.viewModel!.filters
-                          .contains(Filter(teamNum: index + 1)),
-                      onChanged: (value) {
-                        widget.viewModel!.toggleTeamFilter(teamNum: index + 1);
-                        setState(() {});
-                      },
-                    );
-                  }),
+                          (index) {
+                        return CheckboxListTile(
+                          title: Text('${index + 1}. csapat'),
+                          value: widget.viewModel!.filters
+                              .contains(Filter(teamNum: index + 1)),
+                          onChanged: (value) {
+                            widget.viewModel!
+                                .toggleTeamFilter(teamNum: index + 1);
+                            setState(() {});
+                          },
+                        );
+                      }) +
+                      [
+                        CheckboxListTile(
+                          title: const Text('Szervező'),
+                          value: widget.viewModel!.filters
+                              .contains(Filter(teamNum: 0)),
+                          onChanged: (value) {
+                            widget.viewModel!.toggleTeamFilter(teamNum: 0);
+                            setState(() {});
+                          },
+                        ),
+                      ],
                 ),
                 ExpansionTile(
                   title: const Text(
@@ -215,6 +224,6 @@ class _PicturesScreenState extends State<PicturesScreen> {
           },
         );
       },
-    );
+    ).whenComplete(() => widget.viewModel!.filterPictures());
   }
 }
