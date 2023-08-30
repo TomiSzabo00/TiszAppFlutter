@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/pics/filter.dart';
 import 'package:tiszapp_flutter/models/pics/picture_category.dart';
 import 'package:tiszapp_flutter/models/pics/picture_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
@@ -15,6 +16,9 @@ import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   final List<Picture> pictures = [];
+  List<Picture> filteredPictures = [];
+  final List<Filter> filters = [];
+  int numberOfTeams = 4;
   UserData authorDetails = UserData.empty();
 
   final DatabaseReference picsRef = DatabaseService.database.child("pics");
@@ -112,9 +116,8 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   Future<void> _uploadPicToAccepted(Picture picture) async {
-    final key = DateService.dateInMillisAsString();
     final pictureData = picture.toJson();
-    await picsRef.child(key).set(pictureData);
+    await picsRef.child(picture.key).set(pictureData);
   }
 
   Future<void> acceptPic(Picture picture) async {
@@ -345,11 +348,101 @@ class PicturesViewModel extends ChangeNotifier {
     }
     return 'Mind$article$count komment megtekintése';
   }
-    static Future getMaxNumberOfImages(Function(int?) callback) async {
+
+  static Future getMaxNumberOfImages(Function(int?) callback) async {
     final ref = DatabaseService.database;
-    ref.child('_settings/max_number_of_images').once().then((DatabaseEvent event) {
+    ref
+        .child('_settings/max_number_of_images')
+        .once()
+        .then((DatabaseEvent event) {
       callback(tryCast<int>(event.snapshot.value));
     });
+  }
+
+  void toggleTeamFilter({required int teamNum}) {
+    if (filters.contains(Filter(teamNum: teamNum))) {
+      filters.remove(Filter(teamNum: teamNum));
+    } else {
+      filters.add(Filter(teamNum: teamNum));
+    }
+    notifyListeners();
+  }
+
+  void toggleCategoryFilter({required PictureCategory category}) {
+    if (filters.contains(Filter(category: category))) {
+      filters.remove(Filter(category: category));
+    } else {
+      filters.add(Filter(category: category));
+    }
+    notifyListeners();
+  }
+
+  void toggleDateFilter({required DateFilter date}) {
+    if (filters.contains(Filter(date: date))) {
+      filters.remove(Filter(date: date));
+    } else {
+      filters.add(Filter(date: date));
+    }
+    notifyListeners();
+  }
+
+  void toggleIsPicOfTheDayFilter({required bool isPicOfTheDay}) {
+    if (filters.contains(Filter(isPicOfTheDay: isPicOfTheDay))) {
+      filters.remove(Filter(isPicOfTheDay: isPicOfTheDay));
+    } else {
+      filters.add(Filter(isPicOfTheDay: isPicOfTheDay));
+    }
+    notifyListeners();
+  }
+
+  void getNumberOfTeams() async {
+    numberOfTeams = await DatabaseService.getNumberOfTeams();
+    notifyListeners();
+  }
+
+  Future filterPictures() async {
+    filteredPictures = [];
+    if (filters.isEmpty) {
+      filteredPictures = pictures;
+    } else {
+      for (var pic in pictures) {
+        if (await isFiltered(pic)) {
+          filteredPictures.add(pic);
+          notifyListeners();
+        }
+      }
+    }
+  }
+
+  Future<bool> isFiltered(Picture pic) async {
+    if (filters.isEmpty) {
+      return true;
+    } else {
+      final authorTeamNum = await DatabaseService.getUserData(pic.author);
+      return filters.contains(Filter(teamNum: authorTeamNum.teamNum)) ||
+          filters.contains(Filter(category: pic.category)) ||
+          filters.contains(Filter(date: getDateFilterFromKey(pic.key))) ||
+          filters.contains(Filter(isPicOfTheDay: pic.isPicOfTheDay));
+    }
+  }
+
+  DateFilter getDateFilterFromKey(String key) {
+    final date = DateTime(
+      int.parse(key.substring(0, 4)),
+      int.parse(key.substring(4, 6)),
+      int.parse(key.substring(6, 8)),
+      int.parse(key.substring(8, 10)),
+      int.parse(key.substring(10, 12)),
+      int.parse(key.substring(12, 14)),
+      int.parse(key.substring(14, 16)),
+    );
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) {
+      return DateFilter.today;
+    } else if (diff.inDays == 1) {
+      return DateFilter.yesterday;
+    }
+    return DateFilter.earlier;
   }
 }
 
