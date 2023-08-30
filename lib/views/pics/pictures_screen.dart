@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/pics/filter.dart';
@@ -39,6 +40,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<PicturesViewModel>();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      viewModel.filterPictures();
+    });
     bool isDarkTheme =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
@@ -52,10 +56,10 @@ class _PicturesScreenState extends State<PicturesScreen> {
           color: isDarkTheme ? Colors.black : Colors.white,
         ),
         child: ListView.builder(
-          itemCount: viewModel.pictures.length,
+          itemCount: viewModel.filteredPictures.length,
           itemBuilder: (context, index) {
             return PictureItem(
-              pic: viewModel.pictures[index],
+              pic: viewModel.filteredPictures[index],
               isReview: widget.isReview,
               isAdmin: widget.isAdmin,
             );

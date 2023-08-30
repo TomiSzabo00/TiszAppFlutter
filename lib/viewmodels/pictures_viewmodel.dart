@@ -16,6 +16,7 @@ import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   final List<Picture> pictures = [];
+  List<Picture> filteredPictures = [];
   final List<Filter> filters = [];
   int numberOfTeams = 4;
   UserData authorDetails = UserData.empty();
@@ -398,6 +399,51 @@ class PicturesViewModel extends ChangeNotifier {
   void getNumberOfTeams() async {
     numberOfTeams = await DatabaseService.getNumberOfTeams();
     notifyListeners();
+  }
+
+  void filterPictures() async {
+    filteredPictures = [];
+    if (filters.isEmpty) {
+      filteredPictures = pictures;
+    } else {
+      for (var pic in pictures) {
+        if (await isFiltered(pic)) {
+          filteredPictures.add(pic);
+        }
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<bool> isFiltered(Picture pic) async {
+    if (filters.isEmpty) {
+      return true;
+    } else {
+      final authorTeamNum = await DatabaseService.getUserData(pic.author);
+      return filters.contains(Filter(teamNum: authorTeamNum.teamNum)) ||
+          filters.contains(Filter(category: pic.category)) ||
+          filters.contains(Filter(date: getDateFilterFromKey(pic.key))) ||
+          filters.contains(Filter(isPicOfTheDay: pic.isPicOfTheDay));
+    }
+  }
+
+  DateFilter getDateFilterFromKey(String key) {
+    final date = DateTime(
+      int.parse(key.substring(0, 4)),
+      int.parse(key.substring(4, 6)),
+      int.parse(key.substring(6, 8)),
+      int.parse(key.substring(8, 10)),
+      int.parse(key.substring(10, 12)),
+      int.parse(key.substring(12, 14)),
+      int.parse(key.substring(14, 16)),
+    );
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) {
+      return DateFilter.today;
+    } else if (diff.inDays == 1) {
+      return DateFilter.yesterday;
+    }
+    return DateFilter.earlier;
   }
 }
 
