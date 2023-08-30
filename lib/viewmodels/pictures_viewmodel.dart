@@ -116,9 +116,8 @@ class PicturesViewModel extends ChangeNotifier {
   }
 
   Future<void> _uploadPicToAccepted(Picture picture) async {
-    final key = DateService.dateInMillisAsString();
     final pictureData = picture.toJson();
-    await picsRef.child(key).set(pictureData);
+    await picsRef.child(picture.key).set(pictureData);
   }
 
   Future<void> acceptPic(Picture picture) async {
