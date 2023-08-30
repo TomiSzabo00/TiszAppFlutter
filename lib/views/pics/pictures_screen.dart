@@ -101,9 +101,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            return ListView(
               children: [
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -117,7 +115,12 @@ class _PicturesScreenState extends State<PicturesScreen> {
                 ),
                 const Divider(),
                 ExpansionTile(
-                  title: const Text('Csapat'),
+                  title: const Text(
+                    'Csapat',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   children: List.generate(widget.viewModel?.numberOfTeams ?? 0,
                       (index) {
                     return CheckboxListTile(
@@ -132,7 +135,12 @@ class _PicturesScreenState extends State<PicturesScreen> {
                   }),
                 ),
                 ExpansionTile(
-                  title: const Text('Kategória'),
+                  title: const Text(
+                    'Kategória',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   children: List.generate(
                     PictureCategory.values.length,
                     (index) {
@@ -148,6 +156,55 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       );
                     },
                   ),
+                ),
+                ExpansionTile(
+                    title: const Text(
+                      'Dátum',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    children: List.generate(DateFilter.values.length, (index) {
+                      return CheckboxListTile(
+                        title: Text(DateFilter.values[index].displayName),
+                        value: widget.viewModel!.filters
+                            .contains(Filter(date: DateFilter.values[index])),
+                        onChanged: (value) {
+                          widget.viewModel!
+                              .toggleDateFilter(date: DateFilter.values[index]);
+                          setState(() {});
+                        },
+                      );
+                    })),
+                ExpansionTile(
+                  title: const Text(
+                    'Nap képei',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  children: [
+                    CheckboxListTile(
+                      title: const Text('Csak nap képei'),
+                      value: widget.viewModel!.filters
+                          .contains(Filter(isPicOfTheDay: true)),
+                      onChanged: (value) {
+                        widget.viewModel!
+                            .toggleIsPicOfTheDayFilter(isPicOfTheDay: true);
+                        setState(() {});
+                      },
+                    ),
+                    CheckboxListTile(
+                      title: const Text('Csak nem nap képei'),
+                      value: widget.viewModel!.filters
+                          .contains(Filter(isPicOfTheDay: false)),
+                      onChanged: (value) {
+                        widget.viewModel!
+                            .toggleIsPicOfTheDayFilter(isPicOfTheDay: false);
+                        setState(() {});
+                      },
+                    ),
+                  ],
                 ),
               ],
             );

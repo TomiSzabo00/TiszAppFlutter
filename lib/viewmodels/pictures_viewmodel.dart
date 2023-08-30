@@ -377,6 +377,24 @@ class PicturesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleDateFilter({required DateFilter date}) {
+    if (filters.contains(Filter(date: date))) {
+      filters.remove(Filter(date: date));
+    } else {
+      filters.add(Filter(date: date));
+    }
+    notifyListeners();
+  }
+
+  void toggleIsPicOfTheDayFilter({required bool isPicOfTheDay}) {
+    if (filters.contains(Filter(isPicOfTheDay: isPicOfTheDay))) {
+      filters.remove(Filter(isPicOfTheDay: isPicOfTheDay));
+    } else {
+      filters.add(Filter(isPicOfTheDay: isPicOfTheDay));
+    }
+    notifyListeners();
+  }
+
   void getNumberOfTeams() async {
     numberOfTeams = await DatabaseService.getNumberOfTeams();
     notifyListeners();
