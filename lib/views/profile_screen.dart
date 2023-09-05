@@ -1,15 +1,27 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../viewmodels/profile_viewmodel.dart';
 
-class ProfileScreen extends StatelessWidget {
-  ProfileScreen({Key? key, required this.args}) : super(key: key) {
-    _viewModel = ProfileViewModel(args);
-  }
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key, required this.args}) : super(key: key);
+
   final ProfileScreenArguments args;
-  late final ProfileViewModel _viewModel;
+
+  @override
+  ProfileScreenState createState() => ProfileScreenState();
+}
+
+class ProfileScreenState extends State<ProfileScreen> {
+  late ProfileViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = ProfileViewModel(widget.args);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,66 +31,60 @@ class ProfileScreen extends StatelessWidget {
           title: const Text('Profilom'),
         ),
         body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  isDarkTheme ? "images/bg2_night.png" : "images/bg2_day.png"),
-              fit: BoxFit.cover,
-            ),
-          ),
+          decoration:
+              BoxDecoration(color: isDarkTheme ? Colors.black : Colors.white),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Wrap(direction: Axis.vertical, children: [
-                  Text('Név: ${args.user.name}',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 20),
-                  Text('Csapat: ${_viewModel.getTeamNum()}',
-                      style: Theme.of(context).textTheme.titleLarge),
-                ]),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.5,
-                width: double.infinity,
-                alignment: Alignment.topLeft,
-                child: FutureBuilder(
-                    future: _viewModel.getTeammates(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ExpansionTile(
-                            collapsedBackgroundColor:
-                                isDarkTheme ? Colors.black : Colors.white,
-                            backgroundColor:
-                                isDarkTheme ? Colors.black : Colors.white,
-                            title: Text("Regisztrált csapattagok",
-                                style: Theme.of(context).textTheme.titleLarge),
-                            children: [
-                              SizedBox(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.5 *
-                                      0.8,
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: snapshot.data!.length,
-                                      itemBuilder: (context, index) {
-                                        return ListTile(
-                                          title: Text(
-                                            snapshot.data![index],
-                                            style: TextStyle(
-                                                color: isDarkTheme
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                          ),
-                                        );
-                                      }))
-                            ]);
-                      } else {
-                        return Text('Csapattársak: Betöltés...',
-                            style: Theme.of(context).textTheme.titleLarge);
-                      }
-                    }),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.45,
+                child: Stack(
+                  alignment: Alignment.bottomLeft,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.45,
+                      foregroundDecoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            isDarkTheme ? Colors.black : Colors.white
+                          ],
+                          stops: const [0.4, 0.9],
+                        ),
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            'http://via.placeholder.com/200x200', //widget.args.user.profilePictureUrl,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Wrap(
+                        direction: Axis.vertical,
+                        children: [
+                          Text(
+                            widget.args.user.name,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            widget.args.user.teamNumberAsString,
+                            style: const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Spacer(),
               Container(
