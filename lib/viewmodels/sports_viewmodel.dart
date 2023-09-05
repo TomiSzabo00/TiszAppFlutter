@@ -21,7 +21,7 @@ class SportsViewModel with ChangeNotifier {
   final team1ScoreController = TextEditingController();
   final team2ScoreController = TextEditingController();
   final MVPController = TextEditingController();
-  UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
+  UserData user = UserData.empty();
   Map<int, List<String>> teams = {};
   void getData() async {
     final databaseref_sports_results = DatabaseService.database.child('sports');

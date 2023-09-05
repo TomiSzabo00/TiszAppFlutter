@@ -150,7 +150,11 @@ class ApiService {
       return parsed
           .map<AdminApiData>((json) => AdminApiData.fromJson(json))
           .map<UserData>((adminData) => UserData(
-              uid: "", name: adminData.name, isAdmin: true, teamNum: 0))
+              uid: "",
+              name: adminData.name,
+              isAdmin: true,
+              teamNum: 0,
+              profilePictureUrl: ''))
           .toList();
     } else {
       return parsed
@@ -159,7 +163,8 @@ class ApiService {
               uid: "",
               name: userData.name,
               isAdmin: false,
-              teamNum: int.parse(userData.teamNum)))
+              teamNum: int.parse(userData.teamNum),
+              profilePictureUrl: ''))
           .toList();
     }
   }

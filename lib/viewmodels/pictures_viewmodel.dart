@@ -137,7 +137,7 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future uploadPicture(List<File> image, String title, PictureCategory category,
       bool isAdmin) async {
-    final urls = await StorageService.uploadImage(image, title);
+    final urls = await StorageService.uploadImages(image, title);
     if (isAdmin) {
       await _uploadPicToAccepted(
         Picture(
@@ -310,21 +310,21 @@ class PicturesViewModel extends ChangeNotifier {
     return await DatabaseService.getUserData(authorId);
   }
 
-  Future<Map<String, String>> getLikesList(Picture pic) async {
-    final Map<String, String> likesList = {};
+  Future<Map<String, UserData>> getLikesList(Picture pic) async {
+    final Map<String, UserData> likesList = {};
     await Future.forEach(pic.likes.entries, (entry) async {
       final user = await DatabaseService.getUserData(entry.value);
-      likesList[entry.key] = user.name;
+      likesList[entry.key] = user;
     });
     return likesList;
   }
 
-  Future<List<Map<String, String>>> getCommentsList(Picture pic) async {
-    final List<Map<String, String>> commentsList = [];
+  Future<List<Map<UserData, String>>> getCommentsList(Picture pic) async {
+    final List<Map<UserData, String>> commentsList = [];
     await Future.forEach(pic.comments, (entry) async {
       final uid = entry.keys.first;
       final user = await DatabaseService.getUserData(uid);
-      commentsList.add({user.name: entry.values.first});
+      commentsList.add({user: entry.values.first});
     });
     return commentsList;
   }

@@ -34,7 +34,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class MainMenuViewModel extends ChangeNotifier {
   MainMenuViewModel();
-  UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
+  UserData user = UserData.empty();
 
   List<MainMenuButton> buttons = [];
   List<MainMenuButton> buttonToggles = [];

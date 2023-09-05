@@ -18,7 +18,7 @@ class EjjeliPortyaViewModel with ChangeNotifier {
   EjjeliPortyaData data =
       EjjeliPortyaData(csapatData: List.empty(growable: true));
 
-  UserData user = UserData(uid: "", name: "", isAdmin: false, teamNum: -1);
+  UserData user = UserData.empty();
 
   final LatLng _center = const LatLng(47.220617, 20.298267);
   final List<BitmapDescriptor> colorList =

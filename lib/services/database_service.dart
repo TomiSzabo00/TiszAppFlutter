@@ -25,7 +25,7 @@ class DatabaseService {
 
   static Future<UserData> getUserData(String uid) async {
     if (FirebaseAuth.instance.currentUser == null) {
-      return UserData(uid: "", name: "Error", isAdmin: false, teamNum: -1);
+      return UserData.empty();
     }
     return await FirebaseDatabase.instance
         .ref()
@@ -35,7 +35,7 @@ class DatabaseService {
       if (snapshot.value != null) {
         return UserData.fromSnapshot(snapshot);
       }
-      return UserData(uid: "", name: "Error", isAdmin: false, teamNum: -1);
+      return UserData.empty();
     });
   }
 

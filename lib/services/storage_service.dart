@@ -19,7 +19,8 @@ class StorageService {
     }
   }
 
-  static Future<List<String>> uploadImage(List<File> files, String title) async {
+  static Future<List<String>> uploadImages(
+      List<File> files, String title) async {
     List<String> urls = [];
 
     await Future.forEach(files, (file) async {
@@ -64,6 +65,50 @@ class StorageService {
     });
 
     return urls;
+  }
+
+  static Future<String> uploadProfilePic(
+      {required File file, required String uid}) async {
+    // compress image
+    final filePath = file.path;
+    final fileExtension = extension(filePath);
+    final lastIndex = filePath.lastIndexOf(RegExp(fileExtension));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+    if (fileExtension == '.jpg' || fileExtension == '.jpeg') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+      );
+      file = File(result!.path);
+    } else if (fileExtension == '.png') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+        format: CompressFormat.png,
+      );
+      file = File(result!.path);
+    } else if (fileExtension == '.heic') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+        format: CompressFormat.heic,
+      );
+      file = File(result!.path);
+    }
+
+    final images = storage.FirebaseStorage.instance
+        .ref()
+        .child('profile_pictures/$uid.jpg');
+    final storage.UploadTask uploadTask = images.putData(
+        await file.readAsBytes(),
+        storage.SettableMetadata(contentType: 'image/jpeg'));
+    final storage.TaskSnapshot downloadUrl = (await uploadTask);
+    final String url = (await downloadUrl.ref.getDownloadURL());
+    return url;
   }
 
   static deleteImage(List<String> urls) async {
