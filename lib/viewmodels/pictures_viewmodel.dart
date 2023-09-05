@@ -137,7 +137,7 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future uploadPicture(List<File> image, String title, PictureCategory category,
       bool isAdmin) async {
-    final urls = await StorageService.uploadImage(image, title);
+    final urls = await StorageService.uploadImages(image, title);
     if (isAdmin) {
       await _uploadPicToAccepted(
         Picture(

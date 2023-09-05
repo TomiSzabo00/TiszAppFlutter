@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import '../viewmodels/profile_viewmodel.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key, required this.args}) : super(key: key);
@@ -17,6 +21,8 @@ class ProfileScreen extends StatefulWidget {
 
 class ProfileScreenState extends State<ProfileScreen> {
   late ProfileViewModel _viewModel;
+  final picker = ImagePicker();
+  final cropper = ImageCropper();
 
   @override
   void initState() {
@@ -89,7 +95,25 @@ class ProfileScreenState extends State<ProfileScreen> {
                         Padding(
                           padding: const EdgeInsets.only(right: 10),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final pickedFile = await picker.pickImage(
+                                  source: ImageSource.gallery);
+                              if (pickedFile != null) {
+                                final croppedFile = await cropper.cropImage(
+                                  sourcePath: pickedFile.path,
+                                  aspectRatio: const CropAspectRatio(
+                                      ratioX: 1, ratioY: 1),
+                                  compressQuality: 100,
+                                  maxWidth: 700,
+                                  maxHeight: 700,
+                                  compressFormat: ImageCompressFormat.jpg,
+                                );
+                                if (croppedFile != null) {
+                                  await _viewModel
+                                      .uploadProfilePicture(File(croppedFile.path));
+                                }
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(15),
