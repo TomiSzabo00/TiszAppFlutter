@@ -333,8 +333,9 @@ class PictureItemState extends State<PictureItem> {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
               visualDensity: VisualDensity.compact,
-              leading: const CircleAvatar(
-                backgroundColor: Colors.grey,
+              leading: CircleAvatar(
+                backgroundImage:
+                    CachedNetworkImageProvider(authorDetails.profilePictureUrl),
               ),
               title: Text(
                 authorDetails.name,
@@ -621,10 +622,12 @@ class PictureItemState extends State<PictureItem> {
             itemCount: widget.pic.likes.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: Colors.grey,
+                leading: CircleAvatar(
+                  backgroundImage: CachedNetworkImageProvider(
+                    snapshot.data!.values.elementAt(index).profilePictureUrl,
+                  ),
                 ),
-                title: Text(snapshot.data!.values.elementAt(index)),
+                title: Text(snapshot.data!.values.elementAt(index).name),
                 subtitle: Text(viewModel
                     .timeStampFromKey(snapshot.data!.keys.elementAt(index))),
               );
@@ -691,10 +694,11 @@ class PictureItemState extends State<PictureItem> {
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 10.0),
                     visualDensity: VisualDensity.compact,
-                    leading: const CircleAvatar(
-                      backgroundColor: Colors.grey,
+                    leading: CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(
+                          snapshot.data![index].keys.first.profilePictureUrl),
                     ),
-                    title: Text(snapshot.data![index].keys.first,
+                    title: Text(snapshot.data![index].keys.first.name,
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 12)),
                     subtitle: Text(
