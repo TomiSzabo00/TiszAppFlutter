@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/profile_screen_arguments.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
@@ -61,26 +62,48 @@ class ProfileScreenState extends State<ProfileScreen> {
                         fit: BoxFit.fill,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Wrap(
-                        direction: Axis.vertical,
-                        children: [
-                          Text(
-                            widget.args.user.name,
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Wrap(
+                            direction: Axis.vertical,
+                            children: [
+                              Text(
+                                widget.args.user.name,
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                widget.args.user.teamNumberAsString,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(15),
+                              backgroundColor:
+                                  isDarkTheme ? Colors.white : Colors.black,
+                              foregroundColor:
+                                  isDarkTheme ? Colors.black : Colors.white,
+                            ),
+                            child: Icon(
+                              MdiIcons.imageEdit,
                             ),
                           ),
-                          Text(
-                            widget.args.user.teamNumberAsString,
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
