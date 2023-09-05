@@ -28,6 +28,13 @@ class ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _viewModel = ProfileViewModel(widget.args);
+    _viewModel.subscribeToProfilePictureChanges();
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 
   @override
@@ -109,8 +116,12 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   compressFormat: ImageCompressFormat.jpg,
                                 );
                                 if (croppedFile != null) {
-                                  await _viewModel
-                                      .uploadProfilePicture(File(croppedFile.path));
+                                  showLoadingDialog();
+                                  await _viewModel.uploadProfilePicture(
+                                      File(croppedFile.path));
+                                  setState(() {
+                                    Navigator.of(context).pop();
+                                  });
                                 }
                               }
                             },
@@ -180,6 +191,26 @@ class ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ));
+  }
+
+  void showLoadingDialog() {
+    AlertDialog alert = const AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 20),
+          Text("Profilkép beállítása..."),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   void showAreYouSureDialog(BuildContext context) {
