@@ -57,8 +57,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       child: CachedNetworkImage(
-                        imageUrl:
-                            'http://via.placeholder.com/200x200', //widget.args.user.profilePictureUrl,
+                        imageUrl: widget.args.user.profilePictureUrl,
                         fit: BoxFit.fill,
                       ),
                     ),
