@@ -23,6 +23,7 @@ import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/tinder/tinder_registration_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -156,6 +157,7 @@ class MainMenuViewModel extends ChangeNotifier {
   void _reorderButtons() {
     List<MainMenuButton> order = [
       MainMenuButton(type: MainMenuButtonType.schedule),
+      MainMenuButton(type: MainMenuButtonType.tinder),
       MainMenuButton(type: MainMenuButtonType.scores),
       MainMenuButton(type: MainMenuButtonType.wordle),
       MainMenuButton(type: MainMenuButtonType.songs),
@@ -231,6 +233,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sports;
     } else if (key == MainMenuButtonType.sportResult.rawValue) {
       return MainMenuButtonType.sportResult;
+    } else if (key == MainMenuButtonType.tinder.rawValue) {
+      return MainMenuButtonType.tinder;
     }
 
     return MainMenuButtonType.none;
@@ -415,6 +419,12 @@ class MainMenuViewModel extends ChangeNotifier {
                     PicturesScreen(isReview: true, isAdmin: user.isAdmin),
               ),
             );
+      case MainMenuButtonType.tinder:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const TinderRegistrationScreen(),
+              ),
+            );
     }
   }
 
@@ -422,8 +432,7 @@ class MainMenuViewModel extends ChangeNotifier {
     final Uri url = Uri.parse(await _getDriveURL());
     try {
       launchUrl(url, mode: LaunchMode.externalApplication);
-    }
-    catch(e) {
+    } catch (e) {
       throw FlutterError("Web page not available");
     }
   }

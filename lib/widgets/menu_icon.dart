@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import '3d_button.dart';
 
@@ -26,7 +27,7 @@ class MenuIcon extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              FaIcon(
                 icon,
                 size: constraints.maxWidth / 3,
               ),

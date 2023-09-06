@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tiszapp_flutter/models/main_menu/main_menu_button_type.dart';
 import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 
@@ -52,6 +53,8 @@ class MainMenuButton {
         return 'Sport Feltöltés';
       case MainMenuButtonType.sportResult:
         return 'Sport Eredmények';
+      case MainMenuButtonType.tinder:
+        return 'Párkereső';
     }
   }
 
@@ -101,6 +104,8 @@ class MainMenuButton {
         return Icons.sports_soccer;
       case MainMenuButtonType.sportResult:
         return Icons.sports_score;
+      case MainMenuButtonType.tinder:
+        return FontAwesomeIcons.userGroup;
     }
   }
 
