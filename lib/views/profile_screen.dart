@@ -78,25 +78,33 @@ class ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Wrap(
-                            direction: Axis.vertical,
-                            children: [
-                              Text(
-                                widget.args.user.name,
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    widget.args.user.name,
+                                    maxLines: 3,
+                                    style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                widget.args.user.teamNumberAsString,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                Text(
+                                  widget.args.user.teamNumberAsString,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         Padding(

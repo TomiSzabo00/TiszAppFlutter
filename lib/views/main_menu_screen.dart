@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
@@ -65,16 +66,18 @@ class MainMenuState extends State<MainMenu> {
                   child: Button3D(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(Icons.person),
                       const SizedBox(width: 10),
-                      FittedBox(
-                        fit: BoxFit.cover,
-                        child: Text(
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: AutoSizeText(
                           "Bejelentkezve, mint ${viewModel.user.name}",
+                          minFontSize: 9,
+                          maxLines: 1,
                           style: TextStyle(
                             color: isDarkTheme
                                 ? CustomColor.btnTextNight
