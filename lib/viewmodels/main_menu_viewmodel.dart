@@ -23,7 +23,7 @@ import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
-import 'package:tiszapp_flutter/views/tinder/tinder_registration_screen.dart';
+import 'package:tiszapp_flutter/views/tinder/tinder_router.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -422,7 +422,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.tinder:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const TinderRegistrationScreen(),
+                builder: (context) => const TinderRouter(),
               ),
             );
     }

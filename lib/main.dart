@@ -17,6 +17,7 @@ import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/sports_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/tinder_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
 import 'firebase_options.dart';
@@ -69,6 +70,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
       ChangeNotifierProvider(create: (_) => SportsViewModel()),
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
+      ChangeNotifierProvider(create: (_) => TinderViewModel()),
     ], child: const MyApp()),
   );
 }
