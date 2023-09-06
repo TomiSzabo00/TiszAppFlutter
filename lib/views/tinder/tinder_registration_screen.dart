@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/alert_widget.dart';
@@ -12,6 +16,10 @@ class TinderRegistrationScreen extends StatefulWidget {
 }
 
 class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
+  final picker = ImagePicker();
+  final cropper = ImageCropper();
+  late OverlayEntry _overlayEntry;
+
   @override
   Widget build(BuildContext context) {
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
@@ -71,14 +79,69 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
               child: const Text('Mégsem'),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                final pickedFile = await picker.pickImage(
+                    source: ImageSource.camera,
+                    requestFullMetadata: false,
+                    preferredCameraDevice: CameraDevice.front);
+                if (pickedFile != null) {
+                  final croppedFile = await cropper.cropImage(
+                    sourcePath: pickedFile.path,
+                    aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 4),
+                    compressQuality: 100,
+                    maxWidth: 700,
+                    maxHeight: 700,
+                    compressFormat: ImageCompressFormat.jpg,
+                  );
+                  if (croppedFile != null) {
+                    showPreviewOverlay(image: File(croppedFile.path));
+                  }
+                }
               },
               child: const Text('Rendben'),
             ),
           ],
         );
       },
+    );
+  }
+
+  void showPreviewOverlay({required File image}) {
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  _overlayEntry.remove();
+                },
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    image: DecorationImage(
+                      image: FileImage(image),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    Overlay.of(context).insert(
+      _overlayEntry,
     );
   }
 }
