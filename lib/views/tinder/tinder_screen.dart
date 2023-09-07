@@ -1,6 +1,7 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/tinder_data.dart';
 import 'package:tiszapp_flutter/viewmodels/tinder_viewmodel.dart';
@@ -127,28 +128,34 @@ class TinderScreenState extends State<TinderScreen> {
                         _controller.swipeLeft();
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
+                        shape: const StadiumBorder(),
                         padding: const EdgeInsets.all(15),
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         shadowColor: Colors.red,
                         elevation: 10,
                       ),
-                      child: const Icon(Icons.close),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Icon(Boxicons.bxs_dislike),
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         _controller.swipeRight();
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
+                        shape: const StadiumBorder(),
                         padding: const EdgeInsets.all(15),
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         shadowColor: Colors.green,
                         elevation: 10,
                       ),
-                      child: const Icon(Icons.check),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Icon(Boxicons.bxs_like),
+                      ),
                     ),
                   ],
                 ),
