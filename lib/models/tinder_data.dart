@@ -35,10 +35,6 @@ class TinderData {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is TinderData &&
-        other.uid == uid &&
-        other.name == name &&
-        other.teamNum == teamNum &&
-        other.imageUrl == imageUrl;
+    return other is TinderData && other.uid == uid;
   }
 }

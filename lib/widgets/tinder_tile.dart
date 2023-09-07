@@ -28,13 +28,15 @@ class TinderTile extends StatelessWidget {
             children: [
               Container(
                   width: width ?? MediaQuery.of(context).size.width,
-                  height: (width ?? MediaQuery.of(context).size.width * 0.8) * 4 / 3,
+                  height: (width ?? MediaQuery.of(context).size.width * 0.8) *
+                      4 /
+                      3,
                   foregroundDecoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [Colors.transparent, Colors.black],
-                      stops: [0.6, 0.9],
+                      stops: [0.6, 0.96],
                     ),
                   ),
                   child: () {

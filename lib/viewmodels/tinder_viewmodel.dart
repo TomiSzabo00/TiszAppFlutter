@@ -9,9 +9,8 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
 
 class TinderViewModel extends ChangeNotifier {
-  // final List<TinderData> allCards = [];
-  final List<TinderData> liked = [];
-  final List<TinderData> disliked = [];
+  final List<String> liked = [];
+  final List<String> disliked = [];
 
   Future<List<TinderData>> getCards() async {
     List<TinderData> allCards = [];
@@ -23,14 +22,74 @@ class TinderViewModel extends ChangeNotifier {
       for (final data in datas.entries) {
         final tinderData = TinderData.fromJson(data.key, data.value);
         if (tinderData.uid != FirebaseAuth.instance.currentUser!.uid &&
-            !liked.contains(tinderData) &&
-            !disliked.contains(tinderData)) {
+            !liked.contains(tinderData.uid) &&
+            !disliked.contains(tinderData.uid)) {
           allCards.add(tinderData);
         }
       }
     });
 
     return allCards;
+  }
+
+  void subscribeToLikes() {
+    DatabaseService.database
+        .child('tinder')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('likes')
+        .onChildAdded
+        .listen((event) {
+      final data = tryCast<String>(event.snapshot.value);
+      if (data == null) {
+        return;
+      }
+      liked.add(data);
+      notifyListeners();
+    });
+
+    DatabaseService.database
+        .child('tinder')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('likes')
+        .onChildRemoved
+        .listen((event) {
+      final data = tryCast<String>(event.snapshot.value);
+      if (data == null) {
+        return;
+      }
+      liked.remove(data);
+      notifyListeners();
+    });
+  }
+
+  void subscribeToDislikes() {
+    DatabaseService.database
+        .child('tinder')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('dislikes')
+        .onChildAdded
+        .listen((event) {
+      final data = tryCast<String>(event.snapshot.value);
+      if (data == null) {
+        return;
+      }
+      disliked.add(data);
+      notifyListeners();
+    });
+
+    DatabaseService.database
+        .child('tinder')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('dislikes')
+        .onChildRemoved
+        .listen((event) {
+      final data = tryCast<String>(event.snapshot.value);
+      if (data == null) {
+        return;
+      }
+      disliked.remove(data);
+      notifyListeners();
+    });
   }
 
   Stream<bool> isUserRegistered() {
@@ -77,5 +136,25 @@ class TinderViewModel extends ChangeNotifier {
           .child(user.uid)
           .set(data.toJson());
     }
+  }
+
+  void like({required TinderData data}) {
+    DatabaseService.database
+        .child('tinder')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('likes')
+        .push()
+        .set(data.uid);
+    notifyListeners();
+  }
+
+  void dislike({required TinderData data}) {
+    DatabaseService.database
+        .child('tinder')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('dislikes')
+        .push()
+        .set(data.uid);
+    notifyListeners();
   }
 }
