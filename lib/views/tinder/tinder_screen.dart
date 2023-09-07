@@ -37,13 +37,16 @@ class TinderScreenState extends State<TinderScreen> {
               cardsCount: snapshot.data!.length,
               cardsBuilder: (context, index) {
                 return Center(
-                  child: TinderTile(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
-                    data: TinderData(
-                      name: snapshot.data![index].name,
-                      teamNum: snapshot.data![index].teamNum,
-                      imageUrl: snapshot.data![index].imageUrl,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: TinderTile(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
+                      data: TinderData(
+                        name: snapshot.data![index].name,
+                        teamNum: snapshot.data![index].teamNum,
+                        imageUrl: snapshot.data![index].imageUrl,
+                      ),
                     ),
                   ),
                 );
