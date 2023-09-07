@@ -9,7 +9,7 @@ class TinderData {
     this.imageUrl,
   });
 
-  factory TinderData.fromJson(Map<String, dynamic> json) {
+  factory TinderData.fromJson(Map<dynamic, dynamic> json) {
     return TinderData(
       name: json['name'] as String,
       teamNum: json['teamNum'] as int,
@@ -23,5 +23,16 @@ class TinderData {
       'teamNum': teamNum,
       'imageUrl': imageUrl,
     };
+  }
+
+  @override
+  // ignore: hash_and_equals
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is TinderData &&
+        other.name == name &&
+        other.teamNum == teamNum &&
+        other.imageUrl == imageUrl;
   }
 }
