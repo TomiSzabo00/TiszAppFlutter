@@ -61,44 +61,99 @@ class TinderScreenState extends State<TinderScreen> {
               });
             }
           });
-          return AppinioSwiper(
-            controller: _controller,
-            cardsCount: snapshot.data!.length,
-            cardsSpacing: 30,
-            maxAngle: 60,
-            swipeOptions: const AppinioSwipeOptions.symmetric(horizontal: true),
-            cardsBuilder: (context, index) {
-              return Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: TinderTile(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    data: TinderData(
-                      uid: snapshot.data![index].uid,
-                      name: snapshot.data![index].name,
-                      teamNum: snapshot.data![index].teamNum,
-                      imageUrl: snapshot.data![index].imageUrl,
-                    ),
-                  ),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Flexible(
+                flex: 2,
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text(
+                      'Húzd az embereket jobbra vagy balra! Jobbra, ha lennél a párjuk, balra, ha nem.'),
                 ),
-              );
-            },
-            onSwipe: (badIndex, direction) {
-              final index = badIndex - 1;
-              if (index < 0) {
-                return;
-              }
-              if (direction == AppinioSwiperDirection.left) {
-                viewModel.dislike(data: snapshot.data![index]);
-              } else if (direction == AppinioSwiperDirection.right) {
-                viewModel.like(data: snapshot.data![index]);
-              }
-            },
-            onEnd: () {
-              setState(() {
-                noMoreCards = true;
-              });
-            },
+              ),
+              Flexible(
+                flex: 10,
+                child: AppinioSwiper(
+                  controller: _controller,
+                  cardsCount: snapshot.data!.length,
+                  cardsSpacing: 30,
+                  maxAngle: 60,
+                  swipeOptions:
+                      const AppinioSwipeOptions.symmetric(horizontal: true),
+                  cardsBuilder: (context, index) {
+                    return Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: TinderTile(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          data: TinderData(
+                            uid: snapshot.data![index].uid,
+                            name: snapshot.data![index].name,
+                            teamNum: snapshot.data![index].teamNum,
+                            imageUrl: snapshot.data![index].imageUrl,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  onSwipe: (badIndex, direction) {
+                    final index = badIndex - 1;
+                    if (index < 0) {
+                      return;
+                    }
+                    if (direction == AppinioSwiperDirection.left) {
+                      viewModel.dislike(data: snapshot.data![index]);
+                    } else if (direction == AppinioSwiperDirection.right) {
+                      viewModel.like(data: snapshot.data![index]);
+                    }
+                  },
+                  onEnd: () {
+                    setState(() {
+                      noMoreCards = true;
+                    });
+                  },
+                ),
+              ),
+              Flexible(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _controller.swipeLeft();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(15),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.red,
+                        elevation: 10,
+                      ),
+                      child: const Icon(Icons.close),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _controller.swipeRight();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(15),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.green,
+                        elevation: 10,
+                      ),
+                      child: const Icon(Icons.check),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           );
         }
         return const Center(
