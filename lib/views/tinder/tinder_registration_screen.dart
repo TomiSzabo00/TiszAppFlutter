@@ -173,6 +173,7 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
                           Navigator.of(context).pop();
                           isLoading = false;
                         });
+                        showSnackBar('Sikeres regisztráció!');
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const CircleBorder(),
@@ -192,6 +193,14 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
     );
     Overlay.of(context).insert(
       _overlayEntry,
+    );
+  }
+
+  void showSnackBar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+      ),
     );
   }
 }
