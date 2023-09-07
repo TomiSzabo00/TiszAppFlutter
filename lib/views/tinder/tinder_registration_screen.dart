@@ -12,7 +12,8 @@ import 'package:tiszapp_flutter/widgets/alert_widget.dart';
 import 'package:tiszapp_flutter/widgets/tinder_tile.dart';
 
 class TinderRegistrationScreen extends StatefulWidget {
-  const TinderRegistrationScreen({Key? key, required this.user, required this.context})
+  const TinderRegistrationScreen(
+      {Key? key, required this.user, required this.context})
       : super(key: key);
 
   final UserData user;
