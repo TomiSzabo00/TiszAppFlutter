@@ -422,7 +422,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.tinder:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const TinderRouter(),
+                builder: (context) => TinderRouter(user: user),
               ),
             );
     }

@@ -4,11 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/models/tinder_data.dart';
+import 'package:tiszapp_flutter/models/user_data.dart';
+import 'package:tiszapp_flutter/viewmodels/tinder_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/alert_widget.dart';
+import 'package:tiszapp_flutter/widgets/tinder_tile.dart';
 
 class TinderRegistrationScreen extends StatefulWidget {
-  const TinderRegistrationScreen({Key? key}) : super(key: key);
+  const TinderRegistrationScreen({Key? key, required this.user})
+      : super(key: key);
+
+  final UserData user;
 
   @override
   TinderRegistrationScreenState createState() =>
@@ -19,6 +26,8 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
   final picker = ImagePicker();
   final cropper = ImageCropper();
   late OverlayEntry _overlayEntry;
+  final viewModel = TinderViewModel();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +76,11 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
     showDialog(
       context: context,
       builder: (context) {
+        if (isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
         return AlertDialog(
           title: const Text('Kép készítése'),
           content: const Text(
@@ -109,34 +123,70 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
   void showPreviewOverlay({required File image}) {
     _overlayEntry = OverlayEntry(
       builder: (context) {
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () {
-                  _overlayEntry.remove();
-                },
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.width * 0.8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: FileImage(image),
-                      fit: BoxFit.cover,
+        return Material(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const Text('Itt láthatod, hogy fogsz megjelenni a többieknek:'),
+                SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: TinderTile(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
+                        data: TinderData(
+                          name: widget.user.name,
+                          teamNum: widget.user.teamNum,
+                        ),
+                        localImage: Image.file(image),
+                      ),
+                    )),
+                const Text('Ha elégedett vagy, regisztrálhatsz.'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        _overlayEntry.remove();
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(15),
+                        backgroundColor: Colors.red[100],
+                        foregroundColor: Colors.red,
+                      ),
+                      child: const Icon(Icons.close),
                     ),
-                  ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _overlayEntry.remove();
+                        setState(() {
+                          isLoading = true;
+                        });
+                        await viewModel.register(user: widget.user, image: image);
+                        setState(() {
+                          Navigator.of(context).pop();
+                          isLoading = false;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(15),
+                        backgroundColor: Colors.green[100],
+                        foregroundColor: Colors.green,
+                      ),
+                      child: const Icon(Icons.check),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );

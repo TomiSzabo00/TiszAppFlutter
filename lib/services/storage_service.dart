@@ -11,7 +11,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart';
 
 class StorageService {
-  static get ref {
+  static storage.Reference get ref {
     if (kDebugMode) {
       return storage.FirebaseStorage.instance.ref().child('debug');
     } else {
@@ -116,6 +116,49 @@ class StorageService {
       final ref = storage.FirebaseStorage.instance.refFromURL(url);
       await ref.delete();
     });
+  }
+
+  static Future<String> uploadPic(
+      {required File file, required String path}) async {
+    // compress image
+    final filePath = file.path;
+    final fileExtension = extension(filePath);
+    final lastIndex = filePath.lastIndexOf(RegExp(fileExtension));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+    if (fileExtension == '.jpg' || fileExtension == '.jpeg') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+      );
+      file = File(result!.path);
+    } else if (fileExtension == '.png') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+        format: CompressFormat.png,
+      );
+      file = File(result!.path);
+    } else if (fileExtension == '.heic') {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        outPath,
+        quality: 50,
+        format: CompressFormat.heic,
+      );
+      file = File(result!.path);
+    }
+
+    final key = DateService.dateInMillisAsString();
+    final images = ref.child('$path/$key.jpg');
+    final storage.UploadTask uploadTask = images.putData(
+        await file.readAsBytes(),
+        storage.SettableMetadata(contentType: 'image/jpeg'));
+    final storage.TaskSnapshot downloadUrl = (await uploadTask);
+    final String url = (await downloadUrl.ref.getDownloadURL());
+    return url;
   }
 
   static Future<List<Song>> getSongs() async {

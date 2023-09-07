@@ -54,3 +54,13 @@ class UserData {
     }
   }
 }
+
+extension TeamNumStringExtension on int {
+  String get teamNumberAsString {
+    if (this == 0) {
+      return 'Szervező';
+    } else {
+      return '$this. csapat';
+    }
+  }
+}

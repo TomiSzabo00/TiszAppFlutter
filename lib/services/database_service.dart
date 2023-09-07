@@ -7,7 +7,7 @@ import 'package:tiszapp_flutter/models/user_data.dart';
 // Insert globally used database getters here. E.x.: getNumberOfTeams() or getFirstDay()
 
 class DatabaseService {
-  static get database {
+  static DatabaseReference get database {
     if (kDebugMode) {
       return FirebaseDatabase.instance.ref().child('debug');
     } else {

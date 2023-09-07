@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/viewmodels/tinder_viewmodel.dart';
 import 'package:tiszapp_flutter/views/tinder/tinder_registration_screen.dart';
 import 'package:tiszapp_flutter/views/tinder/tinder_screen.dart';
 
 class TinderRouter extends StatefulWidget {
-  const TinderRouter({Key? key}) : super(key: key);
+  const TinderRouter({Key? key, required this.user}) : super(key: key);
+
+  final UserData user;
 
   @override
   TinderRouterState createState() => TinderRouterState();
@@ -23,7 +26,7 @@ class TinderRouterState extends State<TinderRouter> {
           if (isUserRegistered) {
             return const TinderScreen();
           }
-          return const TinderRegistrationScreen();
+          return TinderRegistrationScreen(user: widget.user);
         }
         return const Scaffold(
           body: Center(
