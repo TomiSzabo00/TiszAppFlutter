@@ -20,18 +20,14 @@ class TinderViewModel extends ChangeNotifier {
       if (datas == null) {
         return [];
       }
-      await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid)
-          .then((user) {
-        for (final data in datas.values) {
-          final tinderData = TinderData.fromJson(data);
-          if (!(tinderData.name == user.name &&
-                  tinderData.teamNum == user.teamNum) &&
-              !liked.contains(tinderData) &&
-              !disliked.contains(tinderData)) {
-            allCards.add(tinderData);
-          }
+      for (final data in datas.entries) {
+        final tinderData = TinderData.fromJson(data.key, data.value);
+        if (tinderData.uid != FirebaseAuth.instance.currentUser!.uid &&
+            !liked.contains(tinderData) &&
+            !disliked.contains(tinderData)) {
+          allCards.add(tinderData);
         }
-      });
+      }
     });
 
     return allCards;
@@ -50,8 +46,11 @@ class TinderViewModel extends ChangeNotifier {
   Future register({required UserData user, required File image}) async {
     final imageUrl =
         await StorageService.uploadPic(file: image, path: 'tinder_images');
-    final data =
-        TinderData(name: user.name, teamNum: user.teamNum, imageUrl: imageUrl);
+    final data = TinderData(
+        uid: user.uid,
+        name: user.name,
+        teamNum: user.teamNum,
+        imageUrl: imageUrl);
     await DatabaseService.database
         .child('tinder')
         .child(user.uid)
@@ -66,7 +65,10 @@ class TinderViewModel extends ChangeNotifier {
     for (final user in usersList) {
       const imageUrl = UserData.defaultUrl;
       final data = TinderData(
-          name: user.name, teamNum: user.teamNum, imageUrl: imageUrl);
+          uid: user.uid,
+          name: user.name,
+          teamNum: user.teamNum,
+          imageUrl: imageUrl);
       if (user.uid == FirebaseAuth.instance.currentUser!.uid) {
         continue;
       }

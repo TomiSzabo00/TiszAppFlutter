@@ -1,19 +1,24 @@
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
+
 class TinderData {
+  final String uid;
   final String name;
   final int teamNum;
   final String? imageUrl;
 
   TinderData({
+    required this.uid,
     required this.name,
     required this.teamNum,
     this.imageUrl,
   });
 
-  factory TinderData.fromJson(Map<dynamic, dynamic> json) {
+  factory TinderData.fromJson(String key, Map<dynamic, dynamic> json) {
     return TinderData(
-      name: json['name'] as String,
-      teamNum: json['teamNum'] as int,
-      imageUrl: json['imageUrl'] as String,
+      uid: tryCast<String>(key) ?? '',
+      name: tryCast<String>(json['name']) ?? '',
+      teamNum: tryCast<int>(json['teamNum']) ?? -1,
+      imageUrl: tryCast<String>(json['imageUrl']) ?? '',
     );
   }
 
@@ -31,6 +36,7 @@ class TinderData {
     if (identical(this, other)) return true;
 
     return other is TinderData &&
+        other.uid == uid &&
         other.name == name &&
         other.teamNum == teamNum &&
         other.imageUrl == imageUrl;

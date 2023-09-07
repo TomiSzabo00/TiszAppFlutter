@@ -140,21 +140,15 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 const Text('Itt láthatod, hogy fogsz megjelenni a többieknek:'),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: TinderTile(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
-                        data: TinderData(
-                          name: widget.user.name,
-                          teamNum: widget.user.teamNum,
-                        ),
-                        localImage: Image.file(image),
-                      ),
-                    )),
+                TinderTile(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  data: TinderData(
+                    uid: '',
+                    name: widget.user.name,
+                    teamNum: widget.user.teamNum,
+                  ),
+                  localImage: Image.file(image),
+                ),
                 const Text('Ha elégedett vagy, regisztrálhatsz.'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

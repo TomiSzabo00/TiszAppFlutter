@@ -35,14 +35,18 @@ class TinderScreenState extends State<TinderScreen> {
           if (snapshot.hasData) {
             return AppinioSwiper(
               cardsCount: snapshot.data!.length,
+              cardsSpacing: 30,
+              maxAngle: 60,
+              swipeOptions:
+                  const AppinioSwipeOptions.symmetric(horizontal: true),
               cardsBuilder: (context, index) {
                 return Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: TinderTile(
                       width: MediaQuery.of(context).size.width * 0.8,
-                      height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
                       data: TinderData(
+                        uid: snapshot.data![index].uid,
                         name: snapshot.data![index].name,
                         teamNum: snapshot.data![index].teamNum,
                         imageUrl: snapshot.data![index].imageUrl,

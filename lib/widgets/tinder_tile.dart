@@ -9,20 +9,18 @@ class TinderTile extends StatelessWidget {
     required this.data,
     this.localImage,
     this.width,
-    this.height,
   }) : super(key: key);
 
   final TinderData data;
   final Image? localImage;
   final double? width;
-  final double? height;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: MediaQuery.of(context).size.width * 0.8 * 4 / 3,
+        width: width ?? MediaQuery.of(context).size.width * 0.8,
+        height: (width ?? MediaQuery.of(context).size.width * 0.8) * 4 / 3,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Stack(
@@ -30,7 +28,7 @@ class TinderTile extends StatelessWidget {
             children: [
               Container(
                   width: width ?? MediaQuery.of(context).size.width,
-                  height: height ?? MediaQuery.of(context).size.height * 0.45,
+                  height: (width ?? MediaQuery.of(context).size.width * 0.8) * 4 / 3,
                   foregroundDecoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
