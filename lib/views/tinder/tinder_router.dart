@@ -24,9 +24,9 @@ class TinderRouterState extends State<TinderRouter> {
         if (snapshot.connectionState == ConnectionState.active) {
           final bool isUserRegistered = snapshot.data as bool;
           if (isUserRegistered) {
-            return const TinderScreen();
+            return TinderScreen(context: context);
           }
-          return TinderRegistrationScreen(user: widget.user);
+          return TinderRegistrationScreen(user: widget.user, context: context);
         }
         return const Scaffold(
           body: Center(

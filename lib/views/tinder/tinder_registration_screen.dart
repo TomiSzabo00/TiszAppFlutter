@@ -12,10 +12,11 @@ import 'package:tiszapp_flutter/widgets/alert_widget.dart';
 import 'package:tiszapp_flutter/widgets/tinder_tile.dart';
 
 class TinderRegistrationScreen extends StatefulWidget {
-  const TinderRegistrationScreen({Key? key, required this.user})
+  const TinderRegistrationScreen({Key? key, required this.user, required this.context})
       : super(key: key);
 
   final UserData user;
+  final BuildContext context;
 
   @override
   TinderRegistrationScreenState createState() =>
@@ -27,10 +28,10 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
   final cropper = ImageCropper();
   late OverlayEntry _overlayEntry;
   final viewModel = TinderViewModel();
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    context = widget.context;
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
@@ -76,11 +77,6 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        if (isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
         return AlertDialog(
           title: const Text('Kép készítése'),
           content: const Text(
@@ -115,6 +111,19 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
               child: const Text('Rendben'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void showLoadingdialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const AlertDialog(
+          title: Text('Regisztráció'),
+          content: Text('Regisztráció folyamatban...'),
         );
       },
     );
@@ -165,14 +174,12 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         _overlayEntry.remove();
-                        setState(() {
-                          isLoading = true;
-                        });
-                        await viewModel.register(user: widget.user, image: image);
-                        setState(() {
-                          Navigator.of(context).pop();
-                          isLoading = false;
-                        });
+                        Navigator.of(widget.context).pop();
+                        showLoadingdialog();
+                        await viewModel.register(
+                            user: widget.user, image: image);
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(widget.context).pop();
                         showSnackBar('Sikeres regisztráció!');
                       },
                       style: ElevatedButton.styleFrom(
@@ -197,7 +204,7 @@ class TinderRegistrationScreenState extends State<TinderRegistrationScreen> {
   }
 
   void showSnackBar(String text) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(widget.context).showSnackBar(
       SnackBar(
         content: Text(text),
       ),
