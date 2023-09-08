@@ -159,4 +159,8 @@ class TinderViewModel extends ChangeNotifier {
         .set(data.uid);
     notifyListeners();
   }
+
+  bool isMatch({required TinderData data}) {
+    return true;
+  }
 }

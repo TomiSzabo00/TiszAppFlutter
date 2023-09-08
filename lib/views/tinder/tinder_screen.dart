@@ -1,4 +1,5 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
@@ -25,6 +26,8 @@ class TinderScreenState extends State<TinderScreen> {
   Future<List<TinderData>> _getCardsFuture = Future.value([]);
   TinderTileState currentTileState = TinderTileState.none;
   int cardNum = 0;
+  late OverlayEntry _matchOverlayEntry;
+  GlobalKey _matchTextKey = GlobalKey();
 
   @override
   void initState() {
@@ -125,6 +128,9 @@ class TinderScreenState extends State<TinderScreen> {
                       viewModel.dislike(data: snapshot.data![index]);
                     } else if (direction == AppinioSwiperDirection.right) {
                       viewModel.like(data: snapshot.data![index]);
+                      if (viewModel.isMatch(data: snapshot.data![index])) {
+                        _showMatchOverlay(snapshot.data![index]);
+                      }
                     }
                     setState(() {
                       currentTileState = TinderTileState.none;
@@ -241,4 +247,110 @@ class TinderScreenState extends State<TinderScreen> {
         return TinderTileState.none;
     }
   }
+
+  void _showMatchOverlay(TinderData data) {
+    _matchOverlayEntry = OverlayEntry(
+      builder: (context) {
+        return Material(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              alignment: AlignmentDirectional.bottomCenter,
+              children: [
+                CachedNetworkImage(
+                  imageUrl: data.imageUrl ?? '',
+                  fit: BoxFit.cover,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 50),
+                  child: matchTextWidget(),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    Overlay.of(context).insert(
+      _matchOverlayEntry,
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      _matchOverlayEntry.remove();
+    });
+  }
+
+  Widget matchTextWidget() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height / 4,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            top: 60,
+            left: 20,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ClipRect(
+                clipper: MatchClipper(),
+                child: const Text(
+                  'ÚJ PÁR!',
+                  style: TextStyle(
+                    fontSize: 60,
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 30,
+            left: 10,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ClipRect(
+                clipper: MatchClipper(),
+                child: const Text(
+                  'ÚJ PÁR!',
+                  style: TextStyle(
+                    fontSize: 60,
+                    color: Colors.red,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const Positioned.fill(
+            top: 0,
+            left: 0,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                'ÚJ PÁR!',
+                style: TextStyle(
+                  fontSize: 60,
+                  color: Colors.green,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MatchClipper extends CustomClipper<Rect> {
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 38, size.width, 200);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) => false;
 }
