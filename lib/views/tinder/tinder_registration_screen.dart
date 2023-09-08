@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/models/tinder_data.dart';
+import 'package:tiszapp_flutter/models/tinder/tinder_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/viewmodels/tinder_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';

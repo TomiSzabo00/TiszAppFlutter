@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
-import 'package:tiszapp_flutter/models/tinder_data.dart';
+import 'package:tiszapp_flutter/models/tinder/tinder_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
@@ -33,6 +33,7 @@ class TinderViewModel extends ChangeNotifier {
   }
 
   void subscribeToLikes() {
+    liked.clear();
     DatabaseService.database
         .child('tinder')
         .child(FirebaseAuth.instance.currentUser!.uid)
@@ -63,6 +64,7 @@ class TinderViewModel extends ChangeNotifier {
   }
 
   void subscribeToDislikes() {
+    disliked.clear();
     DatabaseService.database
         .child('tinder')
         .child(FirebaseAuth.instance.currentUser!.uid)

@@ -1,19 +1,23 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/models/tinder_data.dart';
+import 'package:tiszapp_flutter/models/tinder/tinder_data.dart';
+import 'package:tiszapp_flutter/models/tinder/tinder_tile_state.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 
+// ignore: must_be_immutable
 class TinderTile extends StatelessWidget {
-  const TinderTile({
+  TinderTile({
     Key? key,
     required this.data,
     this.localImage,
     this.width,
+    this.state = TinderTileState.none,
   }) : super(key: key);
 
   final TinderData data;
   final Image? localImage;
   final double? width;
+  TinderTileState state;
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +35,12 @@ class TinderTile extends StatelessWidget {
                   height: (width ?? MediaQuery.of(context).size.width * 0.8) *
                       4 /
                       3,
-                  foregroundDecoration: const BoxDecoration(
+                  foregroundDecoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black],
-                      stops: [0.6, 0.96],
+                      colors: [Colors.transparent, getFadeColor(state)],
+                      stops: const [0.6, 0.96],
                     ),
                   ),
                   child: () {
@@ -89,5 +93,16 @@ class TinderTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color getFadeColor(TinderTileState state) {
+    switch (state) {
+      case TinderTileState.none:
+        return Colors.black;
+      case TinderTileState.liking:
+        return Colors.green;
+      case TinderTileState.disliking:
+        return Colors.red;
+    }
   }
 }

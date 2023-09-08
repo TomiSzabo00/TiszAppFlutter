@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/models/tinder_data.dart';
+import 'package:tiszapp_flutter/models/tinder/tinder_data.dart';
+import 'package:tiszapp_flutter/models/tinder/tinder_tile_state.dart';
 import 'package:tiszapp_flutter/viewmodels/tinder_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/tinder_tile.dart';
@@ -22,6 +23,8 @@ class TinderScreenState extends State<TinderScreen> {
   final _controller = AppinioSwiperController();
   bool noMoreCards = false;
   Future<List<TinderData>> _getCardsFuture = Future.value([]);
+  TinderTileState currentTileState = TinderTileState.none;
+  int cardNum = 0;
 
   @override
   void initState() {
@@ -90,6 +93,9 @@ class TinderScreenState extends State<TinderScreen> {
                         borderRadius: BorderRadius.circular(20),
                         child: TinderTile(
                           width: MediaQuery.of(context).size.width * 0.8,
+                          state: index == cardNum
+                              ? currentTileState
+                              : TinderTileState.none,
                           data: TinderData(
                             uid: snapshot.data![index].uid,
                             name: snapshot.data![index].name,
@@ -99,6 +105,16 @@ class TinderScreenState extends State<TinderScreen> {
                         ),
                       ),
                     );
+                  },
+                  onSwiping: (direction) {
+                    setState(() {
+                      currentTileState = getStateFrom(direction: direction);
+                    });
+                  },
+                  onSwipeCancelled: () {
+                    setState(() {
+                      currentTileState = TinderTileState.none;
+                    });
                   },
                   onSwipe: (badIndex, direction) {
                     final index = badIndex - 1;
@@ -110,10 +126,15 @@ class TinderScreenState extends State<TinderScreen> {
                     } else if (direction == AppinioSwiperDirection.right) {
                       viewModel.like(data: snapshot.data![index]);
                     }
+                    setState(() {
+                      currentTileState = TinderTileState.none;
+                      cardNum++;
+                    });
                   },
                   onEnd: () {
                     setState(() {
                       noMoreCards = true;
+                      currentTileState = TinderTileState.none;
                     });
                   },
                 ),
@@ -133,7 +154,9 @@ class TinderScreenState extends State<TinderScreen> {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         shadowColor: Colors.red,
-                        elevation: 10,
+                        elevation: currentTileState == TinderTileState.disliking
+                            ? 20
+                            : 10,
                       ),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -150,7 +173,9 @@ class TinderScreenState extends State<TinderScreen> {
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         shadowColor: Colors.green,
-                        elevation: 10,
+                        elevation: currentTileState == TinderTileState.liking
+                            ? 20
+                            : 10,
                       ),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -203,5 +228,16 @@ class TinderScreenState extends State<TinderScreen> {
         ),
       ),
     );
+  }
+
+  TinderTileState getStateFrom({required AppinioSwiperDirection direction}) {
+    switch (direction) {
+      case AppinioSwiperDirection.left:
+        return TinderTileState.disliking;
+      case AppinioSwiperDirection.right:
+        return TinderTileState.liking;
+      default:
+        return TinderTileState.none;
+    }
   }
 }
