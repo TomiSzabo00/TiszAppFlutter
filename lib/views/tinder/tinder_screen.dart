@@ -135,6 +135,7 @@ class TinderScreenState extends State<TinderScreen> {
                     setState(() {
                       noMoreCards = true;
                       currentTileState = TinderTileState.none;
+                      cardNum = 0;
                     });
                   },
                 ),
