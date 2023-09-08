@@ -118,7 +118,7 @@ class TinderScreenState extends State<TinderScreen> {
                       currentTileState = TinderTileState.none;
                     });
                   },
-                  onSwipe: (badIndex, direction) {
+                  onSwipe: (badIndex, direction) async {
                     final index = badIndex - 1;
                     if (index < 0) {
                       return;
@@ -127,7 +127,8 @@ class TinderScreenState extends State<TinderScreen> {
                       viewModel.dislike(data: snapshot.data![index]);
                     } else if (direction == AppinioSwiperDirection.right) {
                       viewModel.like(data: snapshot.data![index]);
-                      if (viewModel.isMatch(data: snapshot.data![index])) {
+                      if (await viewModel.isMatch(
+                          data: snapshot.data![index])) {
                         _showMatchOverlay(snapshot.data![index]);
                       }
                     }

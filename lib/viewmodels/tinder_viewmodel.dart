@@ -160,7 +160,20 @@ class TinderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isMatch({required TinderData data}) {
-    return true;
+  Future<bool> isMatch({required TinderData data}) async {
+    final likes = await getLikesFromUid(uid: data.uid);
+    return likes.contains(FirebaseAuth.instance.currentUser!.uid);
+  }
+
+  Future<List<String>> getLikesFromUid({required String uid}) async {
+    final likes = await DatabaseService.database
+        .child('tinder')
+        .child(uid)
+        .child('likes')
+        .once();
+    final likesData = likes.snapshot;
+    final likesMap = tryCast<Map>(likesData.value) ?? {};
+    final likesList = likesMap.values.map((e) => e.toString()).toList();
+    return likesList;
   }
 }
