@@ -27,7 +27,6 @@ class TinderScreenState extends State<TinderScreen> {
   TinderTileState currentTileState = TinderTileState.none;
   int cardNum = 0;
   late OverlayEntry _matchOverlayEntry;
-  GlobalKey _matchTextKey = GlobalKey();
 
   @override
   void initState() {
@@ -277,7 +276,7 @@ class TinderScreenState extends State<TinderScreen> {
     Overlay.of(context).insert(
       _matchOverlayEntry,
     );
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       _matchOverlayEntry.remove();
     });
   }
@@ -295,11 +294,11 @@ class TinderScreenState extends State<TinderScreen> {
               alignment: Alignment.topCenter,
               child: ClipRect(
                 clipper: MatchClipper(),
-                child: const Text(
+                child: Text(
                   'ÚJ PÁR!',
                   style: TextStyle(
                     fontSize: 60,
-                    color: Colors.blue,
+                    color: Colors.green[100],
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -313,11 +312,11 @@ class TinderScreenState extends State<TinderScreen> {
               alignment: Alignment.topCenter,
               child: ClipRect(
                 clipper: MatchClipper(),
-                child: const Text(
+                child: Text(
                   'ÚJ PÁR!',
                   style: TextStyle(
                     fontSize: 60,
-                    color: Colors.red,
+                    color: Colors.green[200],
                     fontWeight: FontWeight.w900,
                   ),
                 ),
