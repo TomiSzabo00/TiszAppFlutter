@@ -1,7 +1,9 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/tinder/tinder_data.dart';
@@ -129,6 +131,7 @@ class TinderScreenState extends State<TinderScreen> {
                       viewModel.like(data: snapshot.data![index]);
                       if (await viewModel.isMatch(
                           data: snapshot.data![index])) {
+                        HapticFeedback.heavyImpact();
                         _showMatchOverlay(snapshot.data![index]);
                       }
                     }
@@ -277,7 +280,7 @@ class TinderScreenState extends State<TinderScreen> {
     Overlay.of(context).insert(
       _matchOverlayEntry,
     );
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 4), () {
       _matchOverlayEntry.remove();
     });
   }
@@ -324,18 +327,23 @@ class TinderScreenState extends State<TinderScreen> {
               ),
             ),
           ),
-          const Positioned.fill(
+          Positioned.fill(
             top: 0,
             left: 0,
             child: Align(
               alignment: Alignment.topCenter,
-              child: Text(
-                'ÚJ PÁR!',
-                style: TextStyle(
-                  fontSize: 60,
-                  color: Colors.green,
-                  fontWeight: FontWeight.w900,
-                ),
+              child: AnimatedTextKit(
+                animatedTexts: [
+                  WavyAnimatedText(
+                    'ÚJ PÁR!',
+                    textStyle: const TextStyle(
+                      fontSize: 60,
+                      color: Colors.green,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+                isRepeatingAnimation: false,
               ),
             ),
           ),
