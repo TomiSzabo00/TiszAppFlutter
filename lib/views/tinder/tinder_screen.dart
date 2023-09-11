@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/models/tinder/tinder_data.dart';
 import 'package:tiszapp_flutter/models/tinder/tinder_tile_state.dart';
@@ -29,6 +30,7 @@ class TinderScreenState extends State<TinderScreen> {
   TinderTileState currentTileState = TinderTileState.none;
   int cardNum = 0;
   late OverlayEntry _matchOverlayEntry;
+  int currentPageIndex = 0;
 
   @override
   void initState() {
@@ -40,10 +42,47 @@ class TinderScreenState extends State<TinderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     context = widget.context;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Párkereső'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  _showInfoDialog();
+                },
+                icon: const Icon(Icons.info_outline)),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+          },
+          indicatorColor:
+              isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnFaceDay,
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          surfaceTintColor:
+              isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnFaceDay,
+          selectedIndex: currentPageIndex,
+          destinations: [
+            NavigationDestination(
+              selectedIcon: Icon(MdiIcons.cards),
+              icon: Icon(MdiIcons.cardsOutline),
+              label: 'Lapozó',
+            ),
+            NavigationDestination(
+              icon: Icon(MdiIcons.formatListText),
+              label: 'Párok',
+            ),
+            NavigationDestination(
+              selectedIcon: Icon(MdiIcons.accountCog),
+              icon: Icon(MdiIcons.accountCogOutline),
+              label: 'Én',
+            ),
+          ],
         ),
         body: () {
           if (noMoreCards) {
@@ -70,20 +109,12 @@ class TinderScreenState extends State<TinderScreen> {
             }
           });
           return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              const Flexible(
-                flex: 2,
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Text(
-                      'Húzd az embereket jobbra vagy balra! Jobbra, ha lennél a párjuk, balra, ha nem.'),
-                ),
-              ),
-              Flexible(
-                flex: 10,
+              SizedBox(
+                height: MediaQuery.of(context).size.width * 0.8 * 4 / 3 + 40,
                 child: AppinioSwiper(
                   controller: _controller,
                   cardsCount: snapshot.data!.length,
@@ -164,6 +195,11 @@ class TinderScreenState extends State<TinderScreen> {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         shadowColor: Colors.red,
+                        visualDensity:
+                            MediaQuery.of(context).size.width * 0.8 * 4 / 3 >
+                                    MediaQuery.of(context).size.height * 0.5
+                                ? VisualDensity.compact
+                                : VisualDensity.standard,
                         elevation: currentTileState == TinderTileState.disliking
                             ? 20
                             : 10,
@@ -183,6 +219,11 @@ class TinderScreenState extends State<TinderScreen> {
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         shadowColor: Colors.green,
+                        visualDensity:
+                            MediaQuery.of(context).size.width * 0.8 * 4 / 3 >
+                                    MediaQuery.of(context).size.height * 0.5
+                                ? VisualDensity.compact
+                                : VisualDensity.standard,
                         elevation: currentTileState == TinderTileState.liking
                             ? 20
                             : 10,
@@ -349,6 +390,27 @@ class TinderScreenState extends State<TinderScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Információ'),
+          content: const Text(
+              'Húzd az embereket jobbra vagy balra! Jobbra, ha lennél a párjuk, balra, ha nem.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Rendben'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
