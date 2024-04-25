@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.1.1+1
 
 environment:
-  sdk: '>=3.0.0'
+  sdk: '>=3.3.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -46,20 +46,20 @@ dependencies:
   equatable: ^2.0.5
   flip_card: ^0.7.0
   top_snackbar_flutter: ^3.0.0+1
-  intl: ^0.18.1
+  intl: ^0.19.0
   url_launcher: ^6.1.11
   auto_size_text: ^3.0.0
   flutter_slidable: ^3.0.0
   google_maps_flutter: ^2.3.0
   google_maps_flutter_android: ^2.3.0
   google_maps_flutter_platform_interface: ^2.3.0
-  geolocator: ^9.0.2
-  permission_handler: ^10.4.3
+  geolocator: ^11.0.0
+  permission_handler: ^11.3.1
   background_location:
     git:
       url: https://github.com/hilalbaig/background_location.git
       ref: master
-  location: ^5.0.0
+  location: ^6.0.1
   battery_info: ^1.1.1
   firebase_messaging: ^14.6.4
   googleapis_auth: ^1.4.1
@@ -67,20 +67,21 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   flutter_boxicons: ^3.0.0
   community_material_icon: ^5.9.55
-  gal: ^1.6.2
+  gal: ^2.3.0
   cached_network_image: ^3.2.3
   dio: ^5.3.0
   super_banners: ^0.0.1
   flutter_image_compress: ^2.0.3
-  readmore: ^2.2.0
+  readmore: ^3.0.0
   font_awesome_flutter: ^10.5.0
-  flutter_widget_from_html: ^0.9.1
-  flutter_keyboard_visibility: ^5.4.1
-  info_popup: ^3.0.5
-  photo_manager: ^2.7.1
-  photo_view: ^0.14.0
+  flutter_widget_from_html: ^0.14.11
+  flutter_keyboard_visibility: ^6.0.0
+  info_popup: ^4.3.1
+  photo_manager: ^3.0.0
+  photo_view: ^0.15.0
   smooth_page_indicator: ^1.1.0
   image_cropper: ^5.0.0
+  photo_manager_image_provider: ^2.1.1
 
 dev_dependencies:
   chewie_audio: ^1.5.0
@@ -92,7 +93,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
