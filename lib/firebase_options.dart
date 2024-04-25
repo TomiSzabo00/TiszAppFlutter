@@ -50,8 +50,8 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDcksZNpCnw7tP9ALYiYHlqVL7ejdDuF6I',
-    appId: '1:703903823299:android:05e79ee34f4b911ed87976',
+    apiKey: 'AIzaSyCUr2Eaj2V0TkHIMWYy9UCql5r0h4rkm1U',
+    appId: '1:703903823299:android:e581e8d17dcddf0fd87976',
     messagingSenderId: '703903823299',
     projectId: 'tiszapp-175fb',
     databaseURL: 'https://tiszapp-175fb-default-rtdb.europe-west1.firebasedatabase.app',
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBffrtaGn_2U6TztmMHlWPgJY_OodH2JVM',
+    apiKey: 'AIzaSyC4WEryqDXNiWbyHEgYhmVsdKPUp5Hk8iE',
     appId: '1:703903823299:ios:55d4b3fea8d5e96dd87976',
     messagingSenderId: '703903823299',
     projectId: 'tiszapp-175fb',
@@ -68,4 +68,5 @@ class DefaultFirebaseOptions {
     iosClientId: '703903823299-l35ulg24vjd5bdrqo2669si445i9gcej.apps.googleusercontent.com',
     iosBundleId: 'com.example.tiszappFlutter',
   );
+
 }
