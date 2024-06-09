@@ -95,6 +95,11 @@ class WordleViewModel with ChangeNotifier {
   void _updateCurrentWordIndex() {
     currentWordIndex = board.indexWhere((element) =>
         element.letters.indexWhere((element) => element.letter.isEmpty) != -1);
+
+    // if no empty word is found, the bord is full
+    if (currentWordIndex == -1) {
+      currentWordIndex = board.length;
+    }
   }
 
   void _saveGameState() {
@@ -235,13 +240,16 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void checkForGameEnd() {
-    if (currentWordIndex < 0) {
+    // this should never excecute but just in case
+    if (currentWordIndex < 0 || currentWordIndex > board.length) {
       gameStatus = WordleGameStatus.lost;
       notifyListeners();
       return;
     }
+
     final lastWord =
         currentWordIndex == 0 ? board.first : board[currentWordIndex - 1];
+
     if (lastWord.wordString.toLowerCase() ==
         solution.wordString.toLowerCase()) {
       gameStatus = WordleGameStatus.won;
