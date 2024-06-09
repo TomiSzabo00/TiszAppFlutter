@@ -10,12 +10,12 @@ const keys = [
 
 class Keyboard extends StatelessWidget {
   const Keyboard({
-    Key? key,
+    super.key,
     required this.onLetterPressed,
     required this.onEnterPressed,
     required this.onDeletePressed,
     required this.letters,
-  }) : super(key: key);
+  });
 
   final void Function(String) onLetterPressed;
   final VoidCallback onEnterPressed;
@@ -62,13 +62,12 @@ class Keyboard extends StatelessWidget {
 
 class _KeyboardButton extends StatelessWidget {
   const _KeyboardButton({
-    Key? key,
     this.width = 48,
     this.flex = 1,
     required this.onTap,
     required this.letter,
     required this.backgroundColor,
-  }) : super(key: key);
+  });
 
   final double height = 48;
   final double width;

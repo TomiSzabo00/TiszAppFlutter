@@ -13,13 +13,11 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 class WordleViewModel with ChangeNotifier {
   WordleGameStatus gameStatus = WordleGameStatus.inProgress;
 
-  List<Word> board = List.generate(
-      6, (_) => Word(letters: List.generate(5, (_) => Letter.empty())));
+  List<Word> board = List.generate(6, (_) => Word(letters: List.generate(5, (_) => Letter.empty())));
 
   int currentWordIndex = 0;
 
-  Word get currentWord =>
-      currentWordIndex < board.length ? board[currentWordIndex] : board.last;
+  Word get currentWord => currentWordIndex < board.length ? board[currentWordIndex] : board.last;
 
   Word solution = Word.fromStr("TISZA");
   Word solutionCopy = Word.fromStr("");
@@ -35,14 +33,6 @@ class WordleViewModel with ChangeNotifier {
     (_) => List.generate(
       5,
       (_) => FlipCardController(),
-    ),
-  );
-
-  final List<List<bool>> shouldCardBeFlipped = List.generate(
-    6,
-    (_) => List.generate(
-      5,
-      (_) => false,
     ),
   );
 
@@ -68,10 +58,13 @@ class WordleViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetState() {
+    gameStatus = WordleGameStatus.submitting;
+  }
+
   Future<List<Word>> _getStateFromFirebase() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    var board = List.generate(
-        6, (_) => Word(letters: List.generate(5, (_) => Letter.empty())));
+    var board = List.generate(6, (_) => Word(letters: List.generate(5, (_) => Letter.empty())));
     DatabaseReference ref = DatabaseService.database;
     DataSnapshot snapshot = await ref.child('wordle/saves/$uid').get();
     if (snapshot.value == null) {
@@ -93,8 +86,13 @@ class WordleViewModel with ChangeNotifier {
 
   // update currentWordIndex to the first empty word
   void _updateCurrentWordIndex() {
-    currentWordIndex = board.indexWhere((element) =>
-        element.letters.indexWhere((element) => element.letter.isEmpty) != -1);
+    currentWordIndex =
+        board.indexWhere((element) => element.letters.indexWhere((element) => element.letter.isEmpty) != -1);
+
+    // if no empty word is found, the bord is full
+    if (currentWordIndex == -1) {
+      currentWordIndex = board.length;
+    }
   }
 
   void _saveGameState() {
@@ -146,104 +144,99 @@ class WordleViewModel with ChangeNotifier {
   }
 
   void onEnterTap() async {
-    if (gameStatus == WordleGameStatus.inProgress &&
-        !currentWord.letters.contains(Letter.empty())) {
-      // check if typed word is in words list
-      final word = currentWord.wordString.toLowerCase();
-      if (!possibleWords.contains(word)) {
-        shouldShowNoWordError = true;
-        notifyListeners();
-        Future.delayed(const Duration(milliseconds: 100), () {
-          shouldShowNoWordError = false;
-          notifyListeners();
-        });
-        return;
-      }
-      gameStatus = WordleGameStatus.submitting;
-      solutionCopy = Word.fromStr(solution.wordString);
-
-      for (var i = 0; i < currentWord.letters.length; i++) {
-        final currLetter = currentWord.letters[i];
-
-        if (currLetter.letter.toLowerCase() ==
-            solution.letters[i].letter.toLowerCase()) {
-          final copyIndex = solutionCopy.letters.indexWhere((element) =>
-              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
-          if (copyIndex != -1) {
-            solutionCopy.letters.removeAt(copyIndex);
-          }
-          currentWord.letters[i] =
-              currLetter.copyWith(status: LetterStatus.correct);
-        }
-      }
-
-      for (var i = 0; i < currentWord.letters.length; i++) {
-        final currLetter = currentWord.letters[i];
-        if (currLetter.status == LetterStatus.correct) {
-          continue;
-        }
-
-        if (solutionCopy.letters
-            .map((e) => e.letter.toLowerCase())
-            .contains(currLetter.letter.toLowerCase())) {
-          final copyIndex = solutionCopy.letters.indexWhere((element) =>
-              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
-          if (copyIndex != -1) {
-            solutionCopy.letters.removeAt(copyIndex);
-          }
-          currentWord.letters[i] =
-              currLetter.copyWith(status: LetterStatus.inWord);
-        } else {
-          currentWord.letters[i] =
-              currLetter.copyWith(status: LetterStatus.notInWord);
-        }
-      }
-
-      // flip the cards and reveal their state
-      for (var i = 0; i < currentWord.letters.length; i++) {
-        await Future.delayed(
-          const Duration(milliseconds: 150),
-          () {
-            // flip cards
-            flipCardControllers[currentWordIndex][i].toggleCard();
-            notifyListeners();
-          },
-        );
-      }
-
-      Future.delayed(const Duration(milliseconds: 150 * 5), () {
-        for (var i = 0; i < currentWord.letters.length; i++) {
-          final currLetter = currentWord.letters[i];
-          final letter = keyboardLetters.firstWhere(
-            (element) =>
-                element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
-            orElse: () => Letter.empty(),
-          );
-          if (letter.status != LetterStatus.correct) {
-            keyboardLetters.removeWhere((element) =>
-                element.letter.toLowerCase() ==
-                currLetter.letter.toLowerCase());
-            keyboardLetters.add(currentWord.letters[i]);
-          }
-        }
-
-        currentWordIndex++;
-        checkForGameEnd();
-        _saveGameState();
-      });
+    if (gameStatus != WordleGameStatus.inProgress || currentWord.letters.contains(Letter.empty())) {
+      return;
     }
+
+    // check if typed word is in words list
+    final word = currentWord.wordString.toLowerCase();
+    if (!possibleWords.contains(word)) {
+      shouldShowNoWordError = true;
+      notifyListeners();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        shouldShowNoWordError = false;
+        notifyListeners();
+      });
+      return;
+    }
+
+    gameStatus = WordleGameStatus.submitting;
+    solutionCopy = Word.fromStr(solution.wordString);
+
+    for (var i = 0; i < currentWord.letters.length; i++) {
+      final currLetter = currentWord.letters[i];
+
+      if (currLetter.letter.toLowerCase() == solution.letters[i].letter.toLowerCase()) {
+        final copyIndex = solutionCopy.letters
+            .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (copyIndex != -1) {
+          solutionCopy.letters.removeAt(copyIndex);
+        }
+        currentWord.letters[i] = currLetter.copyWith(status: LetterStatus.correct);
+      }
+    }
+
+    for (var i = 0; i < currentWord.letters.length; i++) {
+      final currLetter = currentWord.letters[i];
+      if (currLetter.status == LetterStatus.correct) {
+        continue;
+      }
+
+      if (solutionCopy.letters.map((e) => e.letter.toLowerCase()).contains(currLetter.letter.toLowerCase())) {
+        final copyIndex = solutionCopy.letters
+            .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (copyIndex != -1) {
+          solutionCopy.letters.removeAt(copyIndex);
+        }
+        currentWord.letters[i] = currLetter.copyWith(status: LetterStatus.inWord);
+      } else {
+        currentWord.letters[i] = currLetter.copyWith(status: LetterStatus.notInWord);
+      }
+    }
+
+    notifyListeners();
+
+    // flip the cards and reveal their state
+    for (var i = 0; i < currentWord.letters.length; i++) {
+      await Future.delayed(
+        const Duration(milliseconds: 150),
+        () async {
+          // flip cards
+          await flipCardControllers[currentWordIndex][i].toggleCard();
+        },
+      );
+    }
+
+    Future.delayed(const Duration(milliseconds: 150 * 5), () {
+      for (var i = 0; i < currentWord.letters.length; i++) {
+        final currLetter = currentWord.letters[i];
+        final letter = keyboardLetters.firstWhere(
+          (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
+          orElse: () => Letter.empty(),
+        );
+        if (letter.shouldReplace(withOther: currLetter)) {
+          keyboardLetters.removeWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+          keyboardLetters.add(currentWord.letters[i]);
+        }
+      }
+
+      currentWordIndex++;
+      checkForGameEnd();
+      _saveGameState();
+    });
   }
 
   void checkForGameEnd() {
-    if (currentWordIndex < 0) {
+    // this should never excecute but just in case
+    if (currentWordIndex < 0 || currentWordIndex > board.length) {
       gameStatus = WordleGameStatus.lost;
       notifyListeners();
       return;
     }
-    final lastWord =
-        currentWordIndex == 0 ? board.first : board[currentWordIndex - 1];
-    if (lastWord.wordString.toLowerCase() ==
-        solution.wordString.toLowerCase()) {
+
+    final lastWord = currentWordIndex == 0 ? board.first : board[currentWordIndex - 1];
+
+    if (lastWord.wordString.toLowerCase() == solution.wordString.toLowerCase()) {
       gameStatus = WordleGameStatus.won;
     } else if (currentWordIndex == board.length) {
       gameStatus = WordleGameStatus.lost;
@@ -265,15 +258,13 @@ class WordleViewModel with ChangeNotifier {
       for (var i = 0; i < board[j].letters.length; i++) {
         final currLetter = board[j].letters[i];
 
-        if (currLetter.letter.toLowerCase() ==
-            solution.letters[i].letter.toLowerCase()) {
-          final copyIndex = solutionCopy.letters.indexWhere((element) =>
-              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (currLetter.letter.toLowerCase() == solution.letters[i].letter.toLowerCase()) {
+          final copyIndex = solutionCopy.letters
+              .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           if (copyIndex != -1) {
             solutionCopy.letters.removeAt(copyIndex);
           }
-          board[j].letters[i] =
-              currLetter.copyWith(status: LetterStatus.correct);
+          board[j].letters[i] = currLetter.copyWith(status: LetterStatus.correct);
         }
       }
 
@@ -283,27 +274,23 @@ class WordleViewModel with ChangeNotifier {
           continue;
         }
 
-        if (solutionCopy.letters
-            .map((e) => e.letter.toLowerCase())
-            .contains(currLetter.letter.toLowerCase())) {
-          final copyIndex = solutionCopy.letters.indexWhere((element) =>
-              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (solutionCopy.letters.map((e) => e.letter.toLowerCase()).contains(currLetter.letter.toLowerCase())) {
+          final copyIndex = solutionCopy.letters
+              .indexWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           if (copyIndex != -1) {
             solutionCopy.letters.removeAt(copyIndex);
           }
-          board[j].letters[i] =
-              currLetter.copyWith(status: LetterStatus.inWord);
+          board[j].letters[i] = currLetter.copyWith(status: LetterStatus.inWord);
         } else {
-          board[j].letters[i] =
-              currLetter.copyWith(status: LetterStatus.notInWord);
+          board[j].letters[i] = currLetter.copyWith(status: LetterStatus.notInWord);
         }
       }
 
       for (var i = 0; i < board[j].letters.length; i++) {
-        shouldCardBeFlipped[j][i] = true;
-        notifyListeners();
+        flipCardControllers[j][i].toggleCardWithoutAnimation();
       }
     }
+    notifyListeners();
   }
 
   void _updateKeyboardTiles() {
@@ -317,13 +304,11 @@ class WordleViewModel with ChangeNotifier {
       for (var i = 0; i < board[j].letters.length; i++) {
         final currLetter = board[j].letters[i];
         final letter = keyboardLetters.firstWhere(
-          (element) =>
-              element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
+          (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
           orElse: () => Letter.empty(),
         );
-        if (letter.status != LetterStatus.correct) {
-          keyboardLetters.removeWhere((element) =>
-              element.letter.toLowerCase() == currLetter.letter.toLowerCase());
+        if (letter.shouldReplace(withOther: currLetter)) {
+          keyboardLetters.removeWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           keyboardLetters.add(board[j].letters[i]);
         }
       }
