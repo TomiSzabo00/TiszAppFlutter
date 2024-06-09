@@ -11,7 +11,7 @@ import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class WordleScreen extends StatefulWidget {
-  const WordleScreen({Key? key}) : super(key: key);
+  const WordleScreen({super.key});
 
   @override
   WordleScreenState createState() => WordleScreenState();
@@ -35,10 +35,11 @@ class WordleScreenState extends State<WordleScreen> {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<WordleViewModel>();
     AnimationController? localAnimationController;
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      onPopInvoked: (_) {
+        if (localAnimationController?.isAnimating == true) {
           localAnimationController?.reverse();
-        return Future.value(true);
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -55,12 +56,9 @@ class WordleScreenState extends State<WordleScreen> {
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: isDarkTheme
-                  ? const AssetImage("images/bg2_night.png")
-                  : const AssetImage("images/bg2_day.png"),
+              image: isDarkTheme ? const AssetImage("images/bg2_night.png") : const AssetImage("images/bg2_day.png"),
               fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.5), BlendMode.dstATop),
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.dstATop),
             ),
           ),
           child: Center(
@@ -94,8 +92,7 @@ class WordleScreenState extends State<WordleScreen> {
                           child: SingleChildScrollView(
                             child: Board(
                               board: viewModel.board,
-                              flipCardControllers:
-                                  viewModel.flipCardControllers,
+                              flipCardControllers: viewModel.flipCardControllers,
                               flipped: viewModel.shouldCardBeFlipped,
                             ),
                           ),
@@ -106,8 +103,7 @@ class WordleScreenState extends State<WordleScreen> {
                 ),
                 const SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 30.0, left: 12, right: 12, top: 10),
+                  padding: const EdgeInsets.only(bottom: 30.0, left: 12, right: 12, top: 10),
                   child: Keyboard(
                     onLetterPressed: viewModel.onLetterTap,
                     onEnterPressed: viewModel.onEnterTap,
@@ -125,8 +121,7 @@ class WordleScreenState extends State<WordleScreen> {
                           const CustomSnackBar.error(
                             message: "Nincs ilyen magyar szó!",
                           ),
-                          onAnimationControllerInit: (controller) =>
-                              localAnimationController = controller,
+                          onAnimationControllerInit: (controller) => localAnimationController = controller,
                           displayDuration: const Duration(seconds: 2),
                         );
                       });
@@ -138,13 +133,9 @@ class WordleScreenState extends State<WordleScreen> {
                             message: "Gratulálok, nyertél! Nézz vissza holnap!",
                             textScaleFactor: 1.3,
                           ),
-                          onAnimationControllerInit: (controller) =>
-                              localAnimationController = controller,
-                          displayDuration: const Duration(hours: 3),
+                          onAnimationControllerInit: (controller) => localAnimationController = controller,
+                          displayDuration: const Duration(seconds: 5),
                           dismissType: DismissType.onSwipe,
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
                         );
                       });
                     } else if (viewModel.gameStatus == WordleGameStatus.lost) {
@@ -161,9 +152,8 @@ class WordleScreenState extends State<WordleScreen> {
                                 "Sajnos vesztettél! A megoldás a ${viewModel.solution.wordString.toUpperCase()} volt.",
                             textScaleFactor: 1.2,
                           ),
-                          onAnimationControllerInit: (controller) =>
-                              localAnimationController = controller,
-                          displayDuration: const Duration(hours: 3),
+                          onAnimationControllerInit: (controller) => localAnimationController = controller,
+                          displayDuration: const Duration(seconds: 5),
                           dismissType: DismissType.onSwipe,
                         );
                       });
