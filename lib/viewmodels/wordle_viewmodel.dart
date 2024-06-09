@@ -210,7 +210,7 @@ class WordleViewModel with ChangeNotifier {
           (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
           orElse: () => Letter.empty(),
         );
-        if (letter.status != LetterStatus.correct) {
+        if (letter.shouldReplace(withOther: currLetter)) {
           keyboardLetters.removeWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           keyboardLetters.add(currentWord.letters[i]);
         }
@@ -303,7 +303,7 @@ class WordleViewModel with ChangeNotifier {
           (element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase(),
           orElse: () => Letter.empty(),
         );
-        if (letter.status != LetterStatus.correct) {
+        if (letter.shouldReplace(withOther: currLetter)) {
           keyboardLetters.removeWhere((element) => element.letter.toLowerCase() == currLetter.letter.toLowerCase());
           keyboardLetters.add(board[j].letters[i]);
         }

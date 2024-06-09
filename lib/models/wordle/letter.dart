@@ -42,6 +42,10 @@ class Letter extends Equatable {
     );
   }
 
+  bool shouldReplace({required Letter withOther}) {
+    return !status.isHigher(other: withOther.status);
+  }
+
   @override
   List<Object?> get props => [letter, status];
 }
