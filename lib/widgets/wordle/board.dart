@@ -8,16 +8,13 @@ import 'board_tile.dart';
 
 class Board extends StatelessWidget {
   const Board({
-    Key? key,
+    super.key,
     required this.board,
     required this.flipCardControllers,
-    required this.flipped,
-  }) : super(key: key);
+  });
 
   final List<Word> board;
-
   final List<List<FlipCardController>> flipCardControllers;
-  final List<List<bool>> flipped;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +36,7 @@ class Board extends StatelessWidget {
                             aspectRatio: 1,
                             child: FlipCard(
                               controller: flipCardControllers[i][j],
-                              side: flipped[i][j] ? CardSide.BACK : CardSide.FRONT,
+                              // side: flipped[i][j] ? CardSide.BACK : CardSide.FRONT,
                               flipOnTouch: false,
                               direction: FlipDirection.VERTICAL,
                               front: BoardTile(

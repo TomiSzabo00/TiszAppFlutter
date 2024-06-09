@@ -21,13 +21,17 @@ class WordleScreenState extends State<WordleScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<WordleViewModel>(context, listen: false).init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WordleViewModel>(context, listen: false).init();
+    });
   }
 
   @override
   void activate() {
     super.activate();
-    Provider.of<WordleViewModel>(context, listen: false).init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<WordleViewModel>(context, listen: false).init();
+    });
   }
 
   @override
@@ -39,7 +43,10 @@ class WordleScreenState extends State<WordleScreen> {
       onPopInvoked: (_) {
         if (localAnimationController?.isAnimating == true) {
           localAnimationController?.reverse();
+        } else if (localAnimationController?.isCompleted == true) {
+          localAnimationController?.reset();
         }
+
       },
       child: Scaffold(
         appBar: AppBar(
@@ -93,7 +100,6 @@ class WordleScreenState extends State<WordleScreen> {
                             child: Board(
                               board: viewModel.board,
                               flipCardControllers: viewModel.flipCardControllers,
-                              flipped: viewModel.shouldCardBeFlipped,
                             ),
                           ),
                         );
@@ -134,7 +140,7 @@ class WordleScreenState extends State<WordleScreen> {
                             textScaleFactor: 1.3,
                           ),
                           onAnimationControllerInit: (controller) => localAnimationController = controller,
-                          displayDuration: const Duration(seconds: 5),
+                          displayDuration: const Duration(seconds: 10),
                           dismissType: DismissType.onSwipe,
                         );
                       });
@@ -153,7 +159,7 @@ class WordleScreenState extends State<WordleScreen> {
                             textScaleFactor: 1.2,
                           ),
                           onAnimationControllerInit: (controller) => localAnimationController = controller,
-                          displayDuration: const Duration(seconds: 5),
+                          displayDuration: const Duration(seconds: 10),
                           dismissType: DismissType.onSwipe,
                         );
                       });
