@@ -21,16 +21,20 @@ class WordleScreenState extends State<WordleScreen> {
   @override
   void initState() {
     super.initState();
+    final viewModel = Provider.of<WordleViewModel>(context, listen: false);
+    viewModel.resetState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<WordleViewModel>(context, listen: false).init();
+      viewModel.init();
     });
   }
 
   @override
   void activate() {
     super.activate();
+    final viewModel = Provider.of<WordleViewModel>(context, listen: false);
+    viewModel.resetState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<WordleViewModel>(context, listen: false).init();
+      viewModel.init();
     });
   }
 

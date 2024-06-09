@@ -58,6 +58,10 @@ class WordleViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetState() {
+    gameStatus = WordleGameStatus.submitting;
+  }
+
   Future<List<Word>> _getStateFromFirebase() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     var board = List.generate(6, (_) => Word(letters: List.generate(5, (_) => Letter.empty())));
