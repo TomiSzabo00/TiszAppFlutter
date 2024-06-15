@@ -13,6 +13,7 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/profile_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/radio_wishlist_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/sports_viewmodel.dart';
@@ -68,6 +69,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => NotificationViewModel()),
       ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
       ChangeNotifierProvider(create: (_) => SportsViewModel()),
+      ChangeNotifierProvider(create: (_) => RadioWishlistViewModel()),
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
     ], child: const MyApp()),
   );
