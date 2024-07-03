@@ -68,21 +68,9 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
           children: [
             TextField(
               decoration: const InputDecoration(labelText: 'Audio URL'),
-              onSubmitted: (value) =>
-                  viewModel.startChant("https://mozsarmate.me/zene.mp3"),
+              onSubmitted: (value) => viewModel.startChant(value),
             ),
             const SizedBox(height: 20),
-            Text("Hangerő: ${volume.toStringAsFixed(1)}"),
-            Slider(
-                value: volume,
-                min: 0,
-                max: 1,
-                divisions: 10,
-                onChanged: (value) => {
-                      setState(() => volume = value),
-                      _audioPlayer.setVolume(volume * 10)
-                    }),
-            // render conditionally
             if (!viewModel.isPlaying)
               Button3D(
                   onPressed: () {
@@ -122,12 +110,6 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
             Text(
                 'Aktu Előrehaladás: ${_audioPlayer.position.inMilliseconds} ms'),
             Text('Sebesség: ${_audioPlayer.speed} x'),
-            Slider(
-              value: viewModel.played.toDouble() / 1000,
-              min: 0,
-              max: 100,
-              onChanged: (value) {},
-            )
           ],
         ),
       ),
