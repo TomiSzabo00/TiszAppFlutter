@@ -24,6 +24,8 @@ class MainMenuButton {
         return 'Napirend';
       case MainMenuButtonType.scoreUpload:
         return 'Pontok feltöltése';
+      case MainMenuButtonType.ocsiScoreUpload:
+        return 'Öcsi pontozás';
       case MainMenuButtonType.scores:
         return 'Pontállás';
       case MainMenuButtonType.songs:
@@ -74,6 +76,8 @@ class MainMenuButton {
       case MainMenuButtonType.schedule:
         return Icons.calendar_today;
       case MainMenuButtonType.scoreUpload:
+        return Icons.add;
+      case MainMenuButtonType.ocsiScoreUpload:
         return Icons.add;
       case MainMenuButtonType.scores:
         return Icons.format_list_numbered;
