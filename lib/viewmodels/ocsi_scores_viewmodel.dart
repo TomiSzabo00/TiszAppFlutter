@@ -25,7 +25,14 @@ class OcsiScoresViewModel with ChangeNotifier {
     return num;
   }
 
-  void uploadScore() {
+  bool uploadScore() {
+    if (curSliderValue == 0) {
+      return false;
+    }
+    if (nameController.text.isEmpty) {
+      nameController.text = "Öcsi";
+    }
+
     var scores = List.generate(numberOfTeams, (index) {
       if (index == curTeamSelected) {
         return curSliderValue;
@@ -43,5 +50,12 @@ class OcsiScoresViewModel with ChangeNotifier {
     var formatter = DateFormat('yyyyMMddHHmmssSSS');
     var key = formatter.format(now);
     ref.child(key).set(score.toJson());
+
+    nameController.clear();
+    curSliderValue = 0;
+    curTeamSelected = -1;
+    notifyListeners();
+
+    return true;
   }
 }
