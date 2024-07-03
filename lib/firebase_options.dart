@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -48,6 +42,18 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBHXc_JfbEYblfPcoIhjyFiAq0HdHzwWzw',
+    appId: '1:703903823299:web:a713dc2a824f711dd87976',
+    messagingSenderId: '703903823299',
+    projectId: 'tiszapp-175fb',
+    authDomain: 'tiszapp-175fb.firebaseapp.com',
+    databaseURL:
+        'https://tiszapp-175fb-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'tiszapp-175fb.appspot.com',
+    measurementId: 'G-4WZ4KT7S3K',
+  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCUr2Eaj2V0TkHIMWYy9UCql5r0h4rkm1U',
@@ -69,4 +75,16 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.tiszappFlutter',
   );
 
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyC4WEryqDXNiWbyHEgYhmVsdKPUp5Hk8iE',
+    appId: '1:703903823299:ios:55d4b3fea8d5e96dd87976',
+    messagingSenderId: '703903823299',
+    projectId: 'tiszapp-175fb',
+    databaseURL:
+        'https://tiszapp-175fb-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'tiszapp-175fb.appspot.com',
+    iosClientId:
+        '703903823299-l35ulg24vjd5bdrqo2669si445i9gcej.apps.googleusercontent.com',
+    iosBundleId: 'com.example.tiszappFlutter',
+  );
 }

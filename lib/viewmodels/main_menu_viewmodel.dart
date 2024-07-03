@@ -10,10 +10,14 @@ import 'package:tiszapp_flutter/models/main_menu/main_menu_button_type.dart';
 import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
+import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
+import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/notification_screen.dart';
 import 'package:tiszapp_flutter/views/pics/pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
@@ -22,18 +26,16 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/upload_ocsi_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
-import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
-import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
-import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MainMenuViewModel extends ChangeNotifier {
   MainMenuViewModel();
+
   UserData user = UserData.empty();
 
   List<MainMenuButton> buttons = [];
@@ -169,6 +171,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.quizQuick),
       MainMenuButton(type: MainMenuButtonType.slowQuiz),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
+      MainMenuButton(type: MainMenuButtonType.ocsiScoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
       MainMenuButton(type: MainMenuButtonType.ejjeliportya),
       MainMenuButton(type: MainMenuButtonType.notifications),
@@ -203,6 +206,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.schedule;
     } else if (key == MainMenuButtonType.scoreUpload.rawValue) {
       return MainMenuButtonType.scoreUpload;
+    } else if (key == MainMenuButtonType.ocsiScoreUpload.rawValue) {
+      return MainMenuButtonType.ocsiScoreUpload;
     } else if (key == MainMenuButtonType.scores.rawValue) {
       return MainMenuButtonType.scores;
     } else if (key == MainMenuButtonType.songs.rawValue) {
@@ -330,6 +335,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => const UploadScoreScreen(),
               ),
             );
+      case MainMenuButtonType.ocsiScoreUpload:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const UploadOcsiScoreScreen(),
+              ),
+            );
       case MainMenuButtonType.scores:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -422,8 +433,7 @@ class MainMenuViewModel extends ChangeNotifier {
     final Uri url = Uri.parse(await _getDriveURL());
     try {
       launchUrl(url, mode: LaunchMode.externalApplication);
-    }
-    catch(e) {
+    } catch (e) {
       throw FlutterError("Web page not available");
     }
   }
