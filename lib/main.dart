@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/viewmodels/chant_blaster_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
@@ -73,6 +74,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => NotificationViewModel()),
       ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
       ChangeNotifierProvider(create: (_) => SportsViewModel()),
+      ChangeNotifierProvider(create: (_) => ChantBlasterViewModel()),
       ChangeNotifierProvider(create: (_) => SongRequestViewModel()),
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
       ChangeNotifierProvider(create: (_) => StylePointsViewModel()),

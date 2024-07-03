@@ -30,10 +30,14 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
+import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
+import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../views/chant_blaster_screen.dart';
 
 class MainMenuViewModel extends ChangeNotifier {
   MainMenuViewModel();
@@ -179,7 +183,8 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.menuButtons),
       MainMenuButton(type: MainMenuButtonType.hazasParbaj),
       MainMenuButton(type: MainMenuButtonType.sports),
-      MainMenuButton(type: MainMenuButtonType.sportResult)
+      MainMenuButton(type: MainMenuButtonType.sportResult),
+      MainMenuButton(type: MainMenuButtonType.chantBlaster)
     ];
 
     buttons.sort((a, b) => order
@@ -193,6 +198,12 @@ class MainMenuViewModel extends ChangeNotifier {
   }
 
   MainMenuButtonType _getButtonFromKey(String key) {
+    for (MainMenuButtonType type in MainMenuButtonType.values) {
+      if (type.rawValue == key) {
+        return type;
+      }
+    }
+    /*
     if (key == MainMenuButtonType.karaoke.rawValue) {
       return MainMenuButtonType.karaoke;
     } else if (key == MainMenuButtonType.nappaliPortya.rawValue) {
@@ -235,10 +246,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sports;
     } else if (key == MainMenuButtonType.sportResult.rawValue) {
       return MainMenuButtonType.sportResult;
-    } else if (key == MainMenuButtonType.radioWishes.rawValue) {
-      return MainMenuButtonType.radioWishes;
     }
-
+*/
     return MainMenuButtonType.none;
   }
 
@@ -413,6 +422,12 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PicturesScreen(isReview: true, isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.chantBlaster:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ChantBlasterScreen(isAdmin: user.isAdmin),
               ),
             );
       case MainMenuButtonType.radioWishes:

@@ -52,8 +52,10 @@ class MainMenuButton {
         return 'Sport Feltöltés';
       case MainMenuButtonType.sportResult:
         return 'Sport Eredmények';
-      case MainMenuButtonType.radioWishes:
+      case MainMenuButtonType.chantBlaster:
         return 'Zenekérés';
+        return 'Chant Blaster';
+      case MainMenuButtonType.radioWishes:
     }
   }
 
@@ -105,6 +107,8 @@ class MainMenuButton {
         return Icons.sports_score;
       case MainMenuButtonType.radioWishes:
         return Icons.radio;
+      case MainMenuButtonType.chantBlaster:
+        return Icons.volume_up;
     }
   }
 
