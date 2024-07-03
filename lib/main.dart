@@ -4,8 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/chant_blaster_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/notification_viewmodel.dart';
@@ -19,6 +20,7 @@ import 'package:tiszapp_flutter/viewmodels/sports_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
+
 import 'firebase_options.dart';
 import 'widget_tree.dart';
 
@@ -68,6 +70,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => NotificationViewModel()),
       ChangeNotifierProvider(create: (_) => SlowQuizViewModel()),
       ChangeNotifierProvider(create: (_) => SportsViewModel()),
+      ChangeNotifierProvider(create: (_) => ChantBlasterViewModel()),
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
     ], child: const MyApp()),
   );

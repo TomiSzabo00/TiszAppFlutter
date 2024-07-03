@@ -52,6 +52,8 @@ class MainMenuButton {
         return 'Sport Feltöltés';
       case MainMenuButtonType.sportResult:
         return 'Sport Eredmények';
+      case MainMenuButtonType.chantBlaster:
+        return 'Chant Blaster';
     }
   }
 
@@ -101,6 +103,8 @@ class MainMenuButton {
         return Icons.sports_soccer;
       case MainMenuButtonType.sportResult:
         return Icons.sports_score;
+      case MainMenuButtonType.chantBlaster:
+        return Icons.volume_up;
     }
   }
 

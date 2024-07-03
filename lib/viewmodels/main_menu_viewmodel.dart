@@ -10,10 +10,14 @@ import 'package:tiszapp_flutter/models/main_menu/main_menu_button_type.dart';
 import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
+import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
+import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/notification_screen.dart';
 import 'package:tiszapp_flutter/views/pics/pictures_screen.dart';
+import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
@@ -22,15 +26,13 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
-import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
-import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
-import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../views/chant_blaster_screen.dart';
 
 class MainMenuViewModel extends ChangeNotifier {
   MainMenuViewModel();
@@ -175,7 +177,8 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.menuButtons),
       MainMenuButton(type: MainMenuButtonType.hazasParbaj),
       MainMenuButton(type: MainMenuButtonType.sports),
-      MainMenuButton(type: MainMenuButtonType.sportResult)
+      MainMenuButton(type: MainMenuButtonType.sportResult),
+      MainMenuButton(type: MainMenuButtonType.chantBlaster)
     ];
 
     buttons.sort((a, b) => order
@@ -189,6 +192,12 @@ class MainMenuViewModel extends ChangeNotifier {
   }
 
   MainMenuButtonType _getButtonFromKey(String key) {
+    for (MainMenuButtonType type in MainMenuButtonType.values) {
+      if (type.rawValue == key) {
+        return type;
+      }
+    }
+    /*
     if (key == MainMenuButtonType.karaoke.rawValue) {
       return MainMenuButtonType.karaoke;
     } else if (key == MainMenuButtonType.nappaliPortya.rawValue) {
@@ -231,8 +240,10 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sports;
     } else if (key == MainMenuButtonType.sportResult.rawValue) {
       return MainMenuButtonType.sportResult;
+    } else if (key == MainMenuButtonType.chantBlaster.rawValue) {
+      return MainMenuButtonType.chantBlaster;
     }
-
+*/
     return MainMenuButtonType.none;
   }
 
@@ -413,6 +424,12 @@ class MainMenuViewModel extends ChangeNotifier {
               MaterialPageRoute(
                 builder: (context) =>
                     PicturesScreen(isReview: true, isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.chantBlaster:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ChantBlasterScreen(isAdmin: user.isAdmin),
               ),
             );
     }
