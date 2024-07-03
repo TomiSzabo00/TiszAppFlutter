@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../viewmodels/ocsi_scores_viewmodel.dart';
 
@@ -83,9 +85,10 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
                       children: [
                         Button3D(
                           onPressed: () {
-                            HapticFeedback.heavyImpact();
-                            viewModel.uploadScore();
-                            _showDialog(context);
+                            if (viewModel.uploadScore()) {
+                              HapticFeedback.heavyImpact();
+                              _showDialog(context);
+                            }
                           },
                           child: Text(
                             "Feltöltés",
@@ -112,21 +115,19 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
   }
 
   void _showDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Sikeres feltöltés"),
-          content: const Text("A pontok sikeresen feltöltésre kerültek."),
-          actions: [
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+    AnimationController? localAnimationController;
+    showTopSnackBar(
+      Overlay.of(context),
+      const CustomSnackBar.success(
+        message: "Feltöltve!",
+        textScaleFactor: 1.3,
+      ),
+      onAnimationControllerInit: (controller) =>
+          localAnimationController = controller,
+      displayDuration: const Duration(seconds: 2),
+      dismissType: DismissType.onSwipe,
+      onTap: () {
+        Navigator.of(context).pop();
       },
     );
   }
