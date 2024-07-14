@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/song_request_data.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 
 // Insert globally used database getters here. E.x.: getNumberOfTeams() or getFirstDay()
@@ -45,4 +46,50 @@ class DatabaseService {
         .get()
         .then((snapshot) => tryCast<String>(snapshot.value) ?? "");
   }
+
+   Future<List<SongRequest>> fetchSongs() async {
+    try {
+      final snapshot = await database.child('wishes').get();
+      if (snapshot.exists) {
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        final songsList = data.entries.map((entry) {
+          final key = entry.key;
+          final value = entry.value as Map<dynamic, dynamic>;
+          return SongRequest.fromMap(value, key);
+        }).toList();
+        return songsList;
+      }
+    } catch (e) {
+      print('Error fetching songs: $e');
+    }
+    return [];
+  }
+
+  Future<void> addSongRequest(SongRequest songRequest) async {
+     final newSongRef = database.child('wishes').push();
+    await newSongRef.set(songRequest.toMap());
+    songRequest.id = newSongRef.key!;
+  }
+
+  Future<void> removeSongRequest(String songRequestId) async {
+    await database.child('wishes').child(songRequestId).remove();
+  }
+
+ Future<List<SongRequest>> getSongs() async {
+  final snapshot = await database.child('wishes').once();
+  final dataSnapshot = snapshot.snapshot.value as Map<dynamic, dynamic>?;
+
+  if (dataSnapshot != null) {
+    return dataSnapshot.entries.map((entry) {
+      final songData = entry.value;
+      if (songData is Map) {
+        return SongRequest.fromMap(songData, entry.key);
+      } else {
+        throw ArgumentError('Expected a Map for song data, but got ${songData.runtimeType}');
+      }
+    }).toList();
+  } else {
+    return [];
+  }
+}
 }
