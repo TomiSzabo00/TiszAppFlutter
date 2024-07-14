@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/song_request_data.dart';
+import 'package:tiszapp_flutter/services/database_service.dart';
 import '../viewmodels/song_request_viewmodel.dart';
 
 class SongRequestScreen extends StatefulWidget {
@@ -55,9 +57,11 @@ class SongRequestScreenState extends State<SongRequestScreen> {
     );
   }
 
-  bool hasAtLeast30MinutesDifference(DateTime date1, DateTime date2) {
+  Future<bool> hasAtLeast30MinutesDifference(DateTime date1, DateTime date2) async {
     final difference = date1.difference(date2).abs(); // Get the absolute difference
-    return difference >= const Duration(minutes: 30); // Check if the difference is at least 30 minutes
+    DatabaseReference ref = DatabaseService.database;
+    final timeLimit = await ref.child('timeLimit').get();
+    return difference >= Duration(minutes: timeLimit.value as int); // Check if the difference is at least 30 minutes
   }
 
   void showSnackBar(BuildContext context, String message) {
@@ -72,6 +76,8 @@ class SongRequestScreenState extends State<SongRequestScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<SongRequestViewModel>();
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Zene kérések'),
@@ -124,20 +130,24 @@ class SongRequestScreenState extends State<SongRequestScreen> {
                     Padding(
                       padding: const EdgeInsets.all(1.0),
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           bool timeLimit = false;
                           for (var songRequest in viewModel.songRequests) {
                             if(songRequest.user == FirebaseAuth.instance.currentUser!.uid){
-                              if(!hasAtLeast30MinutesDifference(DateTime.now(), songRequest.upload)){
+                              if(await hasAtLeast30MinutesDifference(DateTime.now(), songRequest.upload)){
                                 timeLimit = true;
+                              }
+                              else{
+                                timeLimit = false;
+                                break;
                               }
                             }
                           }
-                          if(!timeLimit){
+                          if(timeLimit){
                             viewModel.uploadSongRequest(singerTitle.text, urlLink.text);
                           }
                           else{
-                            showSnackBar(context, '30 percenként lehet csak számot kérni!');
+                            showSnackBar(context, 'Csak meghatározott időközönként lehet zenét kérni!');
                           }
                           singerTitle.clear();
                           urlLink.clear();
