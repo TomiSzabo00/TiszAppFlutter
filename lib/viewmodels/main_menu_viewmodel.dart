@@ -27,6 +27,7 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
+import 'package:tiszapp_flutter/views/upload_combined_score.dart';
 import 'package:tiszapp_flutter/views/upload_ocsi_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
@@ -172,6 +173,7 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.nappaliPortya),
       MainMenuButton(type: MainMenuButtonType.quizQuick),
       MainMenuButton(type: MainMenuButtonType.slowQuiz),
+      MainMenuButton(type: MainMenuButtonType.combinedScoreUpload),
       MainMenuButton(type: MainMenuButtonType.scoreUpload),
       MainMenuButton(type: MainMenuButtonType.ocsiScoreUpload),
       MainMenuButton(type: MainMenuButtonType.voting),
@@ -210,6 +212,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.scoreUpload;
     } else if (key == MainMenuButtonType.ocsiScoreUpload.rawValue) {
       return MainMenuButtonType.ocsiScoreUpload;
+    } else if (key == MainMenuButtonType.combinedScoreUpload.rawValue) {
+      return MainMenuButtonType.combinedScoreUpload;
     } else if (key == MainMenuButtonType.scores.rawValue) {
       return MainMenuButtonType.scores;
     } else if (key == MainMenuButtonType.songs.rawValue) {
@@ -319,6 +323,12 @@ class MainMenuViewModel extends ChangeNotifier {
               MaterialPageRoute(
                 builder: (context) =>
                     PicturesScreen(isReview: false, isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.combinedScoreUpload:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const UploadCombinedScoreScreen(),
               ),
             );
       case MainMenuButtonType.quizQuick:
