@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/song_request_data.dart';
@@ -67,7 +69,7 @@ class SongRequestScreenState extends State<SongRequestScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Zene kérések'),
+          title: const Text('Zenekérés'),
         ),
         body: Column(
           children: [
@@ -80,10 +82,7 @@ class SongRequestScreenState extends State<SongRequestScreen> {
                 itemCount: viewModel.songRequests.length,
                 itemBuilder: (context, index) {
                   final songRequest = viewModel.songRequests[index];
-                  return widget.isAdmin
-                      ? AdminSongListItem(
-                          songRequest: songRequest, onDelete: () => showDeleteDialog(context, songRequest.id))
-                      : UserSongListItem(songRequest: songRequest);
+                  return listItem(widget.isAdmin, songRequest, () => showDeleteDialog(context, songRequest.id));
                 },
               ),
             ),
@@ -98,28 +97,19 @@ class SongRequestScreenState extends State<SongRequestScreen> {
           height: 80,
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text.isEmpty) {
-                  return const Iterable<String>.empty();
-                }
-                return viewModel.songRequests
-                    .map((song) => song.name)
-                    .where((title) => title.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+            child: TextField(
+              controller: viewModel.singerTitle,
+              autocorrect: false,
+              onChanged: (value) {
+                setState(() {
+                  viewModel.titleError = null;
+                });
               },
-              onSelected: (String selection) {
-                viewModel.singerTitle.text = selection; // Populate the text field with the selected title
-              },
-              fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode,
-                  VoidCallback onFieldSubmitted) {
-                return TextField(
-                  controller: viewModel.singerTitle,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Előadó - Cím (teljes)',
-                  ),
-                );
-              },
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                hintText: 'Előadó - Cím (teljes)',
+                errorText: viewModel.titleError,
+              ),
             ),
           ),
         ),
@@ -128,9 +118,16 @@ class SongRequestScreenState extends State<SongRequestScreen> {
             padding: const EdgeInsets.all(4.0),
             child: TextField(
               controller: viewModel.urlLink,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              autocorrect: false,
+              onChanged: (value) {
+                setState(() {
+                  viewModel.urlError = null;
+                });
+              },
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
                 hintText: 'Link a zenéhez.',
+                errorText: viewModel.urlError,
               ),
             ),
           ),
@@ -139,12 +136,13 @@ class SongRequestScreenState extends State<SongRequestScreen> {
           padding: const EdgeInsets.all(1.0),
           child: ElevatedButton(
             onPressed: () async {
-              final remainingMinutes = await viewModel.uploadSongRequestWithTimeLimit();
+              final remainingMinutes = await viewModel.uploadSongRequestOrReturnWithRemainingMinutes();
               if (remainingMinutes != null) {
-                // ignore: use_build_context_synchronously
+                if (remainingMinutes == -1) {
+                  return;
+                }
                 showSnackBar(context, 'Még $remainingMinutes percet kell várnod a következő kérésig.');
               } else {
-                // ignore: use_build_context_synchronously
                 showSnackBar(context, 'Sikeresen elküldted a kérést.');
               }
             },
@@ -154,44 +152,17 @@ class SongRequestScreenState extends State<SongRequestScreen> {
       ],
     );
   }
-}
 
-class AdminSongListItem extends StatelessWidget {
-  final SongRequest songRequest;
-  final VoidCallback onDelete;
-
-  const AdminSongListItem({
-    Key? key,
-    required this.songRequest,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget listItem(bool isAdmin, SongRequest songRequest, VoidCallback onDelete) {
     return ListTile(
       title: Text(songRequest.name),
       subtitle: Text(songRequest.url),
-      trailing: IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: onDelete,
-      ),
-    );
-  }
-}
-
-class UserSongListItem extends StatelessWidget {
-  final SongRequest songRequest;
-
-  const UserSongListItem({
-    Key? key,
-    required this.songRequest,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(songRequest.name),
-      subtitle: Text(songRequest.url),
+      trailing: isAdmin
+          ? IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: onDelete,
+            )
+          : null,
     );
   }
 }

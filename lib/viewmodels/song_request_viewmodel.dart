@@ -14,6 +14,9 @@ class SongRequestViewModel with ChangeNotifier {
   final TextEditingController singerTitle = TextEditingController();
   final TextEditingController urlLink = TextEditingController();
 
+  String? titleError;
+  String? urlError;
+
   int timeoutMinutes = 30;
 
   SongRequestViewModel() {
@@ -91,11 +94,23 @@ class SongRequestViewModel with ChangeNotifier {
     return difference >= Duration(minutes: timeoutMinutes);
   }
 
-  Future<int?> uploadSongRequestWithTimeLimit() async {
+  Future<int?> uploadSongRequestOrReturnWithRemainingMinutes() async {
+    if (singerTitle.text.isEmpty) {
+      titleError = 'A cím nem lehet üres';
+    }
+    if (urlLink.text.isEmpty) {
+      urlError = 'A link nem lehet üres';
+    }
+    if (singerTitle.text.isEmpty || urlLink.text.isEmpty) {
+      notifyListeners();
+      return -1;
+    }
+    
     var songRequestsCopy = List<SongRequest>.from(songRequests);
     songRequestsCopy.sort((a, b) => a.upload.compareTo(b.upload));
 
-    var lastUploadByUser = songRequestsCopy.lastWhereOrNull((element) => element.user == FirebaseAuth.instance.currentUser!.uid);
+    var lastUploadByUser =
+        songRequestsCopy.lastWhereOrNull((element) => element.user == FirebaseAuth.instance.currentUser!.uid);
     if (lastUploadByUser == null || didWaitTimeout(lastUploadByUser.upload)) {
       uploadSongRequest(singerTitle.text, urlLink.text);
       singerTitle.clear();
