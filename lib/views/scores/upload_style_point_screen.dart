@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/viewmodels/style_points_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
@@ -21,11 +22,15 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
     final viewModel = context.watch<StylePointsViewModel>();
     return Scaffold(
       body: FutureBuilder(
-        future: Future.wait([viewModel.getNumberOfTeams(), viewModel.getMaxNumberOfStylePoints()]),
+        future: Future.wait([
+          viewModel.getNumberOfTeams(),
+          viewModel.getMaxNumberOfStylePoints(),
+          viewModel.getAreStylePointsPerTeam()
+        ]),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final numberOfTeams = snapshot.data?[0] ?? 4;
-            final maxNumberOfStylePoints = snapshot.data?[1] ?? 1;
+            int numberOfTeams = tryCast<int>(snapshot.data?[0]) ?? 4;
+            int maxNumberOfStylePoints = tryCast<int>(snapshot.data?[1]) ?? 1;
             return ListView(children: [
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -62,7 +67,20 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
                         ),
                         children: <TextSpan>[
                           const TextSpan(
-                            text: 'Egy csapatnak, egy nap alatt maximum ',
+                            text: 'Egy nap alatt',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          if (viewModel.isStylePointsPerTeam)
+                            const TextSpan(
+                              text: ', egy csapatnak',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          const TextSpan(
+                            text: ' maximum ',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                             ),
@@ -74,9 +92,8 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
                               fontSize: 18,
                             ),
                           ),
-                          const TextSpan(text: ' stíluspontot'),
                           const TextSpan(
-                            text: ' adhatsz!',
+                            text: ' stíluspontot adhatsz!',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                             ),

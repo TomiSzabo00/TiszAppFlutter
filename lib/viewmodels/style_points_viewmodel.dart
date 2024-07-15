@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/scores/score_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
@@ -20,6 +21,7 @@ class StylePointsViewModel with ChangeNotifier {
 
   int numberOfTeams = 4;
   int maxNumberOfStylePoints = 1;
+  bool isStylePointsPerTeam = true;
   int curTeamSelected = 0;
 
   Future<int> getNumberOfTeams() async {
@@ -32,6 +34,16 @@ class StylePointsViewModel with ChangeNotifier {
     final num = await DatabaseService.getMaxNumberOfStylePoints();
     maxNumberOfStylePoints = num;
     return num;
+  }
+
+  Future<bool> getAreStylePointsPerTeam() async {
+    final snapshot = await DatabaseService.database.child('_settings/style_points_per_team').get();
+    if (snapshot.exists) {
+      final isPerTeam = tryCast<bool>(snapshot.value) ?? true;
+      isStylePointsPerTeam = isPerTeam;
+      return isPerTeam;
+    }
+    return true;
   }
 
   Future<Map<String, Score>> getUploadedStylePoints() async {
@@ -62,7 +74,12 @@ class StylePointsViewModel with ChangeNotifier {
       final formatter = DateFormat('yyyyMMdd');
       final today = formatter.format(now);
       final date = entry.key.substring(0, 8);
-      return today == date && entry.value.scores.indexWhere((element) => element == 1) == curTeamSelected;
+      bool isToday = today == date;
+      if (isStylePointsPerTeam) {
+        return isToday && entry.value.scores.indexWhere((element) => element == 1) == curTeamSelected;
+      } else {
+        return isToday;
+      }
     });
 
     return uploadedToday.length >= maxNumberOfStylePoints;
