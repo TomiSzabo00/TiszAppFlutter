@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/views/scores/upload_ocsi_score_screen.dart';
 import 'package:tiszapp_flutter/views/scores/upload_score_screen.dart';
+import 'package:tiszapp_flutter/views/scores/upload_style_point_screen.dart';
 
 class UploadCombinedScoreScreen extends StatefulWidget {
   const UploadCombinedScoreScreen({super.key});
@@ -29,7 +30,7 @@ class UploadCombinedScoreScreenState extends State<UploadCombinedScoreScreen> {
           children: [
             UploadScoreScreen(), // Replace with your second screen widget
             UploadOcsiScoreScreen(),
-            UploadOcsiScoreScreen(),
+            UploadStylePointScreen(),
           ],
         ),
       ),
