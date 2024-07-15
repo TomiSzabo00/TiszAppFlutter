@@ -26,6 +26,8 @@ class MainMenuButton {
         return 'Pontok feltöltése';
       case MainMenuButtonType.ocsiScoreUpload:
         return 'Öcsi pontozás';
+      case MainMenuButtonType.combinedScoreUpload:
+        return 'Csapatok pontozása';
       case MainMenuButtonType.scores:
         return 'Pontállás';
       case MainMenuButtonType.songs:
@@ -76,6 +78,8 @@ class MainMenuButton {
       case MainMenuButtonType.scoreUpload:
         return Icons.add;
       case MainMenuButtonType.ocsiScoreUpload:
+        return Icons.add;
+      case MainMenuButtonType.combinedScoreUpload:
         return Icons.add;
       case MainMenuButtonType.scores:
         return Icons.format_list_numbered;
