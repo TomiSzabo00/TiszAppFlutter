@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/song_request_data.dart';
@@ -17,9 +16,6 @@ class SongRequestScreen extends StatefulWidget {
 }
 
 class SongRequestScreenState extends State<SongRequestScreen> {
-  final TextEditingController singerTitle = TextEditingController();
-  final TextEditingController urlLink = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -77,78 +73,7 @@ class SongRequestScreenState extends State<SongRequestScreen> {
           children: [
             SizedBox(
               height: 200,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 80,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Autocomplete<String>(
-                        optionsBuilder: (TextEditingValue textEditingValue) {
-                          if (textEditingValue.text.isEmpty) {
-                            return const Iterable<String>.empty();
-                          }
-                          return viewModel.songRequests
-                              .map((song) => song.name)
-                              .where((title) => title.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-                        },
-                        onSelected: (String selection) {
-                          singerTitle.text = selection; // Populate the text field with the selected title
-                        },
-                        fieldViewBuilder: (BuildContext context, TextEditingController textEditingController,
-                            FocusNode focusNode, VoidCallback onFieldSubmitted) {
-                          return TextField(
-                            controller: singerTitle,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Előadó - Cím (teljes)',
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: TextField(
-                        controller: urlLink,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Link a zenéhez.',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        bool timeLimit = false;
-                        for (var songRequest in viewModel.songRequests) {
-                          if (songRequest.user == FirebaseAuth.instance.currentUser!.uid) {
-                            if (await viewModel.hasAtLeast30MinutesDifference(DateTime.now(), songRequest.upload)) {
-                              timeLimit = true;
-                            } else {
-                              timeLimit = false;
-                              break;
-                            }
-                          }
-                        }
-                        if (timeLimit) {
-                          viewModel.uploadSongRequest(singerTitle.text, urlLink.text);
-                        } else {
-                          showSnackBar(context, 'Csak meghatározott időközönként lehet zenét kérni!');
-                        }
-                        singerTitle.clear();
-                        urlLink.clear();
-                        timeLimit = false;
-                      },
-                      child: const Text('Feltöltés'),
-                    ),
-                  ),
-                ],
-              ),
+              child: uploadSection(viewModel),
             ),
             Expanded(
               child: ListView.builder(
@@ -164,6 +89,66 @@ class SongRequestScreenState extends State<SongRequestScreen> {
             ),
           ],
         ));
+  }
+
+  Widget uploadSection(SongRequestViewModel viewModel) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 80,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return viewModel.songRequests
+                    .map((song) => song.name)
+                    .where((title) => title.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+              },
+              onSelected: (String selection) {
+                viewModel.singerTitle.text = selection; // Populate the text field with the selected title
+              },
+              fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode,
+                  VoidCallback onFieldSubmitted) {
+                return TextField(
+                  controller: viewModel.singerTitle,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Előadó - Cím (teljes)',
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: TextField(
+              controller: viewModel.urlLink,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Link a zenéhez.',
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(1.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              if (!await viewModel.uploadSongRequestWithTimeLimit()) {
+                // ignore: use_build_context_synchronously
+                showSnackBar(context, 'Csak meghatározott időközönként lehet zenét kérni!');
+              }
+            },
+            child: const Text('Feltöltés'),
+          ),
+        ),
+      ],
+    );
   }
 }
 

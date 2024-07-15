@@ -9,6 +9,9 @@ class SongRequestViewModel with ChangeNotifier {
   List<SongRequest> songRequests = [];
   final database = DatabaseService.database;
 
+  final TextEditingController singerTitle = TextEditingController();
+  final TextEditingController urlLink = TextEditingController();
+
   Future<void> uploadSongRequest(String name, String url) async {
     final newSong =
         SongRequest(id: '', name: name, url: url, upload: DateTime.now(), user: FirebaseAuth.instance.currentUser!.uid);
@@ -74,5 +77,28 @@ class SongRequestViewModel with ChangeNotifier {
     final difference = date1.difference(date2).abs(); // Get the absolute difference
     final timeLimit = await database.child('timeLimit').get();
     return difference >= Duration(minutes: timeLimit.value as int); // Check if the difference is at least 30 minutes
+  }
+
+  Future<bool> uploadSongRequestWithTimeLimit() async {
+    bool timeLimit = false;
+    for (var songRequest in songRequests) {
+      if (songRequest.user == FirebaseAuth.instance.currentUser!.uid) {
+        if (await hasAtLeast30MinutesDifference(DateTime.now(), songRequest.upload)) {
+          timeLimit = true;
+        } else {
+          timeLimit = false;
+          break;
+        }
+      }
+    }
+    if (timeLimit) {
+      uploadSongRequest(singerTitle.text, urlLink.text);
+      singerTitle.clear();
+      urlLink.clear();
+      return true;
+    } else {
+      return false;
+      // showSnackBar(context, 'Csak meghatározott időközönként lehet zenét kérni!');
+    }
   }
 }
