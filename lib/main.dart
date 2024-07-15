@@ -93,6 +93,17 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.green,
         iconTheme: const IconThemeData(color: CustomColor.btnTextDay),
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.all(CustomColor.btnTextDay),
+        ),
+        sliderTheme: SliderThemeData(
+          activeTrackColor: CustomColor.btnTextDay,
+          inactiveTrackColor: CustomColor.btnFaceDay,
+          thumbColor: CustomColor.btnTextDay,
+          valueIndicatorColor: CustomColor.btnTextDay,
+          valueIndicatorTextStyle: const TextStyle(color: CustomColor.btnFaceDay),
+          overlayColor: CustomColor.btnTextDay.withOpacity(0.3),
+        ),
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
@@ -103,6 +114,17 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         primarySwatch: CustomColor.white,
         iconTheme: const IconThemeData(color: CustomColor.btnTextNight),
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.all(CustomColor.btnFaceNight),
+        ),
+        sliderTheme: SliderThemeData(
+          activeTrackColor: CustomColor.btnTextNight,
+          inactiveTrackColor: CustomColor.btnFaceNight,
+          thumbColor: CustomColor.btnTextNight,
+          valueIndicatorColor: CustomColor.btnTextNight,
+          valueIndicatorTextStyle: const TextStyle(color: CustomColor.btnFaceNight),
+          overlayColor: CustomColor.btnTextNight.withOpacity(0.3),
+        ),
       ),
       home: const WidgetTree(),
     );

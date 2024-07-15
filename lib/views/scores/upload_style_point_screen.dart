@@ -55,9 +55,9 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
                     RichText(
                       text: TextSpan(
                         text: 'Figyelem! ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: isDarkTheme ? Colors.white : Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                         children: <TextSpan>[
