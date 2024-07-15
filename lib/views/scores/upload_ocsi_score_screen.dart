@@ -5,7 +5,7 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
 
-import '../viewmodels/ocsi_scores_viewmodel.dart';
+import '../../viewmodels/ocsi_scores_viewmodel.dart';
 
 class UploadOcsiScoreScreen extends StatefulWidget {
   const UploadOcsiScoreScreen({super.key});

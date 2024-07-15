@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tiszapp_flutter/views/upload_ocsi_score_screen.dart';
-import 'package:tiszapp_flutter/views/upload_score_screen.dart';
+import 'package:tiszapp_flutter/views/scores/upload_ocsi_score_screen.dart';
+import 'package:tiszapp_flutter/views/scores/upload_score_screen.dart';
 
 class UploadCombinedScoreScreen extends StatefulWidget {
   const UploadCombinedScoreScreen({super.key});
