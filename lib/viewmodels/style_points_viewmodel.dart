@@ -1,16 +1,21 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:tiszapp_flutter/models/scores/score_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
 
+enum UploadResult {
+  success,
+  noTeamSelected,
+  limitReached,
+}
+
 class StylePointsViewModel with ChangeNotifier {
   StylePointsViewModel() {
-    initializeDateFormatting();
+    // initializeDateFormatting();
   }
 
   int numberOfTeams = 4;
@@ -29,9 +34,47 @@ class StylePointsViewModel with ChangeNotifier {
     return num;
   }
 
-  bool uploadScore() {
+  Future<Map<String, Score>> getUploadedStylePoints() async {
+    final scoresRef = DatabaseService.database.child("scores");
+    final snapshot = await scoresRef.once();
+    final scores = snapshot.snapshot.children;
+
+    List<MapEntry<String, Score>> stylePoints = [];
+
+    scores.forEach((scoreSnapshot) {
+      final score = Score.fromSnapshot(scoreSnapshot as DataSnapshot);
+      final date = scoreSnapshot.key!;
+      if (score.name.startsWith('SP: ')) {
+        stylePoints.add(MapEntry<String, Score>(date, score));
+      }
+    });
+
+    return Map.fromEntries(stylePoints);
+  }
+
+  Future<bool> hasUserReachedLimit() async {
+    final scores = await getUploadedStylePoints();
+    final allScoresByUser = Map.of(scores)
+      ..removeWhere((key, value) => value.author != FirebaseAuth.instance.currentUser!.uid);
+
+    final uploadedToday = allScoresByUser.entries.where((entry) {
+      final now = DateTime.now();
+      final formatter = DateFormat('yyyyMMdd');
+      final today = formatter.format(now);
+      final date = entry.key.substring(0, 8);
+      return today == date && entry.value.scores.indexWhere((element) => element == 1) == curTeamSelected;
+    });
+
+    return uploadedToday.length >= maxNumberOfStylePoints;
+  }
+
+  Future<UploadResult> uploadScore() async {
     if (curTeamSelected == -1) {
-      return false;
+      return UploadResult.noTeamSelected;
+    }
+
+    if (await hasUserReachedLimit()) {
+      return UploadResult.limitReached;
     }
 
     var scores = List.generate(numberOfTeams, (index) {
@@ -41,8 +84,9 @@ class StylePointsViewModel with ChangeNotifier {
         return 0;
       }
     });
-    var score =
-        Score(author: FirebaseAuth.instance.currentUser!.uid, name: 'SP', scores: scores);
+    final user = await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid);
+    final name = 'SP: ${user.name}';
+    var score = Score(author: FirebaseAuth.instance.currentUser!.uid, name: name, scores: scores);
 
     var ref = DatabaseService.database.child("scores");
     var now = DateTime.now();
@@ -53,6 +97,6 @@ class StylePointsViewModel with ChangeNotifier {
     curTeamSelected = -1;
     notifyListeners();
 
-    return true;
+    return UploadResult.success;
   }
 }
