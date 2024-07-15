@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -87,10 +89,14 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Button3D(
-                          onPressed: () {
-                            if (viewModel.uploadScore()) {
-                              HapticFeedback.heavyImpact();
-                              _showDialog(context);
+                          onPressed: () async {
+                            final result = await viewModel.uploadScore();
+                            if (result == UploadResult.noTeamSelected) {
+                              _showDialog(context, message: "Nincs kiválasztva csapat!");
+                            } else if (result == UploadResult.limitReached) {
+                              _showDialog(context, message: "Ma már nem adhatsz több stíluspontot ennek a csapatnak!");
+                            } else {
+                              _showDialog(context, message: "Sikeres feltöltés!");
                             }
                           },
                           child: Text(
@@ -115,11 +121,11 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
     );
   }
 
-  void _showDialog(BuildContext context) {
+  void _showDialog(BuildContext context, {required String message}) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Öcsi pont sikeresen feltöltve!'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
