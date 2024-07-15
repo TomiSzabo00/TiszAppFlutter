@@ -57,7 +57,6 @@ class ScoresViewModel with ChangeNotifier {
           .addAll(List.generate(num, (_) => TextEditingController()));
     }
     numberOfTeams = num;
-    notifyListeners();
     return num;
   }
 
