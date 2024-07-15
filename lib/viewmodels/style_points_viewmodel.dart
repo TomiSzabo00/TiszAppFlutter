@@ -14,6 +14,7 @@ class StylePointsViewModel with ChangeNotifier {
   }
 
   int numberOfTeams = 4;
+  int maxNumberOfStylePoints = 1;
   int curTeamSelected = 0;
 
   Future<int> getNumberOfTeams() async {
@@ -22,11 +23,17 @@ class StylePointsViewModel with ChangeNotifier {
     return num;
   }
 
+  Future<int> getMaxNumberOfStylePoints() async {
+    final num = await DatabaseService.getMaxNumberOfStylePoints();
+    maxNumberOfStylePoints = num;
+    return num;
+  }
+
   bool uploadScore() {
     if (curTeamSelected == -1) {
       return false;
     }
-    
+
     var scores = List.generate(numberOfTeams, (index) {
       if (index == curTeamSelected) {
         return 1;
