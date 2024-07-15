@@ -5,7 +5,7 @@ import 'package:tiszapp_flutter/models/scores/distribution_type.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
 
-import '../viewmodels/scores_viewmodel.dart';
+import '../../viewmodels/scores_viewmodel.dart';
 
 class UploadScoreScreen extends StatefulWidget {
   const UploadScoreScreen({super.key});
