@@ -139,9 +139,13 @@ class SongRequestScreenState extends State<SongRequestScreen> {
           padding: const EdgeInsets.all(1.0),
           child: ElevatedButton(
             onPressed: () async {
-              if (!await viewModel.uploadSongRequestWithTimeLimit()) {
+              final remainingMinutes = await viewModel.uploadSongRequestWithTimeLimit();
+              if (remainingMinutes != null) {
                 // ignore: use_build_context_synchronously
-                showSnackBar(context, 'Csak meghatározott időközönként lehet zenét kérni!');
+                showSnackBar(context, 'Még $remainingMinutes percet kell várnod a következő kérésig.');
+              } else {
+                // ignore: use_build_context_synchronously
+                showSnackBar(context, 'Sikeresen elküldted a kérést.');
               }
             },
             child: const Text('Feltöltés'),

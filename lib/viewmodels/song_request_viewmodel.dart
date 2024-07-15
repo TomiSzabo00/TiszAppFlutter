@@ -1,7 +1,9 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/song_request_data.dart';
+import 'package:collection/collection.dart';
 
 import '../services/database_service.dart';
 
@@ -11,6 +13,12 @@ class SongRequestViewModel with ChangeNotifier {
 
   final TextEditingController singerTitle = TextEditingController();
   final TextEditingController urlLink = TextEditingController();
+
+  int timeoutMinutes = 30;
+
+  SongRequestViewModel() {
+    getTimeoutMinutes();
+  }
 
   Future<void> uploadSongRequest(String name, String url) async {
     final newSong =
@@ -73,32 +81,28 @@ class SongRequestViewModel with ChangeNotifier {
     }
   }
 
-  Future<bool> hasAtLeast30MinutesDifference(DateTime date1, DateTime date2) async {
-    final difference = date1.difference(date2).abs(); // Get the absolute difference
-    final timeLimit = await database.child('timeLimit').get();
-    return difference >= Duration(minutes: timeLimit.value as int); // Check if the difference is at least 30 minutes
+  Future<void> getTimeoutMinutes() async {
+    final snapshot = await database.child('_settings/timeout_minutes_for_songs').get();
+    timeoutMinutes = tryCast<int>(snapshot.value) ?? 30;
   }
 
-  Future<bool> uploadSongRequestWithTimeLimit() async {
-    bool timeLimit = false;
-    for (var songRequest in songRequests) {
-      if (songRequest.user == FirebaseAuth.instance.currentUser!.uid) {
-        if (await hasAtLeast30MinutesDifference(DateTime.now(), songRequest.upload)) {
-          timeLimit = true;
-        } else {
-          timeLimit = false;
-          break;
-        }
-      }
-    }
-    if (timeLimit) {
+  bool didWaitTimeout(DateTime date) {
+    final difference = DateTime.now().difference(date).abs();
+    return difference >= Duration(minutes: timeoutMinutes);
+  }
+
+  Future<int?> uploadSongRequestWithTimeLimit() async {
+    var songRequestsCopy = List<SongRequest>.from(songRequests);
+    songRequestsCopy.sort((a, b) => a.upload.compareTo(b.upload));
+
+    var lastUploadByUser = songRequestsCopy.lastWhereOrNull((element) => element.user == FirebaseAuth.instance.currentUser!.uid);
+    if (lastUploadByUser == null || didWaitTimeout(lastUploadByUser.upload)) {
       uploadSongRequest(singerTitle.text, urlLink.text);
       singerTitle.clear();
       urlLink.clear();
-      return true;
+      return null;
     } else {
-      return false;
-      // showSnackBar(context, 'Csak meghatározott időközönként lehet zenét kérni!');
+      return timeoutMinutes - DateTime.now().difference(lastUploadByUser.upload).inMinutes;
     }
   }
 }
