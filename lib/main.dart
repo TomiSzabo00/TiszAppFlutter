@@ -18,6 +18,7 @@ import 'package:tiszapp_flutter/viewmodels/song_request_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/sports_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/style_points_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/texts_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/wordle_viewmodel.dart';
@@ -74,6 +75,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => SportsViewModel()),
       ChangeNotifierProvider(create: (_) => SongRequestViewModel()),
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
+      ChangeNotifierProvider(create: (_) => StylePointsViewModel()),
     ], child: const MyApp()),
   );
 }

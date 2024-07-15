@@ -23,6 +23,14 @@ class DatabaseService {
     return 4;
   }
 
+  static Future<int> getMaxNumberOfStylePoints() async {
+    final snapshot = await database.child('_settings/number_of_style_points').get();
+    if (snapshot.exists) {
+      return tryCast<int>(snapshot.value) ?? 1;
+    }
+    return 1;
+  }
+
   static Future<UserData> getUserData(String uid) async {
     if (FirebaseAuth.instance.currentUser == null) {
       return UserData.empty();
