@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/models/song_request_data.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../viewmodels/song_request_viewmodel.dart';
 
 class SongRequestScreen extends StatefulWidget {
@@ -163,6 +164,18 @@ class SongRequestScreenState extends State<SongRequestScreen> {
               onPressed: onDelete,
             )
           : null,
+      leading: IconButton(
+        icon: const Icon(Icons.open_in_new_rounded),
+        onPressed: () {
+          final isValid = Uri.parse(songRequest.url).isAbsolute;
+          if (isValid) {
+            final uri = Uri.parse(songRequest.url);
+            launchUrl(uri);
+          } else {
+            showSnackBar(context, 'Hibás link');
+          }
+        },
+      ),
     );
   }
 }
