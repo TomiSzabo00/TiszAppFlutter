@@ -40,10 +40,8 @@ class OcsiScoresViewModel with ChangeNotifier {
         return 0;
       }
     });
-    var score = Score(
-        author: FirebaseAuth.instance.currentUser!.uid,
-        name: nameController.text,
-        scores: scores);
+    var score =
+        Score(author: FirebaseAuth.instance.currentUser!.uid, name: 'Öcsi: ${nameController.text}', scores: scores);
 
     var ref = DatabaseService.database.child("scores");
     var now = DateTime.now();
