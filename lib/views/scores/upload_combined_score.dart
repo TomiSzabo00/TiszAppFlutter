@@ -14,7 +14,7 @@ class UploadCombinedScoreScreenState extends State<UploadCombinedScoreScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3, // Number of tabs
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Pontozás"),
@@ -28,7 +28,7 @@ class UploadCombinedScoreScreenState extends State<UploadCombinedScoreScreen> {
         ),
         body: const TabBarView(
           children: [
-            UploadScoreScreen(), // Replace with your second screen widget
+            UploadScoreScreen(),
             UploadOcsiScoreScreen(),
             UploadStylePointScreen(),
           ],
