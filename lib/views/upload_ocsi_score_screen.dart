@@ -19,13 +19,9 @@ class UploadOcsiScoreScreen extends StatefulWidget {
 class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
     final viewModel = context.watch<OcsiScoresViewModel>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Öcsi pontozás"),
-      ),
       body: FutureBuilder(
         future: viewModel.getNumberOfTeams(),
         builder: (context, snapshot) {
@@ -58,8 +54,7 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
                                   contentPadding: EdgeInsets.zero,
                                   onChanged: (num? value) {
                                     setState(() {
-                                      viewModel.curTeamSelected =
-                                          value!.toInt();
+                                      viewModel.curTeamSelected = value!.toInt();
                                       HapticFeedback.lightImpact();
                                     });
                                   },
@@ -93,9 +88,7 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
                           child: Text(
                             "Feltöltés",
                             style: TextStyle(
-                              color: isDarkTheme
-                                  ? CustomColor.btnTextNight
-                                  : CustomColor.btnTextDay,
+                              color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
                               fontSize: 18,
                             ),
                           ),
@@ -122,8 +115,7 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
         message: "Feltöltve!",
         textScaleFactor: 1.3,
       ),
-      onAnimationControllerInit: (controller) =>
-          localAnimationController = controller,
+      onAnimationControllerInit: (controller) => localAnimationController = controller,
       displayDuration: const Duration(seconds: 2),
       dismissType: DismissType.onSwipe,
       onTap: () {
