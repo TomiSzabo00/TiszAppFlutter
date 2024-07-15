@@ -23,7 +23,7 @@ class SongRequestScreenState extends State<SongRequestScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = Provider.of<SongRequestViewModel>(context, listen: false);
-      viewModel.fetchSongs();
+      viewModel.subscribeToSongRequestChanges();
     });
   }
 

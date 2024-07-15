@@ -23,18 +23,20 @@ class SongRequestViewModel with ChangeNotifier {
     getTimeoutMinutes();
   }
 
+  void subscribeToSongRequestChanges() {
+    database.child('wishes').onValue.listen((event) {
+      fetchSongs();
+    });
+  }
+
   Future<void> uploadSongRequest(String name, String url) async {
     final newSong =
         SongRequest(id: '', name: name, url: url, upload: DateTime.now(), user: FirebaseAuth.instance.currentUser!.uid);
     await addSongRequest(newSong);
-    songRequests.add(newSong);
-    notifyListeners();
   }
 
   Future<void> deleteSongRequest(String songRequestId) async {
     await removeSongRequest(songRequestId);
-    songRequests.removeWhere((songRequest) => songRequest.id == songRequestId);
-    fetchSongs(); // Refresh the list after deleting a song
   }
 
   Future<List<SongRequest>> fetchSongs() async {
@@ -48,6 +50,7 @@ class SongRequestViewModel with ChangeNotifier {
           return SongRequest.fromMap(value, key);
         }).toList();
         songRequests = songsList;
+        songRequests.sort((a, b) => a.upload.compareTo(b.upload));
         notifyListeners();
       }
     } catch (e) {
@@ -64,24 +67,6 @@ class SongRequestViewModel with ChangeNotifier {
 
   Future<void> removeSongRequest(String songRequestId) async {
     await database.child('wishes').child(songRequestId).remove();
-  }
-
-  Future<List<SongRequest>> getSongs() async {
-    final snapshot = await database.child('wishes').once();
-    final dataSnapshot = snapshot.snapshot.value as Map<dynamic, dynamic>?;
-
-    if (dataSnapshot != null) {
-      return dataSnapshot.entries.map((entry) {
-        final songData = entry.value;
-        if (songData is Map) {
-          return SongRequest.fromMap(songData, entry.key);
-        } else {
-          throw ArgumentError('Expected a Map for song data, but got ${songData.runtimeType}');
-        }
-      }).toList();
-    } else {
-      return [];
-    }
   }
 
   Future<void> getTimeoutMinutes() async {
@@ -105,7 +90,7 @@ class SongRequestViewModel with ChangeNotifier {
       notifyListeners();
       return -1;
     }
-    
+
     var songRequestsCopy = List<SongRequest>.from(songRequests);
     songRequestsCopy.sort((a, b) => a.upload.compareTo(b.upload));
 
