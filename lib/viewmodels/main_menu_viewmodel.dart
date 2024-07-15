@@ -16,6 +16,7 @@ import 'package:tiszapp_flutter/views/notification_screen.dart';
 import 'package:tiszapp_flutter/views/pics/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/slow_quiz_screen.dart';
+import 'package:tiszapp_flutter/views/song_request_screen.dart';
 import 'package:tiszapp_flutter/views/schedule_screen.dart';
 import 'package:tiszapp_flutter/views/scores_screen.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
@@ -156,6 +157,7 @@ class MainMenuViewModel extends ChangeNotifier {
   void _reorderButtons() {
     List<MainMenuButton> order = [
       MainMenuButton(type: MainMenuButtonType.schedule),
+      MainMenuButton(type: MainMenuButtonType.radioWishes),
       MainMenuButton(type: MainMenuButtonType.scores),
       MainMenuButton(type: MainMenuButtonType.wordle),
       MainMenuButton(type: MainMenuButtonType.songs),
@@ -231,6 +233,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sports;
     } else if (key == MainMenuButtonType.sportResult.rawValue) {
       return MainMenuButtonType.sportResult;
+    }else if (key == MainMenuButtonType.radioWishes.rawValue) {
+      return MainMenuButtonType.radioWishes;
     }
 
     return MainMenuButtonType.none;
@@ -413,6 +417,13 @@ class MainMenuViewModel extends ChangeNotifier {
               MaterialPageRoute(
                 builder: (context) =>
                     PicturesScreen(isReview: true, isAdmin: user.isAdmin),
+              ),
+            );
+      case MainMenuButtonType.radioWishes:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>
+                    SongRequestScreen(isAdmin: user.isAdmin,),
               ),
             );
     }
