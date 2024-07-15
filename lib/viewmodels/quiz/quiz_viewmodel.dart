@@ -137,43 +137,29 @@ class QuizViewModel extends ChangeNotifier {
 
   void _clearSignals() {
     signals.clear();
+    notifyListeners();
   }
 
   void subscribeToSignalEventsAsAdmin() async {
-    database.child('quiz/signals').onChildAdded.listen((event) {
+    database.child('quiz/signals').onValue.listen((event) async {
+      _clearSignals();
       if (event.snapshot.value == null) {
-        _clearSignals();
-        notifyListeners();
         return;
       }
-      // decode data
-      final senderUid = tryCast<String>(event.snapshot.value) ?? '';
-      DatabaseService.getUserData(senderUid).then((senderData) {
-        // check if this team already sent a signal
-        if (signals
-                .any((element) => element.containsValue(senderData.teamNum)) ||
-            signals.length >= numberOfTeams) {
-          return;
+
+      final data = tryCast<Map>(event.snapshot.value) ?? {};
+      final signalDatas = data.entries.map((entry) => {entry.key: entry.value}).toList();
+      debugPrint('signalDatas: $signalDatas');
+      for (var signal in signalDatas) {
+        final userData = await DatabaseService.getUserData(signal.values.first);
+        if (signals.any((element) => element.containsValue(userData.teamNum))) {
+          continue;
         }
-        signals.add({event.snapshot.key!: senderData.teamNum});
-        // sort signals by date
+
+        signals.add({signal.keys.first: userData.teamNum});
         signals.sort((a, b) => a.keys.first.compareTo(b.keys.first));
         notifyListeners();
-      });
-    });
-
-    database.child('quiz/signals').onChildRemoved.listen((event) {
-      // decode data
-      final senderUid = tryCast<String>(event.snapshot.value) ?? '';
-      DatabaseService.getUserData(senderUid).then((senderData) {
-        // check if this team already sent a signal
-        final index = signals
-            .indexWhere((element) => element.containsValue(senderData.teamNum));
-        if (index != -1) {
-          signals.removeAt(index);
-          notifyListeners();
-        }
-      });
+      }
     });
   }
 
