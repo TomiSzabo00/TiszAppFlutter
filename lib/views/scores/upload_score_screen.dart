@@ -38,6 +38,16 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                       placeholder: "Program neve",
                       icon: const Icon(Icons.edit),
                     ),
+                    const SizedBox(height: 5),
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "Ezt a táborozók is látni fogják",
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 25),
                     const Text("Hány pontot értek el a csapatok?"),
                     const SizedBox(height: 10),
