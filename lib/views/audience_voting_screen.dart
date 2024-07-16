@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
+import 'package:tiszapp_flutter/models/audience_voting_state.dart';
 import 'package:tiszapp_flutter/viewmodels/audience_voting_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -32,7 +34,7 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
       appBar: AppBar(
         title: const Text('Közönségszavazás'),
       ),
-      body: widget.isAdmin ? _userScreen(viewModel) : _userScreen(viewModel),
+      body: widget.isAdmin ? _adminScreen(viewModel) : _userScreen(viewModel),
     );
   }
 
@@ -83,7 +85,197 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _adminScreen(AudienceVotingViewModel viewModel) {
-    return Container();
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          StreamBuilder(
+            stream: viewModel.getVotingState(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final state = snapshot.data!;
+                return Column(
+                  children: [
+                    Text(
+                      'A szavazás jelenleg ${state.displayValue}.',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (state == AudienceVotingState.voting) ...[
+                      _resultsVisibleScreen(),
+                      const SizedBox(height: 20),
+                      _inProgressAdminButtons(),
+                    ] else if (state == AudienceVotingState.paused) ...[
+                      _adminPausedScreen(),
+                    ] else if (state == AudienceVotingState.stopped) ...[
+                      _adminStoppedScreen(),
+                    ],
+                  ],
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _inProgressAdminButtons() {
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Button3D(
+          onPressed: () {
+            context.read<AudienceVotingViewModel>().setVotingState(AudienceVotingState.paused);
+          },
+          child: Text(
+            'Szüneteltetés',
+            style: TextStyle(
+                color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+        Button3D(
+          onPressed: () {
+            final viewModel = context.read<AudienceVotingViewModel>();
+            viewModel.setVotingState(AudienceVotingState.stopped);
+            viewModel.deleteVotes();
+          },
+          child: Text(
+            'Törlés',
+            style: TextStyle(
+                color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _adminPausedScreen() {
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return Column(
+      children: [
+        _resultsVisibleScreen(),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Button3D(
+              onPressed: () {
+                context.read<AudienceVotingViewModel>().setVotingState(AudienceVotingState.voting);
+              },
+              child: Text(
+                'Folytatás',
+                style: TextStyle(
+                    color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            Button3D(
+              onPressed: () {
+                final viewModel = context.read<AudienceVotingViewModel>();
+                viewModel.setVotingState(AudienceVotingState.stopped);
+                viewModel.deleteVotes();
+              },
+              child: Text(
+                'Törlés',
+                style: TextStyle(
+                    color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _adminStoppedScreen() {
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final viewModel = context.watch<AudienceVotingViewModel>();
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SizedBox(
+              height: 60,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: TextField(
+                  controller: viewModel.newPairTextController,
+                  autocorrect: false,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                    hintText: 'Új páros (Ember1 - Ember2)',
+                    isDense: true,
+                  ),
+                ),
+              ),
+            ),
+            Button3D(
+              width: MediaQuery.of(context).size.width * 0.15,
+              height: 60,
+              onPressed: () {
+                viewModel.addVotingOption();
+              },
+              child: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        StreamBuilder(
+          stream: viewModel.getVotingOptions(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final List<String> options = snapshot.data ?? [];
+              return Column(
+                children: options.map((option) {
+                  return ListTile(
+                    title: Text(option),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        viewModel.deleteVotingOption(option);
+                      },
+                    ),
+                  );
+                }).toList(),
+              );
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+        const SizedBox(height: 20),
+        Button3D(
+          onPressed: () {
+            final viewModel = context.read<AudienceVotingViewModel>();
+            viewModel.setVotingState(AudienceVotingState.voting);
+          },
+          child: Text(
+            'Indítás',
+            style: TextStyle(
+                color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _votingClosedScreen() {
@@ -216,7 +408,7 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                   if (!viewModel.vote()) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Válassz egy párost!'),
+                        content: Text('Nem választottál ki egy párost sem, vagy a szavazás már lezárult!'),
                       ),
                     );
                   }
