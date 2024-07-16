@@ -5,21 +5,25 @@ import 'package:tiszapp_flutter/models/scores/distribution_type.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
 import 'package:tiszapp_flutter/widgets/input_field.dart';
 
-import '../../viewmodels/scores_viewmodel.dart';
+import '../viewmodels/scores_viewmodel.dart';
 
-class UploadScoreScreen extends StatefulWidget {
-  const UploadScoreScreen({super.key});
+class UploadOcsiScoreScreen extends StatefulWidget {
+  const UploadOcsiScoreScreen({super.key});
 
   @override
-  UploadScoreScreenState createState() => UploadScoreScreenState();
+  UploadOcsiScoreScreenState createState() => UploadOcsiScoreScreenState();
 }
 
-class UploadScoreScreenState extends State<UploadScoreScreen> {
+class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     final viewModel = context.watch<ScoresViewModel>();
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Öcsi pontozás"),
+      ),
       body: FutureBuilder(
         future: viewModel.getNumberOfTeams(),
         builder: (context, snapshot) {
@@ -38,23 +42,13 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                       placeholder: "Program neve",
                       icon: const Icon(Icons.edit),
                     ),
-                    /*const SizedBox(height: 5),
-                    const Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "Ezt a táborozók is látni fogják",
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),*/
-                    //megse latjak
                     const SizedBox(height: 25),
                     const Text("Hány pontot értek el a csapatok?"),
                     const SizedBox(height: 10),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: List.generate(snapshot.data!, (index) => Text('${index + 1}.'))),
+                        children: List.generate(
+                            snapshot.data!, (index) => Text('${index + 1}.'))),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,9 +58,10 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: InputField(
-                              controller: viewModel.scoreControllers.length > index
-                                  ? viewModel.scoreControllers[index]
-                                  : TextEditingController(),
+                              controller:
+                                  viewModel.scoreControllers.length > index
+                                      ? viewModel.scoreControllers[index]
+                                      : TextEditingController(),
                               placeholder: "0",
                               isNumber: true,
                               maxChar: 3,
@@ -104,8 +99,8 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                     const SizedBox(height: 25),
                     const Text("Hány pontot kap a legjobb csapat?"),
                     const SizedBox(height: 10),
-                    Center(
-                      child: Padding(
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
                           child: SizedBox(
                               width: 200,
@@ -119,13 +114,14 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                                   maxChar: 3,
                                 ),
                               ))),
-                    ),
+                    ]),
                     const SizedBox(height: 25),
                     const Text("Végső pontszámok"),
                     const SizedBox(height: 10),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: List.generate(snapshot.data!, (index) => Text('${index + 1}.'))),
+                        children: List.generate(
+                            snapshot.data!, (index) => Text('${index + 1}.'))),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,7 +133,9 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                             child: AbsorbPointer(
                                 absorbing: !viewModel.areAllScoresAdded,
                                 child: InputField(
-                                  controller: viewModel.finalScoreControllers.length > index
+                                  controller: viewModel
+                                              .finalScoreControllers.length >
+                                          index
                                       ? viewModel.finalScoreControllers[index]
                                       : TextEditingController(),
                                   placeholder: "0",
@@ -160,7 +158,9 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                           child: Text(
                             "Feltöltés",
                             style: TextStyle(
-                              color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                              color: isDarkTheme
+                                  ? CustomColor.btnTextNight
+                                  : CustomColor.btnTextDay,
                               fontSize: 18,
                             ),
                           ),
