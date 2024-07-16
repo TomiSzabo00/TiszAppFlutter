@@ -28,7 +28,6 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/scores/upload_combined_score.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
