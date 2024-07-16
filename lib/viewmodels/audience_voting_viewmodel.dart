@@ -8,6 +8,7 @@ class AudienceVotingViewModel extends ChangeNotifier {
   final DatabaseReference database = DatabaseService.database;
   final databaseNode = 'audience_votes';
   String selectedOption = '';
+  Map<String, int> results = {};
 
   Stream<bool> isVotingOpen() async* {
     yield* database.child('$databaseNode/voting_state').onValue.map((event) {
@@ -55,5 +56,25 @@ class AudienceVotingViewModel extends ChangeNotifier {
 
     database.child('$databaseNode/votes/$uid').set(selectedOption);
     return true;
+  }
+
+  void subscribeToResults() {
+    database.child('$databaseNode/votes').onChildAdded.listen((event) {
+      final option = tryCast<String>(event.snapshot.value);
+      if (option == null) {
+        return;
+      }
+      results.update(option, (value) => value + 1, ifAbsent: () => 1);
+      results = Map.fromEntries(results.entries.toList()..sort((a, b) => b.value.compareTo(a.value)));
+      notifyListeners();
+    });
+  }
+
+  String getWinner() {
+    if (results.isEmpty) {
+      return '-';
+    }
+    final winner = results.entries.first;
+    return winner.key;
   }
 }

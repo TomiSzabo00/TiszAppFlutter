@@ -4,6 +4,7 @@ import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/viewmodels/audience_voting_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class AudienceVotingScreen extends StatefulWidget {
   const AudienceVotingScreen({
@@ -18,6 +19,12 @@ class AudienceVotingScreen extends StatefulWidget {
 }
 
 class AudienceVotingScreenState extends State<AudienceVotingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<AudienceVotingViewModel>(context, listen: false).subscribeToResults();
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<AudienceVotingViewModel>();
@@ -88,8 +95,71 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _resultsVisibleScreen() {
-    // TODO
-    return const Center(child: Text('A szavazás eredményeit megtekintheted!'));
+    final viewModel = context.watch<AudienceVotingViewModel>();
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Wrap(
+              children: [
+                const Text('Legtöbb szavazatot kapott pár:'),
+                const SizedBox(width: 10),
+                Text(
+                  viewModel.getWinner(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 300,
+            child: BarChart(
+              BarChartData(
+                gridData: const FlGridData(show: false),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  show: true,
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles:
+                      const AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 30, interval: 1)),
+                  bottomTitles: AxisTitles(
+                    drawBelowEverything: false,
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: getTitles,
+                      reservedSize: 60,
+                    ),
+                  ),
+                ),
+                barGroups: viewModel.results.entries
+                    .map(
+                      (entry) => BarChartGroupData(
+                        x: viewModel.results.keys.toList().indexOf(entry.key),
+                        barRods: [
+                          BarChartRodData(
+                            fromY: 0,
+                            toY: entry.value.toDouble(),
+                            color: isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnTextDay,
+                            width: MediaQuery.of(context).size.width / viewModel.results.length * 0.4,
+                            borderRadius: const BorderRadius.all(Radius.circular(6)),
+                          ),
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _votingScreen(AudienceVotingViewModel viewModel) {
@@ -157,6 +227,39 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget getTitles(double value, TitleMeta meta) {
+    final viewModel = context.watch<AudienceVotingViewModel>();
+    const style = TextStyle(
+      fontSize: 14,
+    );
+    Widget text;
+    final index = value.toInt();
+    final names = viewModel.results.keys.toList();
+    text = index < names.length
+        ? Text(
+            names[index],
+            style: style,
+          )
+        : const SizedBox();
+    // return Padding(
+    //   padding: const EdgeInsets.only(top: 30),
+    //   child: SideTitleWidget(
+    //     axisSide: meta.axisSide,
+    //     space: 0,
+    //     angle: -1.2,
+    //     fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+    //     child: text,
+    //   ),
+    // );
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 8,
+      angle: -1.2,
+      fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+      child: text,
     );
   }
 }
