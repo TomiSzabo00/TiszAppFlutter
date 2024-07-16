@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -43,19 +45,26 @@ class MainMenuViewModel extends ChangeNotifier {
 
   DatabaseReference database = DatabaseService.database;
 
+  StreamSubscription<DatabaseEvent>? userSubscription;
+
   void subscribeToButtonEvents() async {
     if (user.uid.isEmpty) {
-      user = await DatabaseService.getUserData(
-          FirebaseAuth.instance.currentUser!.uid);
+      user = await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid);
       notifyListeners();
     }
 
     FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
       if (firebaseUser == null) {
         buttons.clear();
+        userSubscription?.cancel();
         return;
       }
-      DatabaseService.getUserData(firebaseUser.uid).then((value) {
+      userSubscription = database.child('users').onChildAdded.listen((event) {
+        if (event.snapshot.key != FirebaseAuth.instance.currentUser!.uid) {
+          return;
+        }
+        final snapshot = event.snapshot;
+        final value = UserData.fromSnapshot(snapshot);
         buttons.clear();
         user = value;
         database.child('_main_menu').once().then((event) {
@@ -65,10 +74,7 @@ class MainMenuViewModel extends ChangeNotifier {
       });
       FirebaseMessaging.instance.getToken().then((token) {
         if (FirebaseAuth.instance.currentUser != null && token != null) {
-          database
-              .child("notification_tokens")
-              .child(FirebaseAuth.instance.currentUser!.uid)
-              .set(token);
+          database.child("notification_tokens").child(FirebaseAuth.instance.currentUser!.uid).set(token);
         }
       });
     });
@@ -80,8 +86,7 @@ class MainMenuViewModel extends ChangeNotifier {
       if (key != null) {
         final buttonType = _getButtonFromKey(key);
         final visibility = _getVisibilityFromKey(value);
-        final button =
-            MainMenuButton(type: buttonType, visibilityType: visibility);
+        final button = MainMenuButton(type: buttonType, visibilityType: visibility);
         if (user.isAdmin || button.isVisible) {
           if (!buttons.any((element) => element.title == button.title)) {
             buttons.add(button);
@@ -102,8 +107,7 @@ class MainMenuViewModel extends ChangeNotifier {
       if (key != null) {
         final buttonType = _getButtonFromKey(key);
         final visibility = _getVisibilityFromKey(value);
-        final button =
-            MainMenuButton(type: buttonType, visibilityType: visibility);
+        final button = MainMenuButton(type: buttonType, visibilityType: visibility);
         if (user.isAdmin || button.isVisible) {
           if (!buttons.any((element) => element.title == button.title)) {
             buttons.add(button);
@@ -112,8 +116,7 @@ class MainMenuViewModel extends ChangeNotifier {
           buttons.removeWhere((element) => element.title == button.title);
         }
         _reorderButtons();
-        final index = buttonToggles
-            .indexWhere((element) => element.title == button.title);
+        final index = buttonToggles.indexWhere((element) => element.title == button.title);
         if (index != -1) {
           buttonToggles[index] = button;
         }
@@ -139,8 +142,7 @@ class MainMenuViewModel extends ChangeNotifier {
     values.forEach((key, value) {
       final buttonType = _getButtonFromKey(key);
       final visibility = _getVisibilityFromKey(value);
-      final button =
-          MainMenuButton(type: buttonType, visibilityType: visibility);
+      final button = MainMenuButton(type: buttonType, visibilityType: visibility);
       //the last part is for the reviewers to see the buttons no matter the settings
       if (user.isAdmin || button.isVisible || user.name == "Test User") {
         if (!buttons.any((element) => element.title == button.title)) {
@@ -234,7 +236,7 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sports;
     } else if (key == MainMenuButtonType.sportResult.rawValue) {
       return MainMenuButtonType.sportResult;
-    }else if (key == MainMenuButtonType.radioWishes.rawValue) {
+    } else if (key == MainMenuButtonType.radioWishes.rawValue) {
       return MainMenuButtonType.radioWishes;
     }
 
@@ -254,8 +256,7 @@ class MainMenuViewModel extends ChangeNotifier {
     }
   }
 
-  Function getActionFor(
-      {required MainMenuButtonType buttonType, required BuildContext context}) {
+  Function getActionFor({required MainMenuButtonType buttonType, required BuildContext context}) {
     switch (buttonType) {
       case MainMenuButtonType.none:
         return () => {};
@@ -269,8 +270,7 @@ class MainMenuViewModel extends ChangeNotifier {
         return () => _launchURL();
       case MainMenuButtonType.pictureUpload:
         return () async {
-          final PermissionState ps =
-              await PhotoManager.requestPermissionExtend();
+          final PermissionState ps = await PhotoManager.requestPermissionExtend();
           if (!ps.isAuth) {
             showDialog(
               context: context,
@@ -284,8 +284,7 @@ class MainMenuViewModel extends ChangeNotifier {
                       Navigator.of(context).pop();
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              SelectPicturesScreen(isAdmin: user.isAdmin),
+                          builder: (context) => SelectPicturesScreen(isAdmin: user.isAdmin),
                         ),
                       );
                     },
@@ -304,8 +303,7 @@ class MainMenuViewModel extends ChangeNotifier {
           } else {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) =>
-                    SelectPicturesScreen(isAdmin: user.isAdmin),
+                builder: (context) => SelectPicturesScreen(isAdmin: user.isAdmin),
               ),
             );
           }
@@ -313,8 +311,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.pictures:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) =>
-                    PicturesScreen(isReview: false, isAdmin: user.isAdmin),
+                builder: (context) => PicturesScreen(isReview: false, isAdmin: user.isAdmin),
               ),
             );
       case MainMenuButtonType.combinedScoreUpload:
@@ -374,9 +371,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.ejjeliportya:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => user.isAdmin
-                    ? const EjjeliPortyaAdminScreen()
-                    : const EjjeliPortyaScreen(),
+                builder: (context) => user.isAdmin ? const EjjeliPortyaAdminScreen() : const EjjeliPortyaScreen(),
               ),
             );
       case MainMenuButtonType.menuButtons:
@@ -387,8 +382,8 @@ class MainMenuViewModel extends ChangeNotifier {
             );
 
       case MainMenuButtonType.hazasParbaj:
-        return () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => HazasParbajScreen(isAdmin: user.isAdmin)));
+        return () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HazasParbajScreen(isAdmin: user.isAdmin)));
       case MainMenuButtonType.notifications:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -416,15 +411,15 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.reviewPics:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) =>
-                    PicturesScreen(isReview: true, isAdmin: user.isAdmin),
+                builder: (context) => PicturesScreen(isReview: true, isAdmin: user.isAdmin),
               ),
             );
       case MainMenuButtonType.radioWishes:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) =>
-                    SongRequestScreen(isAdmin: user.isAdmin,),
+                builder: (context) => SongRequestScreen(
+                  isAdmin: user.isAdmin,
+                ),
               ),
             );
     }
@@ -443,8 +438,7 @@ class MainMenuViewModel extends ChangeNotifier {
     return await DatabaseService.getDriveURL(teamNum: user.teamNum);
   }
 
-  void toggleButtonVisibility(
-      {required MainMenuButton button, required bool isVisible}) {
+  void toggleButtonVisibility({required MainMenuButton button, required bool isVisible}) {
     DatabaseReference ref = DatabaseService.database;
     ref.child('_main_menu/${button.type.rawValue}').set(isVisible ? 1 : 0);
   }
