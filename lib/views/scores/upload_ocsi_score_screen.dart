@@ -38,7 +38,7 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
                       placeholder: "Öcsi",
                       icon: const Icon(Icons.edit),
                     ),
-                    const SizedBox(height: 5),
+                    /*const SizedBox(height: 5),
                     const Align(
                       alignment: Alignment.centerRight,
                       child: Text(
@@ -47,7 +47,8 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                    ),
+                    ),*/
+                    //megse latjak
                     const SizedBox(height: 25),
                     const Text("Melyik csapatnak?"),
                     const SizedBox(height: 10),
