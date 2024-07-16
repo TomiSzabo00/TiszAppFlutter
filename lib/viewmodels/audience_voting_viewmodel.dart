@@ -59,12 +59,19 @@ class AudienceVotingViewModel extends ChangeNotifier {
   }
 
   void subscribeToResults() {
-    database.child('$databaseNode/votes').onChildAdded.listen((event) {
-      final option = tryCast<String>(event.snapshot.value);
-      if (option == null) {
+    database.child('$databaseNode/votes').onValue.listen((event) {
+      results.clear();
+      if (event.snapshot.value == null) {
         return;
       }
-      results.update(option, (value) => value + 1, ifAbsent: () => 1);
+      final votes = tryCast<Map>(event.snapshot.value) ?? {};
+      if (votes.isEmpty) {
+        return;
+      }
+      for (var element in votes.entries) {
+        final option = element.value;
+        results.update(option, (value) => value + 1, ifAbsent: () => 1);
+      }
       results = Map.fromEntries(results.entries.toList()..sort((a, b) => b.value.compareTo(a.value)));
       notifyListeners();
     });

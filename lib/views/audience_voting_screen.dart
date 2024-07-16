@@ -103,15 +103,21 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Wrap(
               children: [
-                const Text('Legtöbb szavazatot kapott pár:'),
+                const Text(
+                  'Legtöbb szavazatot kapta:',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(width: 10),
                 Text(
                   viewModel.getWinner(),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ],
@@ -244,21 +250,11 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
             style: style,
           )
         : const SizedBox();
-    // return Padding(
-    //   padding: const EdgeInsets.only(top: 30),
-    //   child: SideTitleWidget(
-    //     axisSide: meta.axisSide,
-    //     space: 0,
-    //     angle: -1.2,
-    //     fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
-    //     child: text,
-    //   ),
-    // );
+
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 8,
       angle: -1.2,
-      fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: text,
     );
   }
