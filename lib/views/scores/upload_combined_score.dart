@@ -22,9 +22,9 @@ class UploadCombinedScoreScreenState extends State<UploadCombinedScoreScreen> {
           title: const Text("Pontozás"),
           bottom: TabBar(
             tabs: const [
-              Tab(text: "Sima"),
-              Tab(text: "Öcsi"),
-              Tab(text: "Stíluspont"),
+              Tab(icon: Icon(Icons.sailing), text: "Sima"),
+              Tab(icon: Icon(Icons.shield_moon), text: "Öcsi"),
+              Tab(icon: Icon(Icons.accessibility_new), text: "Stíílus"),
             ],
             indicatorColor: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
             labelColor: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
