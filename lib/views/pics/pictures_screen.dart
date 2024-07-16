@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -53,8 +51,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
         ),
         child: ListView.builder(
           itemCount: viewModel.filteredPictures.length + 1,
-          itemBuilder: (context, indexx) {
-            final index = max(indexx - 1, 0);
+          itemBuilder: (context, index) {
             if (viewModel.filteredPictures.isEmpty && viewModel.filters.isNotEmpty) {
               return const Padding(
                 padding: EdgeInsets.all(20),

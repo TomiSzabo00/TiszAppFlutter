@@ -60,7 +60,7 @@ class MainMenuViewModel extends ChangeNotifier {
         return;
       }
       userSubscription = database.child('users').onChildAdded.listen((event) {
-        if (event.snapshot.key != FirebaseAuth.instance.currentUser!.uid) {
+        if (event.snapshot.key != firebaseUser.uid) {
           return;
         }
         final snapshot = event.snapshot;

@@ -13,6 +13,8 @@ import 'package:tiszapp_flutter/services/database_service.dart';
 import 'package:tiszapp_flutter/services/date_service.dart';
 import 'package:tiszapp_flutter/services/notification_service.dart';
 import 'package:tiszapp_flutter/services/storage_service.dart';
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   final List<Picture> pictures = [];
@@ -22,10 +24,8 @@ class PicturesViewModel extends ChangeNotifier {
   UserData authorDetails = UserData.empty();
 
   final DatabaseReference picsRef = DatabaseService.database.child("pics");
-  final DatabaseReference reviewPicsRef =
-      DatabaseService.database.child("reviewPics");
-  final DatabaseReference reactionsRef =
-      DatabaseService.database.child("reactions");
+  final DatabaseReference reviewPicsRef = DatabaseService.database.child("reviewPics");
+  final DatabaseReference reactionsRef = DatabaseService.database.child("reactions");
 
   TextEditingController commentController = TextEditingController();
 
@@ -38,14 +38,15 @@ class PicturesViewModel extends ChangeNotifier {
         final snapshot = event.snapshot;
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
-        pictures.insert(0, pic);
-        notifyListeners();
+        if (pictures.firstWhereOrNull((element) => element.key == pic.key) == null) {
+          pictures.insert(0, pic);
+          notifyListeners();
+        }
       });
 
       var s2 = reviewPicsRef.onChildRemoved.listen((event) {
         final snapshot = event.snapshot;
-        final picIndex =
-            pictures.indexWhere((element) => element.key == snapshot.key);
+        final picIndex = pictures.indexWhere((element) => element.key == snapshot.key);
         if (picIndex != -1) {
           pictures.removeAt(picIndex);
           notifyListeners();
@@ -58,15 +59,16 @@ class PicturesViewModel extends ChangeNotifier {
         final snapshot = event.snapshot;
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
-        pictures.insert(0, pic);
-        pictures.sort((a, b) => b.key.compareTo(a.key));
-        notifyListeners();
+        if (pictures.firstWhereOrNull((element) => element.key == pic.key) == null) {
+          pictures.insert(0, pic);
+          pictures.sort((a, b) => b.key.compareTo(a.key));
+          notifyListeners();
+        }
       });
 
       var s2 = picsRef.onChildRemoved.listen((event) {
         final snapshot = event.snapshot;
-        final picIndex =
-            pictures.indexWhere((element) => element.key == snapshot.key);
+        final picIndex = pictures.indexWhere((element) => element.key == snapshot.key);
         if (picIndex != -1) {
           pictures.removeAt(picIndex);
           notifyListeners();
@@ -77,11 +79,9 @@ class PicturesViewModel extends ChangeNotifier {
         final snapshot = event.snapshot;
         final Map<dynamic, dynamic> value = tryCast<Map>(snapshot.value) ?? {};
         final pic = Picture.fromSnapshot(snapshot.key ?? 'no key', value);
-        final picIndex =
-            pictures.indexWhere((element) => element.key == snapshot.key);
+        final picIndex = pictures.indexWhere((element) => element.key == snapshot.key);
         if (picIndex != -1 && picIndex < pictures.length) {
-          pic.likes =
-              pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
+          pic.likes = pic.likes.orderByKeys(compareTo: (a, b) => b.compareTo(a));
           pictures[picIndex] = pic;
           notifyListeners();
         }
@@ -103,11 +103,8 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future<void> _uploadPicToReview(String title, List<String> urls) async {
     final key = DateService.dateInMillisAsString();
-    final pictureData = Picture(
-            urls: urls,
-            title: title,
-            author: FirebaseAuth.instance.currentUser!.uid)
-        .toJson();
+    final pictureData =
+        Picture(key: key, urls: urls, title: title, author: FirebaseAuth.instance.currentUser!.uid).toJson();
     await reviewPicsRef.child(key).set(pictureData);
   }
 
@@ -135,12 +132,12 @@ class PicturesViewModel extends ChangeNotifier {
     await StorageService.deleteImage(picture.urls);
   }
 
-  Future uploadPicture(List<File> image, String title, PictureCategory category,
-      bool isAdmin) async {
+  Future uploadPicture(List<File> image, String title, PictureCategory category, bool isAdmin) async {
     final urls = await StorageService.uploadImages(image, title);
     if (isAdmin) {
       await _uploadPicToAccepted(
         Picture(
+          key: DateService.dateInMillisAsString(),
           urls: urls,
           title: title,
           author: FirebaseAuth.instance.currentUser!.uid,
@@ -156,8 +153,7 @@ class PicturesViewModel extends ChangeNotifier {
     authorDetails = UserData.empty();
     if (isReview) {
       reviewPicsRef.child('${pic.key}/author').once().then((event) {
-        DatabaseService.getUserData(event.snapshot.value.toString())
-            .then((value) {
+        DatabaseService.getUserData(event.snapshot.value.toString()).then((value) {
           authorDetails = value;
           notifyListeners();
         });
@@ -165,8 +161,7 @@ class PicturesViewModel extends ChangeNotifier {
       reviewPicsRef.child(pic.key).onChildRemoved.listen((event) {});
     } else {
       picsRef.child('${pic.key}/author').onValue.listen((event) {
-        DatabaseService.getUserData(event.snapshot.value.toString())
-            .then((value) {
+        DatabaseService.getUserData(event.snapshot.value.toString()).then((value) {
           authorDetails = value;
           notifyListeners();
         });
@@ -192,8 +187,7 @@ class PicturesViewModel extends ChangeNotifier {
   Future<void> getLikesOnce(Picture pic) async {
     await picsRef.child(pic.key).child('likes').once().then((event) {
       pic.likes.clear();
-      final Map<dynamic, dynamic> value =
-          tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
+      final Map<dynamic, dynamic> value = tryCast<Map>(event.snapshot.value) ?? <dynamic, dynamic>{};
       value.forEach((key, value) {
         final valueMap = tryCast<Map>(value);
         if (valueMap != null) {
@@ -231,23 +225,15 @@ class PicturesViewModel extends ChangeNotifier {
 
   void toggleReactionTo(Picture picture, Function completion) {
     if (!checkIfAlreadyLiked(picture)) {
-      picsRef.child(picture.key).child('likes').push().set({
-        DateService.dateInMillisAsString():
-            FirebaseAuth.instance.currentUser!.uid
-      }).then((value) => completion());
+      picsRef.child(picture.key).child('likes').push().set(
+          {DateService.dateInMillisAsString(): FirebaseAuth.instance.currentUser!.uid}).then((value) => completion());
     } else {
       picsRef.child(picture.key).child('likes').once().then((value) {
-        final Map<dynamic, dynamic> likes =
-            tryCast<Map>(value.snapshot.value) ?? <dynamic, dynamic>{};
+        final Map<dynamic, dynamic> likes = tryCast<Map>(value.snapshot.value) ?? <dynamic, dynamic>{};
         likes.forEach((key, value) {
           final valueMap = tryCast<Map>(value) ?? {};
           if (valueMap.values.first == FirebaseAuth.instance.currentUser!.uid) {
-            picsRef
-                .child(picture.key)
-                .child('likes')
-                .child(key)
-                .remove()
-                .then((value) => completion());
+            picsRef.child(picture.key).child('likes').child(key).remove().then((value) => completion());
           }
         });
       });
@@ -258,17 +244,17 @@ class PicturesViewModel extends ChangeNotifier {
     if (checkIfAlreadyLiked(picture)) {
       return;
     }
-    picsRef.child(picture.key).child('likes').push().set({
-      DateService.dateInMillisAsString(): FirebaseAuth.instance.currentUser!.uid
-    });
+    picsRef
+        .child(picture.key)
+        .child('likes')
+        .push()
+        .set({DateService.dateInMillisAsString(): FirebaseAuth.instance.currentUser!.uid});
   }
 
   void choosePic(Picture picture) {
     picsRef.child(picture.key).child('isPicOfTheDay').set(true);
     NotificationService.getTokensAsMap().then((tokens) {
-      final token = tokens.keys.firstWhere(
-          (element) => tokens[element] == picture.author,
-          orElse: () => '');
+      final token = tokens.keys.firstWhere((element) => tokens[element] == picture.author, orElse: () => '');
       if (token.isNotEmpty) {
         NotificationService.sendNotification(
           [token],
@@ -351,10 +337,7 @@ class PicturesViewModel extends ChangeNotifier {
 
   static Future getMaxNumberOfImages(Function(int?) callback) async {
     final ref = DatabaseService.database;
-    ref
-        .child('_settings/max_number_of_images')
-        .once()
-        .then((DatabaseEvent event) {
+    ref.child('_settings/max_number_of_images').once().then((DatabaseEvent event) {
       callback(tryCast<int>(event.snapshot.value));
     });
   }
@@ -450,13 +433,11 @@ class PicturesViewModel extends ChangeNotifier {
 extension ExtendsionsOnMapDynamicDynamic<K, V> on Map<K, V> {
   /// Order by keys
   Map<K, V> orderByKeys({required int Function(K a, K b) compareTo}) {
-    return Map.fromEntries(
-        entries.toList()..sort((a, b) => compareTo(a.key, b.key)));
+    return Map.fromEntries(entries.toList()..sort((a, b) => compareTo(a.key, b.key)));
   }
 
   /// Order by values
   Map<K, V> orderByValues({required int Function(V a, V b) compareTo}) {
-    return Map.fromEntries(
-        entries.toList()..sort((a, b) => compareTo(a.value, b.value)));
+    return Map.fromEntries(entries.toList()..sort((a, b) => compareTo(a.value, b.value)));
   }
 }

@@ -13,7 +13,7 @@ class Picture {
   PictureCategory category = PictureCategory.general;
 
   Picture({
-    this.key = "0",
+    required this.key,
     required this.urls,
     required this.title,
     required this.author,
