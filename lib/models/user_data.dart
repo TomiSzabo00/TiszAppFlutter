@@ -19,6 +19,12 @@ class UserData {
   });
 
   factory UserData.fromSnapshot(DataSnapshot snapshot) {
+    String picUrl = tryCast<String>(
+            (tryCast<Map>(snapshot.value) ?? {})['profilePictureUrl']) ??
+        defaultUrl;
+    if (picUrl == '') {
+      picUrl = defaultUrl;
+    }
     return UserData(
       uid: tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['uid']) ?? "",
       name: tryCast<String>((tryCast<Map>(snapshot.value) ?? {})['userName']) ??
@@ -28,9 +34,7 @@ class UserData {
       teamNum:
           tryCast<int>((tryCast<Map>(snapshot.value) ?? {})['groupNumber']) ??
               -1,
-      profilePictureUrl: tryCast<String>(
-              (tryCast<Map>(snapshot.value) ?? {})['profilePictureUrl']) ??
-          defaultUrl,
+      profilePictureUrl: picUrl,
     );
   }
 
@@ -39,7 +43,7 @@ class UserData {
         'userName': name,
         'admin': isAdmin,
         'groupNumber': teamNum,
-        'profilePictureUrl': profilePictureUrl,
+        'profilePictureUrl': profilePictureUrl.isEmpty ? defaultUrl : profilePictureUrl,
       };
 
   factory UserData.empty() {

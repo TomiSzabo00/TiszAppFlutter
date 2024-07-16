@@ -45,8 +45,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           title: const Text('Profilom'),
         ),
         body: Container(
-          decoration:
-              BoxDecoration(color: isDarkTheme ? Colors.black : Colors.white),
+          decoration: BoxDecoration(color: isDarkTheme ? Colors.black : Colors.white),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,15 +57,12 @@ class ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.45,
+                      height: MediaQuery.of(context).size.width,
                       foregroundDecoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            isDarkTheme ? Colors.black : Colors.white
-                          ],
+                          colors: [Colors.transparent, isDarkTheme ? Colors.black : Colors.white],
                           stops: const [0.4, 0.9],
                         ),
                       ),
@@ -111,13 +107,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.only(right: 10),
                           child: ElevatedButton(
                             onPressed: () async {
-                              final pickedFile = await picker.pickImage(
-                                  source: ImageSource.gallery);
+                              final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                               if (pickedFile != null) {
                                 final croppedFile = await cropper.cropImage(
                                   sourcePath: pickedFile.path,
-                                  aspectRatio: const CropAspectRatio(
-                                      ratioX: 1, ratioY: 1),
+                                  aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
                                   compressQuality: 100,
                                   maxWidth: 700,
                                   maxHeight: 700,
@@ -125,8 +119,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                 );
                                 if (croppedFile != null) {
                                   showLoadingDialog();
-                                  await _viewModel.uploadProfilePicture(
-                                      File(croppedFile.path));
+                                  await _viewModel.uploadProfilePicture(File(croppedFile.path));
                                   setState(() {
                                     Navigator.of(context).pop();
                                   });
@@ -136,10 +129,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                             style: ElevatedButton.styleFrom(
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(15),
-                              backgroundColor:
-                                  isDarkTheme ? Colors.white : Colors.black,
-                              foregroundColor:
-                                  isDarkTheme ? Colors.black : Colors.white,
+                              backgroundColor: isDarkTheme ? Colors.white : Colors.black,
+                              foregroundColor: isDarkTheme ? Colors.black : Colors.white,
                             ),
                             child: Icon(
                               MdiIcons.imageEdit,
@@ -166,9 +157,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         'Kijelentkezés',
                         style: TextStyle(
-                            color: isDarkTheme
-                                ? CustomColor.btnTextNight
-                                : CustomColor.btnTextDay,
+                            color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
                             fontSize: 16,
                             fontWeight: FontWeight.w600),
                       ),
@@ -227,8 +216,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         builder: (context) {
           return AlertDialog(
             title: const Text('Biztosan törölni szeretnéd a fiókod?'),
-            content: const Text(
-                'Ezután nem fogsz tudni többet bejelentkezni a fiókoddal.'),
+            content: const Text('Ezután nem fogsz tudni többet bejelentkezni a fiókoddal.'),
             actions: [
               TextButton(
                   onPressed: () {
