@@ -55,11 +55,12 @@ class MainMenuViewModel extends ChangeNotifier {
 
     FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
       if (firebaseUser == null) {
+        user = UserData.empty();
         buttons.clear();
         userSubscription?.cancel();
         return;
       }
-      userSubscription = database.child('users').onChildAdded.listen((event) {
+      userSubscription = FirebaseDatabase.instance.ref().child('users').onChildAdded.listen((event) {
         if (event.snapshot.key != firebaseUser.uid) {
           return;
         }
