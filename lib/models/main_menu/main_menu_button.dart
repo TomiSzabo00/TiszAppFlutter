@@ -54,6 +54,8 @@ class MainMenuButton {
         return 'Sport Eredmények';
       case MainMenuButtonType.radioWishes:
         return 'Zenekérés';
+      case MainMenuButtonType.audienceVoting:
+        return 'Közönség-szavazás';
     }
   }
 
@@ -105,6 +107,8 @@ class MainMenuButton {
         return Icons.sports_score;
       case MainMenuButtonType.radioWishes:
         return Icons.radio;
+      case MainMenuButtonType.audienceVoting:
+        return Icons.groups_rounded;
     }
   }
 

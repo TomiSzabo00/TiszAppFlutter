@@ -179,7 +179,8 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.menuButtons),
       MainMenuButton(type: MainMenuButtonType.hazasParbaj),
       MainMenuButton(type: MainMenuButtonType.sports),
-      MainMenuButton(type: MainMenuButtonType.sportResult)
+      MainMenuButton(type: MainMenuButtonType.sportResult),
+      MainMenuButton(type: MainMenuButtonType.audienceVoting)
     ];
 
     buttons.sort((a, b) => order
@@ -237,6 +238,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sportResult;
     } else if (key == MainMenuButtonType.radioWishes.rawValue) {
       return MainMenuButtonType.radioWishes;
+    } else if (key == MainMenuButtonType.audienceVoting.rawValue) {
+      return MainMenuButtonType.audienceVoting;
     }
 
     return MainMenuButtonType.none;
@@ -421,6 +424,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => SongRequestScreen(
                   isAdmin: user.isAdmin,
                 ),
+              ),
+            );
+      case MainMenuButtonType.audienceVoting:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const SizedBox.shrink(),
               ),
             );
     }
