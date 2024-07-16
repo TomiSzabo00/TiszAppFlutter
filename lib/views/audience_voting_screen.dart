@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
@@ -85,7 +84,6 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _adminScreen(AudienceVotingViewModel viewModel) {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -103,7 +101,7 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                         fontSize: 16,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    _visibilityToggle(),
                     if (state == AudienceVotingState.voting) ...[
                       _resultsVisibleScreen(),
                       const SizedBox(height: 20),
@@ -122,6 +120,40 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _visibilityToggle() {
+    final viewModel = context.watch<AudienceVotingViewModel>();
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: StreamBuilder(
+        stream: viewModel.isResultVisible(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final bool isResultVisible = tryCast<bool>(snapshot.data) ?? false;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Az eredményeket lássák a diákok?',
+                  style: TextStyle(fontSize: 16),
+                ),
+                Switch(
+                  value: isResultVisible,
+                  activeColor: Colors.green,
+                  onChanged: (value) {
+                    viewModel.setResultVisibility(value);
+                  },
+                ),
+              ],
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }

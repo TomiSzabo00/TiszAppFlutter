@@ -127,4 +127,8 @@ class AudienceVotingViewModel extends ChangeNotifier {
     database.child('$databaseNode/voting_options').push().set(option);
     newPairTextController.clear();
   }
+
+  void setResultVisibility(bool visible) {
+    database.child('$databaseNode/result_showing').set(visible);
+  }
 }
