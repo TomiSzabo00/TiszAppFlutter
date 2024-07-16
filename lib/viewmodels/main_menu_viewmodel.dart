@@ -87,7 +87,7 @@ class MainMenuViewModel extends ChangeNotifier {
         final buttonType = _getButtonFromKey(key);
         final visibility = _getVisibilityFromKey(value);
         final button = MainMenuButton(type: buttonType, visibilityType: visibility);
-        if (user.isAdmin || button.isVisible) {
+        if ((user.isAdmin && button.visibilityType != VisibilityType.invisibleForAdmins) || button.isVisible) {
           if (!buttons.any((element) => element.title == button.title)) {
             buttons.add(button);
           }
@@ -108,7 +108,7 @@ class MainMenuViewModel extends ChangeNotifier {
         final buttonType = _getButtonFromKey(key);
         final visibility = _getVisibilityFromKey(value);
         final button = MainMenuButton(type: buttonType, visibilityType: visibility);
-        if (user.isAdmin || button.isVisible) {
+        if ((user.isAdmin && button.visibilityType != VisibilityType.invisibleForAdmins) || button.isVisible) {
           if (!buttons.any((element) => element.title == button.title)) {
             buttons.add(button);
           }
@@ -144,7 +144,9 @@ class MainMenuViewModel extends ChangeNotifier {
       final visibility = _getVisibilityFromKey(value);
       final button = MainMenuButton(type: buttonType, visibilityType: visibility);
       //the last part is for the reviewers to see the buttons no matter the settings
-      if (user.isAdmin || button.isVisible || user.name == "Test User") {
+      if ((user.isAdmin && button.visibilityType != VisibilityType.invisibleForAdmins) ||
+          button.isVisible ||
+          user.name == "Test User") {
         if (!buttons.any((element) => element.title == button.title)) {
           buttons.add(button);
         }
@@ -251,6 +253,8 @@ class MainMenuViewModel extends ChangeNotifier {
         return VisibilityType.visible;
       case 2:
         return VisibilityType.never;
+      case 3:
+        return VisibilityType.invisibleForAdmins;
       default:
         return VisibilityType.hidden;
     }
