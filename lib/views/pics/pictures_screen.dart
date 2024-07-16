@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,9 +28,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
   void initState() {
     super.initState();
     widget.viewModel = Provider.of<PicturesViewModel>(context, listen: false);
-    widget.viewModel!.getImages(widget.isReview);
-    widget.viewModel!.getNumberOfTeams();
-    widget.viewModel!.filterPictures();
+    widget.viewModel?.getImages(widget.isReview);
+    widget.viewModel?.getNumberOfTeams();
+    widget.viewModel?.filterPictures();
   }
 
   @override
@@ -40,26 +42,49 @@ class _PicturesScreenState extends State<PicturesScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<PicturesViewModel>();
-    bool isDarkTheme =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    bool isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: widget.isReview
-            ? const Text('Képek ellenőrzése')
-            : const Text('Képek'),
+        title: widget.isReview ? const Text('Képek ellenőrzése') : const Text('Képek'),
       ),
       body: Container(
         decoration: BoxDecoration(
           color: isDarkTheme ? Colors.black : Colors.white,
         ),
         child: ListView.builder(
-          itemCount: viewModel.filteredPictures.length,
-          itemBuilder: (context, index) {
-            return PictureItem(
-              pic: viewModel.filteredPictures[index],
-              isReview: widget.isReview,
-              isAdmin: widget.isAdmin,
-            );
+          itemCount: viewModel.filteredPictures.length + 1,
+          itemBuilder: (context, indexx) {
+            final index = max(indexx - 1, 0);
+            if (viewModel.filteredPictures.isEmpty && viewModel.filters.isNotEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'Nincs megjeleníthető kép, állítsd át a szűrőket!',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              );
+            } else if (viewModel.filteredPictures.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'Nincs még feltöltött kép.',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              );
+            }
+            if (viewModel.filteredPictures.length > index) {
+              return PictureItem(
+                pic: viewModel.filteredPictures[index],
+                isReview: widget.isReview,
+                isAdmin: widget.isAdmin,
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
           },
         ),
       ),
@@ -76,9 +101,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
               child: Container(
                 padding: const EdgeInsets.all(1),
                 decoration: BoxDecoration(
-                  color: viewModel.filters.isEmpty
-                      ? Colors.transparent
-                      : Colors.red,
+                  color: viewModel.filters.isEmpty ? Colors.transparent : Colors.red,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 constraints: const BoxConstraints(
@@ -122,15 +145,12 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  children: List.generate(widget.viewModel?.numberOfTeams ?? 0,
-                          (index) {
+                  children: List.generate(widget.viewModel?.numberOfTeams ?? 0, (index) {
                         return CheckboxListTile(
                           title: Text('${index + 1}. csapat'),
-                          value: widget.viewModel!.filters
-                              .contains(Filter(teamNum: index + 1)),
+                          value: widget.viewModel?.filters.contains(Filter(teamNum: index + 1)),
                           onChanged: (value) {
-                            widget.viewModel!
-                                .toggleTeamFilter(teamNum: index + 1);
+                            widget.viewModel?.toggleTeamFilter(teamNum: index + 1);
                             setState(() {});
                           },
                         );
@@ -138,10 +158,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       [
                         CheckboxListTile(
                           title: const Text('Szervező'),
-                          value: widget.viewModel!.filters
-                              .contains(Filter(teamNum: 0)),
+                          value: widget.viewModel?.filters.contains(Filter(teamNum: 0)),
                           onChanged: (value) {
-                            widget.viewModel!.toggleTeamFilter(teamNum: 0);
+                            widget.viewModel?.toggleTeamFilter(teamNum: 0);
                             setState(() {});
                           },
                         ),
@@ -159,11 +178,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     (index) {
                       return CheckboxListTile(
                         title: Text(PictureCategory.values[index].displayName),
-                        value: widget.viewModel!.filters.contains(
-                            Filter(category: PictureCategory.values[index])),
+                        value: widget.viewModel?.filters.contains(Filter(category: PictureCategory.values[index])),
                         onChanged: (value) {
-                          widget.viewModel!.toggleCategoryFilter(
-                              category: PictureCategory.values[index]);
+                          widget.viewModel?.toggleCategoryFilter(category: PictureCategory.values[index]);
                           setState(() {});
                         },
                       );
@@ -180,11 +197,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     children: List.generate(DateFilter.values.length, (index) {
                       return CheckboxListTile(
                         title: Text(DateFilter.values[index].displayName),
-                        value: widget.viewModel!.filters
-                            .contains(Filter(date: DateFilter.values[index])),
+                        value: widget.viewModel?.filters.contains(Filter(date: DateFilter.values[index])),
                         onChanged: (value) {
-                          widget.viewModel!
-                              .toggleDateFilter(date: DateFilter.values[index]);
+                          widget.viewModel?.toggleDateFilter(date: DateFilter.values[index]);
                           setState(() {});
                         },
                       );
@@ -199,21 +214,17 @@ class _PicturesScreenState extends State<PicturesScreen> {
                   children: [
                     CheckboxListTile(
                       title: const Text('Csak nap képei'),
-                      value: widget.viewModel!.filters
-                          .contains(Filter(isPicOfTheDay: true)),
+                      value: widget.viewModel?.filters.contains(Filter(isPicOfTheDay: true)),
                       onChanged: (value) {
-                        widget.viewModel!
-                            .toggleIsPicOfTheDayFilter(isPicOfTheDay: true);
+                        widget.viewModel?.toggleIsPicOfTheDayFilter(isPicOfTheDay: true);
                         setState(() {});
                       },
                     ),
                     CheckboxListTile(
                       title: const Text('Csak nem nap képei'),
-                      value: widget.viewModel!.filters
-                          .contains(Filter(isPicOfTheDay: false)),
+                      value: widget.viewModel?.filters.contains(Filter(isPicOfTheDay: false)),
                       onChanged: (value) {
-                        widget.viewModel!
-                            .toggleIsPicOfTheDayFilter(isPicOfTheDay: false);
+                        widget.viewModel?.toggleIsPicOfTheDayFilter(isPicOfTheDay: false);
                         setState(() {});
                       },
                     ),
@@ -224,6 +235,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
           },
         );
       },
-    ).whenComplete(() => widget.viewModel!.filterPictures());
+    ).whenComplete(() {
+      widget.viewModel?.filterPictures();
+      setState(() {});
+    });
   }
 }
