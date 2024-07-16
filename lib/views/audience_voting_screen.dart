@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/viewmodels/audience_voting_viewmodel.dart';
+import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
 class AudienceVotingScreen extends StatefulWidget {
   const AudienceVotingScreen({
@@ -91,6 +93,7 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _votingScreen(AudienceVotingViewModel viewModel) {
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -104,6 +107,7 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
               if (snapshot.hasData) {
                 final List<String> options = snapshot.data ?? [];
                 if (options.isEmpty) {
+                  viewModel.selectOption('');
                   return const Center(child: Text('Nincsenek lehetőségek. :('));
                 }
                 return SingleChildScrollView(
@@ -126,6 +130,30 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                 child: CircularProgressIndicator(),
               );
             },
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Button3D(
+                onPressed: () {
+                  if (!viewModel.vote()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Válassz egy párost!'),
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  'Szavazás',
+                  style: TextStyle(
+                      color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
           ),
         ],
       ),
