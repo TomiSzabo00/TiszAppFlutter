@@ -22,10 +22,6 @@ class MainMenuButton {
         return 'AV Kvíz';
       case MainMenuButtonType.schedule:
         return 'Napirend';
-      case MainMenuButtonType.scoreUpload:
-        return 'Pontok feltöltése';
-      case MainMenuButtonType.ocsiScoreUpload:
-        return 'Öcsi pontozás';
       case MainMenuButtonType.combinedScoreUpload:
         return 'Csapatok pontozása';
       case MainMenuButtonType.scores:
@@ -68,25 +64,21 @@ class MainMenuButton {
       case MainMenuButtonType.nappaliPortya:
         return Icons.holiday_village_outlined;
       case MainMenuButtonType.pictureUpload:
-        return Icons.add;
+        return Icons.upload_rounded;
       case MainMenuButtonType.pictures:
         return Icons.image;
       case MainMenuButtonType.quizQuick:
         return Icons.front_hand;
       case MainMenuButtonType.schedule:
         return Icons.calendar_today;
-      case MainMenuButtonType.scoreUpload:
-        return Icons.add;
-      case MainMenuButtonType.ocsiScoreUpload:
-        return Icons.add;
       case MainMenuButtonType.combinedScoreUpload:
-        return Icons.add;
+        return Icons.control_point_sharp;
       case MainMenuButtonType.scores:
         return Icons.format_list_numbered;
       case MainMenuButtonType.songs:
         return Icons.music_note;
       case MainMenuButtonType.textUpload:
-        return Icons.add;
+        return Icons.upload_rounded;
       case MainMenuButtonType.texts:
         return Icons.text_fields;
       case MainMenuButtonType.voting:
