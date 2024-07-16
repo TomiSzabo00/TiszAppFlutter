@@ -38,7 +38,7 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                       placeholder: "Program neve",
                       icon: const Icon(Icons.edit),
                     ),
-                    const SizedBox(height: 5),
+                    /*const SizedBox(height: 5),
                     const Align(
                       alignment: Alignment.centerRight,
                       child: Text(
@@ -47,7 +47,8 @@ class UploadScoreScreenState extends State<UploadScoreScreen> {
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                    ),
+                    ),*/
+                    //megse latjak
                     const SizedBox(height: 25),
                     const Text("Hány pontot értek el a csapatok?"),
                     const SizedBox(height: 10),
