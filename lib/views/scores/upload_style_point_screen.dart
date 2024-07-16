@@ -18,7 +18,8 @@ class UploadStylePointScreen extends StatefulWidget {
 class UploadStylePointScreenState extends State<UploadStylePointScreen> {
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     final viewModel = context.watch<StylePointsViewModel>();
     return Scaffold(
       body: FutureBuilder(
@@ -51,7 +52,8 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
                                   contentPadding: EdgeInsets.zero,
                                   onChanged: (num? value) {
                                     setState(() {
-                                      viewModel.curTeamSelected = value!.toInt();
+                                      viewModel.curTeamSelected =
+                                          value!.toInt();
                                       HapticFeedback.lightImpact();
                                     });
                                   },
@@ -109,17 +111,23 @@ class UploadStylePointScreenState extends State<UploadStylePointScreen> {
                           onPressed: () async {
                             final result = await viewModel.uploadScore();
                             if (result == UploadResult.noTeamSelected) {
-                              _showDialog(context, message: "Nincs kiválasztva csapat!");
+                              _showDialog(context,
+                                  message: "Nincs kiválasztva csapat!");
                             } else if (result == UploadResult.limitReached) {
-                              _showDialog(context, message: "Ma már nem adhatsz több stíluspontot ennek a csapatnak!");
+                              _showDialog(context,
+                                  message:
+                                      "Ma már nem adhatsz több stíluspontot ennek a csapatnak!");
                             } else {
-                              _showDialog(context, message: "Sikeres feltöltés!");
+                              _showDialog(context,
+                                  message: "Sikeres feltöltés!");
                             }
                           },
                           child: Text(
                             "Feltöltés",
                             style: TextStyle(
-                              color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                              color: isDarkTheme
+                                  ? CustomColor.btnTextNight
+                                  : CustomColor.btnTextDay,
                               fontSize: 18,
                             ),
                           ),

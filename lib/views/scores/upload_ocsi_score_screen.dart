@@ -38,6 +38,16 @@ class UploadOcsiScoreScreenState extends State<UploadOcsiScoreScreen> {
                       placeholder: "Öcsi",
                       icon: const Icon(Icons.edit),
                     ),
+                    const SizedBox(height: 5),
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "Ezt a táborozók is látni fogják",
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 25),
                     const Text("Melyik csapatnak?"),
                     const SizedBox(height: 10),
