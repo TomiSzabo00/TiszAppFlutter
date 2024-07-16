@@ -36,6 +36,8 @@
 	<string>Lehetőséged lesz lementeni képeket a telefonodra, ezért szükséges megadnod ezt az engedélyt az alkalmazásnak.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Ha képeket szeretnél feltölteni az alkalmazásba, akkor meg kell adnond ezt az engedélyt.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Kérlek engedélyezd a mikrofon használatát, hogy hangüzeneteket tudj küldeni a csapatodnak.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
