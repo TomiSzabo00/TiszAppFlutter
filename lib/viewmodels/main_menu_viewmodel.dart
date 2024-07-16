@@ -48,11 +48,6 @@ class MainMenuViewModel extends ChangeNotifier {
   StreamSubscription<DatabaseEvent>? userSubscription;
 
   void subscribeToButtonEvents() async {
-    if (user.uid.isEmpty) {
-      user = await DatabaseService.getUserData(FirebaseAuth.instance.currentUser!.uid);
-      notifyListeners();
-    }
-
     FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
       if (firebaseUser == null) {
         user = UserData.empty();
@@ -60,7 +55,7 @@ class MainMenuViewModel extends ChangeNotifier {
         userSubscription?.cancel();
         return;
       }
-      userSubscription = FirebaseDatabase.instance.ref().child('users').onChildAdded.listen((event) {
+      userSubscription = FirebaseDatabase.instance.ref().child('users').child(firebaseUser.uid).onValue.listen((event) {
         if (event.snapshot.key != firebaseUser.uid) {
           return;
         }
@@ -73,6 +68,7 @@ class MainMenuViewModel extends ChangeNotifier {
         });
         notifyListeners();
       });
+
       FirebaseMessaging.instance.getToken().then((token) {
         if (FirebaseAuth.instance.currentUser != null && token != null) {
           database.child("notification_tokens").child(FirebaseAuth.instance.currentUser!.uid).set(token);
