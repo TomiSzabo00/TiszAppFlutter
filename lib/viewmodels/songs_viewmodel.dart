@@ -11,6 +11,22 @@ class SongsViewModel with ChangeNotifier {
   SongsViewModel();
 
   Future<void> loadSongs() async {
+    await loadOfflineSongs();
+
+    isLoading = true;
+    notifyListeners();
+    
+    final onlineSongs = await StorageService.getSongs();
+    songs.addAll(onlineSongs);
+    filteredSongs.addAll(onlineSongs);
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> loadOfflineSongs() async {
+    isLoading = true;
+    notifyListeners();
+
     final data = await rootBundle.loadString('assets/metadata/names.txt');
     List<String> lines = data.split('\n');
     for (String line in lines) {
@@ -21,8 +37,7 @@ class SongsViewModel with ChangeNotifier {
       );
       songs.add(currSong);
     }
-    final onlineSongs = await StorageService.getSongs();
-    songs.addAll(onlineSongs);
+    
     filteredSongs.addAll(songs);
     isLoading = false;
     notifyListeners();
