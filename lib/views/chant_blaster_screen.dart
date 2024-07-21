@@ -29,9 +29,9 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
 
   @override
   void dispose() {
-    context.read<ChantBlasterViewModel>().removeListener(_syncAudio);
     _audioPlayer.stop();
     _audioPlayer.dispose();
+    context.read<ChantBlasterViewModel>().removeListener(_syncAudio);
     super.dispose();
   }
 
@@ -88,8 +88,11 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
               Button3D(
                   height: 200,
                   width: 200,
+                  isDisabled: !widget.isAdmin,
                   onPressed: () {
-                    viewModel.startChant("assets/audio/wimm.mp3");
+                    if (widget.isAdmin) {
+                      viewModel.startChant("assets/audio/wimm.mp3");
+                    }
                   },
                   child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -100,18 +103,21 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                      "Chant!",
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ])),
+                          "Chant!",
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ])),
             if (viewModel.isPlaying)
               Button3D(
                   height: 200,
                   width: 200,
+                  isDisabled: !widget.isAdmin,
                   onPressed: () {
-                    viewModel.stopChant();
+                    if (widget.isAdmin) {
+                      viewModel.stopChant();
+                    }
                   },
                   child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,

@@ -66,15 +66,13 @@ class MainMenuButton {
       case MainMenuButtonType.nappaliPortya:
         return Icons.holiday_village_outlined;
       case MainMenuButtonType.pictureUpload:
-        return Icons.add;
+        return Icons.upload_rounded;
       case MainMenuButtonType.pictures:
         return Icons.image;
       case MainMenuButtonType.quizQuick:
         return Icons.front_hand;
       case MainMenuButtonType.schedule:
         return Icons.calendar_today;
-      case MainMenuButtonType.scoreUpload:
-        return Icons.add;
       case MainMenuButtonType.scores:
         return Icons.format_list_numbered;
       case MainMenuButtonType.songs:
@@ -105,6 +103,8 @@ class MainMenuButton {
         return Icons.sports_score;
       case MainMenuButtonType.chantBlaster:
         return Icons.volume_up;
+      case MainMenuButtonType.scoreUpload:
+        return Icons.upload_rounded;
     }
   }
 
