@@ -109,6 +109,8 @@ class MainMenuButton {
         return Icons.radio;
       case MainMenuButtonType.chantBlaster:
         return Icons.volume_up;
+      case MainMenuButtonType.scoreUpload:
+        return Icons.upload_rounded;
     }
   }
 

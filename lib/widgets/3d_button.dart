@@ -27,6 +27,7 @@ class Button3D extends StatefulWidget {
   final StyleOf3dButton style;
   final double width;
   final double height;
+  final bool isDisabled;
 
   const Button3D({
     super.key,
@@ -35,6 +36,7 @@ class Button3D extends StatefulWidget {
     this.style = const StyleOf3dButton(),
     this.width = 120,
     this.height = 60,
+    this.isDisabled = false,
   });
 
   @override
@@ -56,8 +58,12 @@ class Button3DState extends State<Button3D> {
           boxShadow: [
             BoxShadow(
               color: isDarkTheme
-                  ? CustomColor.btnSideNight
-                  : CustomColor.btnSideDay,
+                  ? widget.isDisabled
+                      ? CustomColor.btnSideNight.withOpacity(0.7)
+                      : CustomColor.btnSideNight
+                  : widget.isDisabled
+                      ? CustomColor.btnSideDay.withOpacity(0.7)
+                      : CustomColor.btnSideDay,
               //offset: const Offset(2, 0),
             )
           ],

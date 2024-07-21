@@ -58,6 +58,8 @@ class ChantBlasterViewModel with ChangeNotifier {
       await _chantRef.update({'played': elapsed});
       await Future.delayed(const Duration(seconds: 1));
     }
+
+    isOwner = false;
   }
 
   Future<void> stopChant() async {
