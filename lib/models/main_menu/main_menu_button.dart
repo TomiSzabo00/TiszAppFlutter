@@ -53,9 +53,9 @@ class MainMenuButton {
       case MainMenuButtonType.sportResult:
         return 'Sport Eredmények';
       case MainMenuButtonType.chantBlaster:
-        return 'Zenekérés';
         return 'Chant Blaster';
-      case MainMenuButtonType.radioWishes:
+      case MainMenuButton.radioWishes:
+        return 'Zenekérés';
     }
   }
 

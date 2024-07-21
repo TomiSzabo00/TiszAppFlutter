@@ -30,7 +30,6 @@ import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
-import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/upload_score_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
 import 'package:tiszapp_flutter/views/voting_screen.dart';
@@ -246,6 +245,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sports;
     } else if (key == MainMenuButtonType.sportResult.rawValue) {
       return MainMenuButtonType.sportResult;
+    } else if (key == MainMenuButtonType.chantBlaster.rawValue) {
+      return MainMenuButtonType.chantBlaster;
     }
 */
     return MainMenuButtonType.none;
@@ -436,6 +437,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => SongRequestScreen(
                   isAdmin: user.isAdmin,
                 ),
+              ),
+            );
+      case MainMenuButtonType.chantBlaster:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ChantBlasterScreen(isAdmin: user.isAdmin),
               ),
             );
     }
