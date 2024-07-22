@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/views/songs_summary_screen.dart';
 
 class SongsScreen extends StatefulWidget {
-  const SongsScreen({Key? key}) : super(key: key);
+  const SongsScreen({
+    super.key,
+    required this.isOffline,
+  });
+
+  final bool isOffline;
 
   @override
   SongsScreenState createState() => SongsScreenState();
 }
 
-class SongsScreenState extends State<SongsScreen>
-    with TickerProviderStateMixin {
+class SongsScreenState extends State<SongsScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
@@ -20,15 +24,12 @@ class SongsScreenState extends State<SongsScreen>
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: isDarkTheme
-                ? const AssetImage("images/bg2_night.png")
-                : const AssetImage("images/bg2_day.png"),
+            image: isDarkTheme ? const AssetImage("images/bg2_night.png") : const AssetImage("images/bg2_day.png"),
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.7), BlendMode.dstATop),
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.dstATop),
           ),
         ),
-        child: const SongsSummaryScreen(),
+        child: SongsSummaryScreen(isOffline: widget.isOffline),
       ),
     );
   }

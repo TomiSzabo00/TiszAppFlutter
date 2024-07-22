@@ -342,7 +342,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.songs:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const SongsScreen(),
+                builder: (context) => const SongsScreen(isOffline: false),
               ),
             );
       case MainMenuButtonType.textUpload:

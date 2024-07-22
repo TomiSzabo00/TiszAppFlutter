@@ -4,7 +4,12 @@ import 'package:tiszapp_flutter/widgets/songs_list.dart';
 import '../viewmodels/songs_viewmodel.dart';
 
 class SongsSummaryScreen extends StatefulWidget {
-  const SongsSummaryScreen({Key? key}) : super(key: key);
+  const SongsSummaryScreen({
+    super.key,
+    required this.isOffline,
+  });
+
+  final bool isOffline;
 
   @override
   SongsSummaryScreenState createState() => SongsSummaryScreenState();
@@ -14,7 +19,13 @@ class SongsSummaryScreenState extends State<SongsSummaryScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<SongsViewModel>(context, listen: false).loadSongs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.isOffline) {
+      Provider.of<SongsViewModel>(context, listen: false).loadOfflineSongs();
+    } else {
+      Provider.of<SongsViewModel>(context, listen: false).loadSongs();
+    }
+    });
   }
 
   @override
