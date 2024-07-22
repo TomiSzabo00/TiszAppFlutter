@@ -22,6 +22,7 @@ enum MainMenuButtonType {
   sports,
   sportResult,
   radioWishes,
+  audienceVoting,
 }
 
 extension RawValuesExtension on MainMenuButtonType {
@@ -48,6 +49,7 @@ extension RawValuesExtension on MainMenuButtonType {
     MainMenuButtonType.sports: 'sports',
     MainMenuButtonType.sportResult: 'sports_result',
     MainMenuButtonType.radioWishes: 'song_requests',
+    MainMenuButtonType.audienceVoting: 'audience_voting',
   };
 
   String get rawValue => rawValues[this] ?? 'error';

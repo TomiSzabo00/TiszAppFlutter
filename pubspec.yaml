@@ -82,6 +82,7 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   image_cropper: ^5.0.0
   photo_manager_image_provider: ^2.1.1
+  fl_chart: ^0.68.0
   connectivity_plus: ^6.0.3
 
 dev_dependencies:

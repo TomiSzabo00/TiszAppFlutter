@@ -12,6 +12,7 @@ import 'package:tiszapp_flutter/models/main_menu/main_menu_button_type.dart';
 import 'package:tiszapp_flutter/models/main_menu/visibility_type.dart';
 import 'package:tiszapp_flutter/models/user_data.dart';
 import 'package:tiszapp_flutter/services/database_service.dart';
+import 'package:tiszapp_flutter/views/audience_voting_screen.dart';
 import 'package:tiszapp_flutter/views/ejjeli_portya_admin_screen.dart';
 import 'package:tiszapp_flutter/views/ejjeli_portya_screen.dart';
 import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
@@ -179,7 +180,8 @@ class MainMenuViewModel extends ChangeNotifier {
       MainMenuButton(type: MainMenuButtonType.menuButtons),
       MainMenuButton(type: MainMenuButtonType.hazasParbaj),
       MainMenuButton(type: MainMenuButtonType.sports),
-      MainMenuButton(type: MainMenuButtonType.sportResult)
+      MainMenuButton(type: MainMenuButtonType.sportResult),
+      MainMenuButton(type: MainMenuButtonType.audienceVoting)
     ];
 
     buttons.sort((a, b) => order
@@ -237,6 +239,8 @@ class MainMenuViewModel extends ChangeNotifier {
       return MainMenuButtonType.sportResult;
     } else if (key == MainMenuButtonType.radioWishes.rawValue) {
       return MainMenuButtonType.radioWishes;
+    } else if (key == MainMenuButtonType.audienceVoting.rawValue) {
+      return MainMenuButtonType.audienceVoting;
     }
 
     return MainMenuButtonType.none;
@@ -421,6 +425,12 @@ class MainMenuViewModel extends ChangeNotifier {
                 builder: (context) => SongRequestScreen(
                   isAdmin: user.isAdmin,
                 ),
+              ),
+            );
+      case MainMenuButtonType.audienceVoting:
+        return () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AudienceVotingScreen(isAdmin: user.isAdmin),
               ),
             );
     }

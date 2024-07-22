@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/viewmodels/audience_voting_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/ejjeli_portya_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/hazas_parbaj_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart';
@@ -76,6 +77,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => SongRequestViewModel()),
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
       ChangeNotifierProvider(create: (_) => StylePointsViewModel()),
+      ChangeNotifierProvider(create: (_) => AudienceVotingViewModel()),
     ], child: const MyApp()),
   );
 }
