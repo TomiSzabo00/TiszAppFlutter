@@ -7,7 +7,7 @@ import 'package:tiszapp_flutter/widgets/3d_button.dart';
 
 // ignore: must_be_immutable
 class VotingScreen extends StatefulWidget {
-  VotingScreen({Key? key}) : super(key: key);
+  VotingScreen({super.key});
 
   bool isDarkTheme = false;
 
@@ -27,9 +27,6 @@ class VotingScreenState extends State<VotingScreen> {
     widget.isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final viewModel = context.watch<VotingViewmodel>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Szavazás'),
-      ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: (() {

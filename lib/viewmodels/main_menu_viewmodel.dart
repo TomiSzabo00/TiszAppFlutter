@@ -32,7 +32,7 @@ import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
-import 'package:tiszapp_flutter/views/voting_screen.dart';
+import 'package:tiszapp_flutter/views/ordering/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
