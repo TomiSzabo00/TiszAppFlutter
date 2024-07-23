@@ -39,7 +39,7 @@ class OrderingByPointsScreenState extends State<OrderingByPointsScreen> {
               case VotingState.inProgress:
                 return _votingInProgress(viewModel);
               case VotingState.finished:
-                return _finishedScreen();
+                return _finishedScreen(viewModel);
               default:
                 return _notStartedScreen(viewModel);
             }
@@ -59,6 +59,7 @@ class OrderingByPointsScreenState extends State<OrderingByPointsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 100),
           const SizedBox(width: double.infinity),
           const Text("Jelenleg nincs aktív skálázás",
               style: TextStyle(
@@ -220,9 +221,114 @@ class OrderingByPointsScreenState extends State<OrderingByPointsScreen> {
     );
   }
 
-  Widget _finishedScreen() {
-    return const Center(
-      child: Text("Pontozás befejeződött"),
+  Widget _finishedScreen(OrderingByPointsViewModel viewModel) {
+    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return FutureBuilder(
+      future: viewModel.summarizeScores(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final data = snapshot.data as List<OrderElement>;
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('(A skála 1 - ${viewModel.maxPoints}-ig ment)'),
+                  const SizedBox(height: 20),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Csapat",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      // SizedBox(width: 50),
+                      Text(
+                        "Sum",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      // SizedBox(width: 30),
+                      Text(
+                        "Avg",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: data
+                            .map((e) => Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(e.name),
+                                ))
+                            .toList(),
+                      ),
+                      // const SizedBox(width: 70),
+                      Column(
+                        children: data
+                            .map(
+                              (e) => Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(e.sumPoints.toString()),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      // const SizedBox(width: 60),
+                      Column(
+                        children: data
+                            .map(
+                              (e) => Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(e.averagePoints.toString()),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Button3D(
+                    onPressed: () {
+                      _showAreYouSureDeleteDialog(context);
+                    },
+                    width: 150,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          "Szavarzás törlése",
+                          style: TextStyle(
+                            color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 
@@ -245,6 +351,34 @@ class OrderingByPointsScreenState extends State<OrderingByPointsScreen> {
                 Navigator.of(context).pop();
                 final viewModel = context.read<OrderingByPointsViewModel>();
                 viewModel.finishVoting();
+              },
+              child: const Text("Igen"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showAreYouSureDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Biztosan törölni szeretnéd a szavazást?"),
+          content: const Text("A szavazás törlése után nem lehet visszaállítani."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Mégsem"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                final viewModel = context.read<OrderingByPointsViewModel>();
+                viewModel.endVoting();
               },
               child: const Text("Igen"),
             ),
