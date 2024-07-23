@@ -24,7 +24,7 @@ class UploadCombinedScoreScreenState extends State<UploadCombinedScoreScreen> {
             tabs: const [
               Tab(icon: Icon(Icons.sailing), text: "Sima"),
               Tab(icon: Icon(Icons.shield_moon), text: "Öcsi"),
-              Tab(icon: Icon(Icons.accessibility_new), text: "Stíílus"),
+              Tab(icon: Icon(Icons.accessibility_new), text: "Stílus"),
             ],
             indicatorColor: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
             labelColor: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
