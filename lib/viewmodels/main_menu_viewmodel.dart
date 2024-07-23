@@ -19,6 +19,7 @@ import 'package:tiszapp_flutter/views/hazas_parbaj_screen.dart';
 import 'package:tiszapp_flutter/views/karoke/karaoke_basic_screen.dart';
 import 'package:tiszapp_flutter/views/menu_buttons_screen.dart';
 import 'package:tiszapp_flutter/views/notification_screen.dart';
+import 'package:tiszapp_flutter/views/ordering/ordering_summary_screen.dart';
 import 'package:tiszapp_flutter/views/pics/pictures_screen.dart';
 import 'package:tiszapp_flutter/views/pics/select_pictures_screen.dart';
 import 'package:tiszapp_flutter/views/quiz/quiz_screen.dart';
@@ -32,7 +33,6 @@ import 'package:tiszapp_flutter/views/sports_result_view_screen.dart';
 import 'package:tiszapp_flutter/views/sports_screen.dart';
 import 'package:tiszapp_flutter/views/texts_screen.dart';
 import 'package:tiszapp_flutter/views/upload_texts_screen.dart';
-import 'package:tiszapp_flutter/views/ordering/voting_screen.dart';
 import 'package:tiszapp_flutter/views/wordle_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -364,7 +364,7 @@ class MainMenuViewModel extends ChangeNotifier {
       case MainMenuButtonType.voting:
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => VotingScreen(),
+                builder: (context) => const OrderingSummaryScreen(),
               ),
             );
       case MainMenuButtonType.wordle:

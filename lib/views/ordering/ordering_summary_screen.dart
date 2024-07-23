@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
+import 'package:tiszapp_flutter/views/ordering/ordering_by_points_screen.dart';
 import 'package:tiszapp_flutter/views/ordering/voting_screen.dart';
 
 class OrderingSummaryScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class OrderingSummaryScreenState extends State<OrderingSummaryScreen> {
   Widget build(BuildContext context) {
     bool isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Szavazás"),
@@ -31,7 +32,7 @@ class OrderingSummaryScreenState extends State<OrderingSummaryScreen> {
         body: TabBarView(
           children: [
             VotingScreen(),
-            const OrderingSummaryScreen(),
+            const OrderingByPointsScreen(),
           ],
         ),
       ),

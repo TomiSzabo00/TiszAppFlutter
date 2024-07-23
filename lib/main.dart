@@ -11,6 +11,7 @@ import 'package:tiszapp_flutter/viewmodels/karaoke/karaoke_basic_viewmodel.dart'
 import 'package:tiszapp_flutter/viewmodels/main_menu_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/notification_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/ocsi_scores_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/ordering_by_points_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/profile_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
@@ -78,6 +79,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => ProfileViewModel.empty()),
       ChangeNotifierProvider(create: (_) => StylePointsViewModel()),
       ChangeNotifierProvider(create: (_) => AudienceVotingViewModel()),
+      ChangeNotifierProvider(create: (_) => OrderingByPointsViewModel()),
     ], child: const MyApp()),
   );
 }
