@@ -16,6 +16,9 @@ class VotingScreen extends StatefulWidget {
 }
 
 class VotingScreenState extends State<VotingScreen> {
+  final List<TextEditingController> controllers = [];
+  bool scaledVoting = false;
+
   @override
   void initState() {
     super.initState();
@@ -36,16 +39,62 @@ class VotingScreenState extends State<VotingScreen> {
           if (viewModel.votingState == VotingState.notStarted) {
             return notStartedScreen();
           } else if (viewModel.votingState == VotingState.inProgress) {
-            if (viewModel.isVoteSent) {
-              return votingSentScreen();
-            } else {
-              return votingScreen(viewModel);
-            }
+            if(scaledVoting){
+              if (viewModel.isVoteSent) {
+                return scaledVotingSentScreen();
+              } else {
+                return scaledVotingScreen(viewModel);
+              }
+            }else{
+              if (viewModel.isVoteSent) {
+                return votingSentScreen();
+              } else {
+                return votingScreen(viewModel);
+              }
+            }            
           } else {
+            scaledVoting = false;
             return finishedScreen();
           }
         }()),
       ),
+    );
+  }
+
+  void _showChoiceDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Milyen szavazást szeretnél?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Provider.of<VotingViewmodel>(context, listen: false).startVoting();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Sorba rendezés'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  scaledVoting = true;
+                  Provider.of<VotingViewmodel>(context, listen: false).startVoting();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Skálázott sorbarendezés'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Mégse'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -57,7 +106,7 @@ class VotingScreenState extends State<VotingScreen> {
         const SizedBox(height: 40),
         Button3D(
           onPressed: () {
-            Provider.of<VotingViewmodel>(context, listen: false).startVoting();
+            _showChoiceDialog(context);
           },
           width: 150,
           child: Padding(
@@ -150,7 +199,161 @@ class VotingScreenState extends State<VotingScreen> {
     );
   }
 
+  Widget scaledVotingScreen(VotingViewmodel viewModel) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
+    final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text(
+                        'Más a felirat itt!'),
+                    const SizedBox(height: 40),
+                    Expanded(
+                      child: FutureBuilder(
+                        future: viewModel.getTeams(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            return ListView(
+                              children: <Widget>[
+                                for (int i = 0; i < viewModel.teams.length; i++)
+                                  ListTile(
+                                    key: Key(i.toString()),
+                                    tileColor: i.isEven ? evenItemColor : oddItemColor,
+                                    title: Text('${viewModel.teams[i]}. csapat'),
+                                    trailing: const Icon(Icons.drag_handle),
+                                  )
+                              ],);
+                          } else {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+                    ),
+                    
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text(
+                        'Más a felirat itt!'),
+                    const SizedBox(height: 40),
+                    Expanded(
+                      child: FutureBuilder(
+                        future: viewModel.getTeams(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            return ListView(
+                              children: <Widget>[
+                                for (int i = 0; i < viewModel.teams.length; i++)
+                                  ListTile(
+                                    key: Key(i.toString()),
+                                    tileColor: i.isEven ? evenItemColor : oddItemColor,
+                                    title: Text('${viewModel.teams[i]}. csapat'),
+                                    trailing: const Icon(Icons.drag_handle),
+                                  )
+                              ],);
+                          } else {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+                    ),
+                    
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 40),
+                Button3D(
+                  onPressed: () {
+                    showSendVoteConfirmationDialog(context);
+                  },
+                  width: 150,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: Text(
+                        "Sorrend beküldése",
+                        style: TextStyle(
+                          color: widget.isDarkTheme
+                              ? CustomColor.btnTextNight
+                              : CustomColor.btnTextDay,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
   Widget votingSentScreen() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('A szavazatod sikeresen beküldésre került!'),
+        const SizedBox(height: 40),
+        Button3D(
+          onPressed: () {
+            Provider.of<VotingViewmodel>(context, listen: false).resetVote();
+          },
+          width: 150,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                "Új szavazat beküldése",
+                style: TextStyle(
+                  color: widget.isDarkTheme
+                      ? CustomColor.btnTextNight
+                      : CustomColor.btnTextDay,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Button3D(
+          onPressed: () {
+            showEndVotingConfirmationDialog(context);
+          },
+          width: 150,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Text(
+                "Szavazás lezárása",
+                style: TextStyle(
+                  color: widget.isDarkTheme
+                      ? CustomColor.btnTextNight
+                      : CustomColor.btnTextDay,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget scaledVotingSentScreen() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
