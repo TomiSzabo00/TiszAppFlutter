@@ -25,6 +25,7 @@ class _WidgetTreeState extends State<WidgetTree> {
     ConnectivityResult.mobile,
     ConnectivityResult.wifi,
   ];
+  Stream<User?>? _authStateStream;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _WidgetTreeState extends State<WidgetTree> {
     initConnectivity();
 
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _authStateStream = FirebaseAuth.instance.authStateChanges();
   }
 
   @override
@@ -46,7 +48,7 @@ class _WidgetTreeState extends State<WidgetTree> {
       return _offlineScreen();
     }
     return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
+      stream: _authStateStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;

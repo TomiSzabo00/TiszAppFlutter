@@ -146,7 +146,11 @@ class MainMenuViewModel extends ChangeNotifier {
           button.isVisible ||
           user.name == "Test User") {
         if (!buttons.any((element) => element.title == button.title)) {
-          buttons.add(button);
+          if ((user.name == "Test User" || user.name == "Test Admin") && button.type == MainMenuButtonType.wordle) {
+            // do nothing
+          } else {
+            buttons.add(button);
+          }
         }
       }
       _reorderButtons();
