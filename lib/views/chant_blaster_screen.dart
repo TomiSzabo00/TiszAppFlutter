@@ -24,6 +24,9 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChantBlasterViewModel>().joinChant();
+    });
     context.read<ChantBlasterViewModel>().addListener(_syncAudio);
   }
 
@@ -66,82 +69,94 @@ class ChantBlasterScreenState extends State<ChantBlasterScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ChantBlasterViewModel>();
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      appBar: AppBar(title: const Text("Chant Blaster")),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                isDarkTheme ? "images/bg2_night.png" : "images/bg2_day.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Audio URL'),
-              onSubmitted: (value) => viewModel.startChant(value),
+    return PopScope(
+      onPopInvoked: (action) {
+        _audioPlayer.stop();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text("Chant Blaster")),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  isDarkTheme ? "images/bg2_night.png" : "images/bg2_day.png"),
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 80),
-            if (!viewModel.isPlaying)
-              Button3D(
-                  height: 200,
-                  width: 200,
-                  isDisabled: !widget.isAdmin,
-                  onPressed: () {
-                    if (widget.isAdmin) {
-                      viewModel.startChant("assets/audio/wimm.mp3");
-                    }
+          ),
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Audio URL'),
+                  onSubmitted: (value) => {
+                    if (widget.isAdmin)
+                      {viewModel.startChant('assets/audio/' + value + '.mp3')}
                   },
-                  child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.speaker_group_outlined,
-                          size: 80,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Chant!",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                      ])),
-            if (viewModel.isPlaying)
-              Button3D(
-                  height: 200,
-                  width: 200,
-                  isDisabled: !widget.isAdmin,
-                  onPressed: () {
-                    if (widget.isAdmin) {
-                      viewModel.stopChant();
-                    }
-                  },
-                  child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.volume_off_outlined,
-                          size: 80,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Stop!",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                      ])),
-            const SizedBox(height: 80),
-            Text('Tulajdonos: ${viewModel.isOwner ? "igen" : "nem"}'),
-            Text('Megy: ${viewModel.isAlreadyPlaying ? "igen" : "nem"}'),
-            Text('Várt előrehaladás: ${viewModel.played} ms'),
-            Text(
-                'Aktu előrehaladás: ${_audioPlayer.position.inMilliseconds} ms'),
-            Text('Sebesség: ${_audioPlayer.speed} x'),
-          ],
+                ),
+                const SizedBox(height: 80),
+                if (!viewModel.isPlaying)
+                  Button3D(
+                      height: 200,
+                      width: 200,
+                      isDisabled: !widget.isAdmin,
+                      onPressed: () {
+                        if (widget.isAdmin) {
+                          viewModel.startChant("assets/audio/wimm.mp3");
+                        }
+                      },
+                      child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.speaker_group_outlined,
+                              size: 80,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Chant!",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ])),
+                if (viewModel.isPlaying)
+                  Button3D(
+                      height: 200,
+                      width: 200,
+                      isDisabled: !widget.isAdmin,
+                      onPressed: () {
+                        if (widget.isAdmin) {
+                          viewModel.stopChant();
+                        }
+                      },
+                      child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.volume_off_outlined,
+                              size: 80,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Stop!",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ])),
+                const SizedBox(height: 80),
+                Text('Tulajdonos: ${viewModel.isOwner ? "igen" : "nem"}'),
+                Text('Megy: ${viewModel.isAlreadyPlaying ? "igen" : "nem"}'),
+                Text('Várt előrehaladás: ${viewModel.played} ms'),
+                Text(
+                    'Aktu előrehaladás: ${_audioPlayer.position.inMilliseconds} ms'),
+                Text('Sebesség: ${_audioPlayer.speed} x'),
+              ],
+            ),
+          ),
         ),
       ),
     );

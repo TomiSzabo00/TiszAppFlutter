@@ -438,12 +438,6 @@ class MainMenuViewModel extends ChangeNotifier {
                 ),
               ),
             );
-      case MainMenuButtonType.chantBlaster:
-        return () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ChantBlasterScreen(isAdmin: user.isAdmin),
-              ),
-            );
     }
   }
 

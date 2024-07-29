@@ -21,7 +21,7 @@ class ChantBlasterViewModel with ChangeNotifier {
 
   int get played => _played;
 
-  ChantBlasterViewModel() {
+  void joinChant() {
     _chantRef.onValue.listen((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data != null) {
@@ -56,7 +56,7 @@ class ChantBlasterViewModel with ChangeNotifier {
     while (_isPlaying) {
       final elapsed = DateTime.now().millisecondsSinceEpoch - timestamp;
       await _chantRef.update({'played': elapsed});
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 400));
     }
 
     isOwner = false;
