@@ -35,7 +35,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  //valami
+  //valami dsfa
 
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
 
