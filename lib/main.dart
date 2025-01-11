@@ -35,6 +35,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  //valami
+
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
