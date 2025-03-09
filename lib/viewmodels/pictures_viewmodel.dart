@@ -223,6 +223,7 @@ class PicturesViewModel extends ChangeNotifier {
     }
   }
 
+
   void toggleReactionTo(Picture picture, Function completion) {
     if (!checkIfAlreadyLiked(picture)) {
       picsRef.child(picture.key).child('likes').push().set(
@@ -441,3 +442,24 @@ extension ExtendsionsOnMapDynamicDynamic<K, V> on Map<K, V> {
     return Map.fromEntries(entries.toList()..sort((a, b) => compareTo(a.value, b.value)));
   }
 }
+
+
+class Person {
+  final String name;
+  final int age;
+
+  Person(this.name, this.age);
+}
+
+class Car {
+  final String brand;
+  final String model;
+  final Person owner;
+
+  Car(this.brand, this.model, this.owner);
+}
+
+final pistike = Person('Pistike', 12);
+final opel = Car('Opel', 'Astra', pistike);
+
+opel.owner.age

@@ -73,9 +73,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
                 ),
               );
             }
-            if (viewModel.filteredPictures.length > index) {
+            if (viewModel.pictures.length > index) {
               return PictureItem(
-                pic: viewModel.filteredPictures[index],
+                pic: viewModel.pictures[index],
                 isReview: widget.isReview,
                 isAdmin: widget.isAdmin,
               );

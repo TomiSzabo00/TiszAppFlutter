@@ -499,41 +499,6 @@ class PictureItemState extends State<PictureItem> {
     );
   }
 
-  Widget likeAndComment(bool isLiked) {
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(
-            isLiked ? MdiIcons.heart : MdiIcons.heartOutline,
-            color: isLiked
-                ? Colors.red
-                : isDarkTheme
-                    ? Colors.white
-                    : Colors.black,
-            size: 30,
-          ),
-          onPressed: () {
-            viewModel.toggleReactionTo(widget.pic, () {
-              if (mounted) {
-                setState(() {});
-              }
-            });
-          },
-        ),
-        IconButton(
-          icon: FaIcon(
-            FontAwesomeIcons.comment,
-            color: isDarkTheme ? Colors.white : Colors.black,
-            size: 25,
-          ),
-          onPressed: () {
-            showCommentsSheet(isFromButton: true);
-          },
-        ),
-      ],
-    );
-  }
 
   Widget likeCount() {
     return FutureBuilder(
@@ -542,7 +507,7 @@ class PictureItemState extends State<PictureItem> {
         if (snapshot.hasData) {
           return Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 14.0, vertical: 0.0),
+            const EdgeInsets.symmetric(horizontal: 14.0, vertical: 0.0),
             child: Row(
               children: [
                 HtmlWidget(snapshot.data!),
@@ -578,6 +543,56 @@ class PictureItemState extends State<PictureItem> {
           return const SizedBox.shrink();
         }
       },
+    );
+  }
+
+
+  Widget likeAndComment(bool isLiked) {
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    return Row(
+      children: [
+        IconButton(
+          icon: Icon(
+            isLiked ? MdiIcons.heart : MdiIcons.heartOutline,
+            color: isLiked
+                ? Colors.red
+                : isDarkTheme
+                    ? Colors.white
+                    : Colors.black,
+            size: 30,
+          ),
+          onPressed: () {
+            viewModel.toggleReactionTo(widget.pic, () {
+              if (mounted) {
+                setState(() {});
+              }
+            });
+          },
+        ),
+        Text(
+          widget.pic.likes.length.toString(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(width: 20),
+        IconButton(
+          icon: FaIcon(
+            FontAwesomeIcons.comment,
+            color: isDarkTheme ? Colors.white : Colors.black,
+            size: 25,
+          ),
+          onPressed: () {
+            showCommentsSheet(isFromButton: true);
+          },
+        ),
+        Text(
+          widget.pic.comments.length.toString(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
     );
   }
 
