@@ -37,6 +37,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    namespace "hu.szig.tiszapp_flutter"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
