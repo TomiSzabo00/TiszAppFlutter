@@ -11,8 +11,6 @@ import '../widgets/autocomplete_textfield.dart' show AutocompleteTextField;
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.context});
 
-  final BuildContext context;
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -24,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _nameController = TextEditingController();
   bool obscurePassword = true;
   String _currentOtp = "";
+  bool _isLoading = false;
 
   AuthenticationViewModel _authenticationViewModel = AuthenticationViewModel();
 
@@ -76,11 +75,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _nameController,
                     options: snapshot.data!,
                   ),
-                  const SizedBox(height: 15),
-                  Text(
-                    "PIN kódod",
-                    style: _labelStyle(),
-                  ),
+                  const SizedBox(height: 16),
+                  Row(children: [
+                    Expanded(
+                      child: Text(
+                        "Egyedi azonosítód",
+                        style: _labelStyle(),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ]),
+                  const SizedBox(height: 4),
                   OtpInput(
                     onCodeChanged: (code) {
                       setState(() {
@@ -88,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 16),
 
                   Align(
                     alignment: Alignment.centerRight,
@@ -157,9 +162,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() {
+    setState(() => _isLoading = true);
+
+    debugPrint(
+        "Logging in with name: ${_nameController.text}, otp: $_currentOtp");
     _authenticationViewModel
-        .loginToFirebase(_emailController.text, _passwordController.text)
+        .loginToFirebase(
+            removeSpaces(_nameController.text.toLowerCase()), _currentOtp)
         .then((value) {
+      setState(() => _isLoading = false);
       if (_authenticationViewModel.errorMessage.isNotEmpty) {
         showCupertinoDialog(
             context: context,
@@ -174,6 +185,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ));
       }
+    }).catchError((error) {
+      setState(() => _isLoading = false); // Ensure loading stops on crash
     });
   }
 
@@ -183,14 +196,26 @@ class _LoginScreenState extends State<LoginScreen> {
     return Button3D(
       width: 150,
       onPressed: _login,
-      child: Text(
-        'Bejelentkezés',
-        style: TextStyle(
-          color:
-              isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
-          fontSize: 18,
-        ),
-      ),
+      child: _isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
+                strokeWidth: 2,
+              ),
+            )
+          : Text(
+              'Bejelentkezés',
+              style: TextStyle(
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
+                fontSize: 18,
+              ),
+            ),
     );
   }
 
@@ -286,5 +311,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ],
     );
+  }
+
+  String removeSpaces(String lowerCase) {
+    return lowerCase.replaceAll(" ", "");
   }
 }
