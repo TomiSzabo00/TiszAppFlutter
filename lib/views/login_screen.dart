@@ -11,6 +11,8 @@ import '../widgets/autocomplete_textfield.dart' show AutocompleteTextField;
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.context});
 
+  final BuildContext context;
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
