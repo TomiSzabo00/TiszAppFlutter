@@ -55,11 +55,13 @@ dependencies:
   google_maps_flutter_platform_interface: ^2.3.0
   geolocator: ^11.0.0
   permission_handler: ^11.3.1
-  background_location:
-      path: ../plugins/background_location
+#  background_location:
+#      path: ../plugins/background_location
+  #background_location: ^0.13.2
   location: ^6.0.1
-  battery_info:
-      path: plugins/battery_info
+#  battery_info:
+#      path: plugins/battery_info
+  battery_info: ^1.1.1
   firebase_messaging: ^15.2.10
   googleapis_auth: ^1.4.1
   wheel_chooser: ^1.1.2
