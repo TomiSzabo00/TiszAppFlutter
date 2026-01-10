@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:tiszapp_flutter/models/admin_api_data.dart';
@@ -159,13 +160,20 @@ class ApiService {
     } else {
       return parsed
           .map<UserApiData>((json) => UserApiData.fromJson(json))
-          .map<UserData>((userData) => UserData(
-              uid: "",
-              name: userData.name,
-              isAdmin: false,
-              teamNum: int.parse(userData.teamNum),
-              profilePictureUrl: ''))
-          .toList();
+          .map<UserData>((userData) {
+        final parsedTeamNum = int.tryParse(userData.teamNum);
+        if (parsedTeamNum == null) {
+          debugPrint(
+              "Hibás teamNum érték: '${userData.teamNum}' a felhasználónál '${userData.name}'");
+        }
+        return UserData(
+          uid: "",
+          name: userData.name,
+          isAdmin: false,
+          teamNum: parsedTeamNum ?? 5,
+          profilePictureUrl: '',
+        );
+      }).toList();
     }
   }
 }

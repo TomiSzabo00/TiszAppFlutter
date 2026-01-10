@@ -9,20 +9,16 @@ class AuthenticationViewModel {
   List<UserData> _userInfos = [];
   String errorMessage = "";
 
-  AuthenticationViewModel._init() {
-    ApiService.getAvailableUsers().then((value) {
-      _availableUsers = value;
-    });
-    ApiService.getUserInfos().then((value) {
-      _userInfos = value;
-    });
+  AuthenticationViewModel._();
+
+  static Future<AuthenticationViewModel> init() async {
+    final viewModel = AuthenticationViewModel._();
+    viewModel._availableUsers = await ApiService.getAvailableUsers();
+    viewModel._userInfos = await ApiService.getUserInfos();
+    return viewModel;
   }
 
   AuthenticationViewModel();
-
-  static Future<AuthenticationViewModel> init() async {
-    return AuthenticationViewModel._init();
-  }
 
   bool isUsernameAndIDMatching(String name, String id) {
     for (var user in _availableUsers) {
@@ -119,6 +115,7 @@ class AuthenticationViewModel {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
+
       errorMessage = e.code;
     }
   }

@@ -1,18 +1,16 @@
-// buildscript {
-//     ext.kotlin_version = '1.9.0-RC'
-//     repositories {
-//         google()
-//         mavenCentral()
-//     }
+buildscript {
+    ext.kotlin_version = '1.9.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
 
-//     dependencies {
-//         classpath 'com.android.tools.build:gradle:7.1.2'
-//         // START: FlutterFire Configuration
-//         classpath 'com.google.gms:google-services:4.3.10'
-//         // END: FlutterFire Configuration
-//         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//     }
-// }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.0'
+        classpath 'com.google.gms:google-services:4.3.15' // frissítve
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
 allprojects {
     repositories {
@@ -21,12 +19,36 @@ allprojects {
     }
 }
 
+
+
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
+
+    // This handles the namespace and Java version for all plugins (subprojects)
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                // 1. Fix the Namespace error
+                if (namespace == null) {
+                    namespace project.group
+                }
+
+                // 2. Fix the JVM Target Mismatch (Force all to 1.8)
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_1_8
+                    targetCompatibility JavaVersion.VERSION_1_8
+                }
+
+                // For Kotlin plugins
+                if (project.plugins.hasPlugin('kotlin-android')) {
+                    kotlinOptions {
+                        jvmTarget = '1.8'
+                    }
+                }
+            }
+        }
+    }
 }
 
 tasks.register("clean", Delete) {

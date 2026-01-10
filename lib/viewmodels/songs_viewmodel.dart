@@ -15,7 +15,7 @@ class SongsViewModel with ChangeNotifier {
 
     isLoading = true;
     notifyListeners();
-    
+
     final onlineSongs = await StorageService.getSongs();
     songs.addAll(onlineSongs);
     filteredSongs.addAll(onlineSongs);
@@ -30,14 +30,16 @@ class SongsViewModel with ChangeNotifier {
     final data = await rootBundle.loadString('assets/metadata/names.txt');
     List<String> lines = data.split('\n');
     for (String line in lines) {
-      final assetPath = _getAssetPathFromFile(line);
-      final currSong = Song(
-        name: _getNameFromLine(line),
-        lyrics: await rootBundle.loadString(assetPath),
-      );
-      songs.add(currSong);
+      if (line.isNotEmpty && line.trim().isNotEmpty) {
+        final assetPath = _getAssetPathFromFile(line);
+        final currSong = Song(
+          name: _getNameFromLine(line),
+          lyrics: await rootBundle.loadString(assetPath),
+        );
+        songs.add(currSong);
+      }
     }
-    
+
     filteredSongs.addAll(songs);
     isLoading = false;
     notifyListeners();
@@ -45,6 +47,9 @@ class SongsViewModel with ChangeNotifier {
 
   String _getNameFromLine(String line) {
     line = line.trim();
+    if (line.length <= 4) {
+      return line;
+    }
     return line.substring(0, line.length - 4);
   }
 
