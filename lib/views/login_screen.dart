@@ -1,13 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/views/register_screen.dart';
 import 'package:tiszapp_flutter/viewmodels/authentication_viewmodel.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+import 'package:tiszapp_flutter/widgets/otp_input.dart';
+
+import '../widgets/autocomplete_textfield.dart' show AutocompleteTextField;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.context});
+
   final BuildContext context;
 
   @override
@@ -18,7 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
   bool obscurePassword = true;
+  String _currentOtp = "";
 
   AuthenticationViewModel _authenticationViewModel = AuthenticationViewModel();
 
@@ -33,94 +38,70 @@ class _LoginScreenState extends State<LoginScreen> {
     //obscurePassword = true;
   }
 
-  void _showRegisterScreen() {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) {
-          return RegisterScreen(context: context);
-        },
-        fullscreenDialog: true));
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
-      body: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: isDarkTheme ? const AssetImage("images/bg2_night.png") : const AssetImage("images/bg2_day.png"),
-              fit: BoxFit.cover,
+      body: FutureBuilder(
+        future: _authenticationViewModel.getNames(),
+        builder: (context, snapshot) => SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: isDarkTheme
+                    ? const AssetImage("images/bg2_night.png")
+                    : const AssetImage("images/bg2_day.png"),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 40),
-                Image.asset("images/logo2_outline.png", width: 200, height: 200),
-                const SizedBox(height: 50),
-                _emailField(),
-                const SizedBox(height: 15),
-                SizedBox(
-                  height: 55,
-                  child: TextField(
-                    onTapOutside: (event) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                    },
-                    controller: _passwordController,
-                    obscureText: obscurePassword,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                        ),
-                      ),
-                      labelText: 'Jelszó',
-                      labelStyle: TextStyle(
-                        color: isDarkTheme ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.3),
-                      ),
-                      floatingLabelStyle: TextStyle(
-                        color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                      ),
-                      prefixIcon: const Icon(CupertinoIcons.lock_fill),
-                      prefixIconColor: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                      suffixIcon: IconButton(
-                        icon: obscurePassword
-                            ? const Icon(CupertinoIcons.eye_fill)
-                            : const Icon(CupertinoIcons.eye_slash_fill),
-                        onPressed: () {
-                          setState(() {
-                            obscurePassword = !obscurePassword;
-                          });
-                        },
-                      ),
-                      suffixIconColor: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                      fillColor: Colors.white.withOpacity(0.5),
-                      filled: true,
-                    ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
+                  Text(
+                    "Bejelentkezés",
+                    style: _titleStyle(),
                   ),
-                ),
-                const SizedBox(height: 15),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: _loginButton3d(),
-                ),
-                _registerText(),
-                _offlineSongsText(),
-              ],
+                  const SizedBox(height: 40),
+                  //_emailField(),
+                  AutocompleteTextField(
+                    placeholder: "Teljes neved",
+                    controller: _nameController,
+                    options: snapshot.data!,
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    "PIN kódod",
+                    style: _labelStyle(),
+                  ),
+                  OtpInput(
+                    onCodeChanged: (code) {
+                      setState(() {
+                        _currentOtp = code;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _loginButton3d(),
+                  ),
+                  //_registerText(),
+                  const SizedBox(height: 40),
+                  Image.asset("images/logo2_outline.png",
+                      width: 100, height: 100),
+                  const SizedBox(height: 40),
+                  _offlineSongs(),
+                ],
+              ),
             ),
           ),
         ),
@@ -129,7 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _emailField() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return SizedBox(
       height: 55,
       child: TextField(
@@ -147,18 +129,26 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
+              color: isDarkTheme
+                  ? Colors.white.withOpacity(0.7)
+                  : CustomColor.btnTextDay,
             ),
           ),
           labelText: 'Felhasználónév',
           labelStyle: TextStyle(
-            color: isDarkTheme ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.3),
+            color: isDarkTheme
+                ? Colors.white.withOpacity(0.7)
+                : Colors.black.withOpacity(0.3),
           ),
           floatingLabelStyle: TextStyle(
-            color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
+            color: isDarkTheme
+                ? Colors.white.withOpacity(0.7)
+                : CustomColor.btnTextDay,
           ),
           prefixIcon: const Icon(CupertinoIcons.person_fill),
-          prefixIconColor: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
+          prefixIconColor: isDarkTheme
+              ? Colors.white.withOpacity(0.7)
+              : CustomColor.btnTextDay,
           fillColor: Colors.white.withOpacity(0.5),
           filled: true,
         ),
@@ -167,7 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() {
-    _authenticationViewModel.loginToFirebase(_emailController.text, _passwordController.text).then((value) {
+    _authenticationViewModel
+        .loginToFirebase(_emailController.text, _passwordController.text)
+        .then((value) {
       if (_authenticationViewModel.errorMessage.isNotEmpty) {
         showCupertinoDialog(
             context: context,
@@ -186,14 +178,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _loginButton3d() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Button3D(
       width: 150,
       onPressed: _login,
       child: Text(
         'Bejelentkezés',
         style: TextStyle(
-          color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+          color:
+              isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
           fontSize: 18,
         ),
       ),
@@ -206,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           "Nincs még fiókod?",
-          style: _textStyle(),
+          style: _labelStyle(),
         ),
         _registerButton(),
       ],
@@ -220,18 +214,17 @@ class _LoginScreenState extends State<LoginScreen> {
         style: _textButtonStyle(),
       ),
       onPressed: () {
-        _showRegisterScreen();
+        //_showRegisterScreen();
       },
     );
   }
 
-  Widget _offlineSongsText() {
+  Widget _offlineSongs() {
     return Column(
       children: [
-        const SizedBox(height: 40),
         Text(
           "Nincs interneted?",
-          style: _textStyle(),
+          style: _titleStyle(),
         ),
         _offlineSongsButton(),
       ],
@@ -239,7 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _offlineSongsButton() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Button3D(
       width: 200,
       onPressed: () {
@@ -252,17 +246,18 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Text(
         'Offline daloskönyv',
         style: TextStyle(
-          color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+          color:
+              isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
           fontSize: 18,
         ),
       ),
     );
   }
 
-  TextStyle _textStyle() {
+  TextStyle _titleStyle() {
     return const TextStyle(
       color: Colors.white,
-      fontSize: 20,
+      fontSize: 32,
       shadows: [
         Shadow(
           color: Colors.black,
@@ -270,6 +265,12 @@ class _LoginScreenState extends State<LoginScreen> {
           blurRadius: 1,
         ),
       ],
+    );
+  }
+
+  TextStyle _labelStyle() {
+    return const TextStyle(
+      fontSize: 16,
     );
   }
 
