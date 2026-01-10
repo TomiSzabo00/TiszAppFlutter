@@ -9,9 +9,7 @@ import 'package:tiszapp_flutter/widgets/otp_input.dart';
 import '../widgets/autocomplete_textfield.dart' show AutocompleteTextField;
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required this.context});
-
-  final BuildContext context;
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -20,23 +18,18 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
-  bool obscurePassword = true;
   String _currentOtp = "";
   bool _isLoading = false;
 
-  AuthenticationViewModel _authenticationViewModel = AuthenticationViewModel();
+  late AuthenticationViewModel _authenticationViewModel;
+  late Future<List<String>> _namesFuture;
 
   @override
   void initState() {
     super.initState();
-    AuthenticationViewModel.init().then((value) {
-      setState(() {
-        _authenticationViewModel = value;
-      });
-    });
-    //obscurePassword = true;
+    _authenticationViewModel = AuthenticationViewModel();
+    _namesFuture = _authenticationViewModel.getNames();
   }
 
   @override
@@ -45,74 +38,79 @@ class _LoginScreenState extends State<LoginScreen> {
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       body: FutureBuilder(
-        future: _authenticationViewModel.getNames(),
-        builder: (context, snapshot) => SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: isDarkTheme
-                    ? const AssetImage("images/bg2_night.png")
-                    : const AssetImage("images/bg2_day.png"),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 40),
-                  Text(
-                    "Bejelentkezés",
-                    style: _titleStyle(),
+          future: _namesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final nameOptions = snapshot.data ?? [];
+            return SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: isDarkTheme
+                        ? const AssetImage("images/bg2_night.png")
+                        : const AssetImage("images/bg2_day.png"),
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(height: 40),
-                  //_emailField(),
-                  AutocompleteTextField(
-                    placeholder: "Teljes neved",
-                    controller: _nameController,
-                    options: snapshot.data!,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(children: [
-                    Expanded(
-                      child: Text(
-                        "Egyedi azonosítód",
-                        style: _labelStyle(),
-                        textAlign: TextAlign.left,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 40),
+                      Text(
+                        "Bejelentkezés",
+                        style: _titleStyle(),
                       ),
-                    ),
-                  ]),
-                  const SizedBox(height: 4),
-                  OtpInput(
-                    onCodeChanged: (code) {
-                      setState(() {
-                        _currentOtp = code;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                      const SizedBox(height: 40),
+                      //_emailField(),
+                      AutocompleteTextField(
+                        placeholder: "Teljes neved",
+                        controller: _nameController,
+                        options: nameOptions,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(children: [
+                        Expanded(
+                          child: Text(
+                            "Egyedi azonosítód",
+                            style: _labelStyle(),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 4),
+                      OtpInput(
+                        onCodeChanged: (code) {
+                          setState(() {
+                            _currentOtp = code;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
 
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: _loginButton3d(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _loginButton3d(),
+                      ),
+                      //_registerText(),
+                      const SizedBox(height: 40),
+                      Image.asset("images/logo2_outline.png",
+                          width: 100, height: 100),
+                      const SizedBox(height: 40),
+                      _offlineSongs(),
+                    ],
                   ),
-                  //_registerText(),
-                  const SizedBox(height: 40),
-                  Image.asset("images/logo2_outline.png",
-                      width: 100, height: 100),
-                  const SizedBox(height: 40),
-                  _offlineSongs(),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          }),
     );
   }
 
@@ -163,33 +161,41 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() {
+  void _login() async {
+    if (_nameController.text.isEmpty || _currentOtp.length < 4) return;
     setState(() => _isLoading = true);
 
-    debugPrint(
-        "Logging in with name: ${_nameController.text}, otp: $_currentOtp");
-    _authenticationViewModel
-        .loginToFirebase(
-            removeSpaces(_nameController.text.toLowerCase()), _currentOtp)
-        .then((value) {
-      setState(() => _isLoading = false);
+    try {
+      // Normalize name for Firebase Auth
+      await _authenticationViewModel.loginToFirebase(
+          removeSpaces(_nameController.text.toLowerCase()), _currentOtp);
+
       if (_authenticationViewModel.errorMessage.isNotEmpty) {
-        showCupertinoDialog(
-            context: context,
-            builder: (context) => CupertinoAlertDialog(
-                  title: const Text("Hiba"),
-                  content: Text(_authenticationViewModel.getErrorMessage()),
-                  actions: [
-                    CupertinoDialogAction(
-                      child: const Text("OK"),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ));
+        _showErrorDialog(_authenticationViewModel.getErrorMessage());
+      } else {
+        // Success! Navigate away
       }
-    }).catchError((error) {
-      setState(() => _isLoading = false); // Ensure loading stops on crash
-    });
+    } catch (e) {
+      _showErrorDialog("Váratlan hiba történt.");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text("Hiba"),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("OK"),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _loginButton3d() {
