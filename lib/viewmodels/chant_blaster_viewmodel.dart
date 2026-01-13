@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ChantBlasterViewModel with ChangeNotifier {
   final DatabaseReference _chantRef =
-      FirebaseDatabase.instance.reference().child('chant');
+      FirebaseDatabase.instance.ref().child('chant');
 
   bool _isPlaying = false;
   int _timestamp = 0;
