@@ -6,7 +6,8 @@ SERVICE_ACCOUNT_KEY_PATH = 'C:/mate_flutter/tiszapp-175fb-firebase-adminsdk-wj70
 USERS_CSV_PATH = 'C:/mate_flutter/test.csv'
 SEND_EMAILS = False
 PROFILE_PICTURE_URL = 'https://firebasestorage.googleapis.com/v0/b/tiszapp-175fb.appspot.com/o/profile_pictures%2Fdefault.jpg?alt=media&token=51830fc5-17d3-46f1-9ddf-3265656dea48'
-
+EMAIL_API_URL = 'https://your-email-api-endpoint.com/send'
+EMAIL_TEMPLATE = 'C:/mate_flutter/helpers/emailTemplate.html'
 
 def sanitize(name):
     return name.lower().replace(' ', '')
@@ -24,20 +25,22 @@ def registrateUser(name, pin, team):
             password = pin
         )
         uid = user.uid
-        print(f"1/2 Created Auth user: {name} (UID: {uid})")
+        print(f"[1/2] {name} (UID: {uid})  Created Auth user")
 
         user_ref = ref.child(uid)
         user_ref.set({
             'uid': uid,
             'userName': name,
             'admin': team == 0,
-            'groupNumber': team,
+             #as integer
+            'groupNumber': int(team),
             'profilePictureUrl': PROFILE_PICTURE_URL,
         })
-        print(f"2/2 Data saved for user: {name} (UID: {uid})")
+        print(f"[2/2] {name} (UID: {uid})  Data saved for user")
+        successful_registrations += 1
 
     except Exception as e:
-        print('Error creating user:', e)
+        print('Error creating {name} :', e)
         return
 
 
@@ -53,9 +56,10 @@ firebase_admin.initialize_app(cred, {
 ref = db.reference('users')
 
 users = []
+successful_registrations = 0
 with open(USERS_CSV_PATH, mode='r', encoding='utf-8') as file:
     reader = csv.DictReader(file)
-        
+
     for row in reader:
         name  = row['name']
         team  = row['team']
@@ -75,3 +79,5 @@ for record in users:
     if SEND_EMAILS:
         sendEmail()
         print(counter, ". email sent")
+
+print(f"Batch registration completed. {successful_registrations} users registered successfully out of {len(users)}.")
