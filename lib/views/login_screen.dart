@@ -1,14 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tiszapp_flutter/colors.dart';
-import 'package:tiszapp_flutter/views/register_screen.dart';
 import 'package:tiszapp_flutter/viewmodels/authentication_viewmodel.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+import 'package:tiszapp_flutter/widgets/otp_input.dart';
+
+import '../widgets/autocomplete_textfield.dart' show AutocompleteTextField;
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required this.context});
-  final BuildContext context;
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -17,119 +18,127 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool obscurePassword = true;
+  final _nameController = TextEditingController();
+  String _currentOtp = "";
+  bool _isLoading = false;
 
-  AuthenticationViewModel _authenticationViewModel = AuthenticationViewModel();
+  late AuthenticationViewModel _authenticationViewModel;
+  late Future<List<String>> _namesFuture;
 
   @override
   void initState() {
     super.initState();
-    AuthenticationViewModel.init().then((value) {
-      setState(() {
-        _authenticationViewModel = value;
-      });
-    });
-    //obscurePassword = true;
-  }
-
-  void _showRegisterScreen() {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) {
-          return RegisterScreen(context: context);
-        },
-        fullscreenDialog: true));
+    _authenticationViewModel = AuthenticationViewModel();
+    _namesFuture = _authenticationViewModel.getNames();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
-      body: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: isDarkTheme ? const AssetImage("images/bg2_night.png") : const AssetImage("images/bg2_day.png"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 40),
-                Image.asset("images/logo2_outline.png", width: 200, height: 200),
-                const SizedBox(height: 50),
-                _emailField(),
-                const SizedBox(height: 15),
-                SizedBox(
-                  height: 55,
-                  child: TextField(
-                    onTapOutside: (event) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                    },
-                    controller: _passwordController,
-                    obscureText: obscurePassword,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
+      body: FutureBuilder(
+          future: _namesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Hiba történt a nevek betöltése közben.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _namesFuture = _authenticationViewModel.getNames();
+                        });
+                      },
+                      child: const Text('Újrapróbálás'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            final nameOptions = snapshot.data ?? [];
+            return SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: isDarkTheme
+                        ? const AssetImage("images/bg2_night.png")
+                        : const AssetImage("images/bg2_day.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 40),
+                      Text(
+                        "Bejelentkezés",
+                        style: _titleStyle(),
+                      ),
+                      const SizedBox(height: 40),
+                      //_emailField(),
+                      AutocompleteTextField(
+                        placeholder: "Teljes neved",
+                        controller: _nameController,
+                        options: nameOptions,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(children: [
+                        Expanded(
+                          child: Text(
+                            "Egyedi azonosítód",
+                            style: _labelStyle(),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                        ),
-                      ),
-                      labelText: 'Jelszó',
-                      labelStyle: TextStyle(
-                        color: isDarkTheme ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.3),
-                      ),
-                      floatingLabelStyle: TextStyle(
-                        color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                      ),
-                      prefixIcon: const Icon(CupertinoIcons.lock_fill),
-                      prefixIconColor: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                      suffixIcon: IconButton(
-                        icon: obscurePassword
-                            ? const Icon(CupertinoIcons.eye_fill)
-                            : const Icon(CupertinoIcons.eye_slash_fill),
-                        onPressed: () {
+                      ]),
+                      const SizedBox(height: 4),
+                      OtpInput(
+                        onCodeChanged: (code) {
                           setState(() {
-                            obscurePassword = !obscurePassword;
+                            _currentOtp = code;
                           });
                         },
                       ),
-                      suffixIconColor: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
-                      fillColor: Colors.white.withOpacity(0.5),
-                      filled: true,
-                    ),
+                      const SizedBox(height: 16),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _loginButton3d(),
+                      ),
+                      //_registerText(),
+                      const SizedBox(height: 40),
+                      Image.asset("images/logo2_outline.png",
+                          width: 100, height: 100),
+                      const SizedBox(height: 40),
+                      _offlineSongs(),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 15),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: _loginButton3d(),
-                ),
-                _registerText(),
-                _offlineSongsText(),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
+            );
+          }),
     );
   }
 
   Widget _emailField() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return SizedBox(
       height: 55,
       child: TextField(
@@ -147,18 +156,26 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
+              color: isDarkTheme
+                  ? Colors.white.withOpacity(0.7)
+                  : CustomColor.btnTextDay,
             ),
           ),
           labelText: 'Felhasználónév',
           labelStyle: TextStyle(
-            color: isDarkTheme ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.3),
+            color: isDarkTheme
+                ? Colors.white.withOpacity(0.7)
+                : Colors.black.withOpacity(0.3),
           ),
           floatingLabelStyle: TextStyle(
-            color: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
+            color: isDarkTheme
+                ? Colors.white.withOpacity(0.7)
+                : CustomColor.btnTextDay,
           ),
           prefixIcon: const Icon(CupertinoIcons.person_fill),
-          prefixIconColor: isDarkTheme ? Colors.white.withOpacity(0.7) : CustomColor.btnTextDay,
+          prefixIconColor: isDarkTheme
+              ? Colors.white.withOpacity(0.7)
+              : CustomColor.btnTextDay,
           fillColor: Colors.white.withOpacity(0.5),
           filled: true,
         ),
@@ -166,37 +183,69 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() {
-    _authenticationViewModel.loginToFirebase(_emailController.text, _passwordController.text).then((value) {
+  void _login() async {
+    if (_nameController.text.isEmpty || _currentOtp.length < 4) return;
+    setState(() => _isLoading = true);
+
+    try {
+      // Normalize name for Firebase Auth
+      await _authenticationViewModel.loginToFirebase(
+          removeSpaces(_nameController.text.toLowerCase()), _currentOtp);
+
       if (_authenticationViewModel.errorMessage.isNotEmpty) {
-        showCupertinoDialog(
-            context: context,
-            builder: (context) => CupertinoAlertDialog(
-                  title: const Text("Hiba"),
-                  content: Text(_authenticationViewModel.getErrorMessage()),
-                  actions: [
-                    CupertinoDialogAction(
-                      child: const Text("OK"),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ));
+        _showErrorDialog(_authenticationViewModel.getErrorMessage());
+      } else {
+        // Success! Navigate away
       }
-    });
+    } catch (e) {
+      _showErrorDialog("Váratlan hiba történt.");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text("Hiba"),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("OK"),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _loginButton3d() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Button3D(
       width: 150,
       onPressed: _login,
-      child: Text(
-        'Bejelentkezés',
-        style: TextStyle(
-          color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
-          fontSize: 18,
-        ),
-      ),
+      child: _isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
+                strokeWidth: 2,
+              ),
+            )
+          : Text(
+              'Bejelentkezés',
+              style: TextStyle(
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
+                fontSize: 18,
+              ),
+            ),
     );
   }
 
@@ -206,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           "Nincs még fiókod?",
-          style: _textStyle(),
+          style: _labelStyle(),
         ),
         _registerButton(),
       ],
@@ -220,18 +269,17 @@ class _LoginScreenState extends State<LoginScreen> {
         style: _textButtonStyle(),
       ),
       onPressed: () {
-        _showRegisterScreen();
+        //_showRegisterScreen();
       },
     );
   }
 
-  Widget _offlineSongsText() {
+  Widget _offlineSongs() {
     return Column(
       children: [
-        const SizedBox(height: 40),
         Text(
           "Nincs interneted?",
-          style: _textStyle(),
+          style: _titleStyle(),
         ),
         _offlineSongsButton(),
       ],
@@ -239,7 +287,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _offlineSongsButton() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Button3D(
       width: 200,
       onPressed: () {
@@ -252,17 +301,18 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Text(
         'Offline daloskönyv',
         style: TextStyle(
-          color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+          color:
+              isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
           fontSize: 18,
         ),
       ),
     );
   }
 
-  TextStyle _textStyle() {
+  TextStyle _titleStyle() {
     return const TextStyle(
       color: Colors.white,
-      fontSize: 20,
+      fontSize: 32,
       shadows: [
         Shadow(
           color: Colors.black,
@@ -270,6 +320,12 @@ class _LoginScreenState extends State<LoginScreen> {
           blurRadius: 1,
         ),
       ],
+    );
+  }
+
+  TextStyle _labelStyle() {
+    return const TextStyle(
+      fontSize: 16,
     );
   }
 
@@ -285,5 +341,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ],
     );
+  }
+
+  String removeSpaces(String lowerCase) {
+    return lowerCase.replaceAll(" ", "");
   }
 }
