@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiszapp_flutter/colors.dart';
@@ -5,7 +6,6 @@ import 'package:tiszapp_flutter/helpers/try_cast.dart';
 import 'package:tiszapp_flutter/models/audience_voting_state.dart';
 import 'package:tiszapp_flutter/viewmodels/audience_voting_viewmodel.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class AudienceVotingScreen extends StatefulWidget {
   const AudienceVotingScreen({
@@ -23,7 +23,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<AudienceVotingViewModel>(context, listen: false).subscribeToResults();
+    Provider.of<AudienceVotingViewModel>(context, listen: false)
+        .subscribeToResults();
   }
 
   @override
@@ -54,7 +55,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                       stream: viewModel.isResultVisible(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final bool isResultVisible = tryCast<bool>(snapshot.data) ?? false;
+                          final bool isResultVisible =
+                              tryCast<bool>(snapshot.data) ?? false;
                           if (isResultVisible) {
                             return _resultsVisibleScreen();
                           }
@@ -159,18 +161,23 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _inProgressAdminButtons() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Button3D(
           onPressed: () {
-            context.read<AudienceVotingViewModel>().setVotingState(AudienceVotingState.paused);
+            context
+                .read<AudienceVotingViewModel>()
+                .setVotingState(AudienceVotingState.paused);
           },
           child: Text(
             'Szüneteltetés',
             style: TextStyle(
-                color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
                 fontSize: 14,
                 fontWeight: FontWeight.w600),
           ),
@@ -184,7 +191,9 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
           child: Text(
             'Törlés',
             style: TextStyle(
-                color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
                 fontSize: 14,
                 fontWeight: FontWeight.w600),
           ),
@@ -194,7 +203,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _adminPausedScreen() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Column(
       children: [
         _resultsVisibleScreen(),
@@ -204,12 +214,16 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
           children: [
             Button3D(
               onPressed: () {
-                context.read<AudienceVotingViewModel>().setVotingState(AudienceVotingState.voting);
+                context
+                    .read<AudienceVotingViewModel>()
+                    .setVotingState(AudienceVotingState.voting);
               },
               child: Text(
                 'Folytatás',
                 style: TextStyle(
-                    color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
@@ -223,7 +237,9 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
               child: Text(
                 'Törlés',
                 style: TextStyle(
-                    color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                    color: isDarkTheme
+                        ? CustomColor.btnTextNight
+                        : CustomColor.btnTextDay,
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
@@ -235,7 +251,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _adminStoppedScreen() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     final viewModel = context.watch<AudienceVotingViewModel>();
     return Column(
       children: [
@@ -251,7 +268,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                   controller: viewModel.newPairTextController,
                   autocorrect: false,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                     hintText: 'Új páros (Ember1 - Ember2)',
                     isDense: true,
                   ),
@@ -301,7 +319,9 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
           child: Text(
             'Indítás',
             style: TextStyle(
-                color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                color: isDarkTheme
+                    ? CustomColor.btnTextNight
+                    : CustomColor.btnTextDay,
                 fontSize: 14,
                 fontWeight: FontWeight.w600),
           ),
@@ -320,7 +340,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
 
   Widget _resultsVisibleScreen() {
     final viewModel = context.watch<AudienceVotingViewModel>();
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
       child: Column(
@@ -355,10 +376,13 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                 borderData: FlBorderData(show: false),
                 titlesData: FlTitlesData(
                   show: true,
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 30, interval: 1)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(
+                          showTitles: true, reservedSize: 30, interval: 1)),
                   bottomTitles: AxisTitles(
                     drawBelowEverything: false,
                     sideTitles: SideTitles(
@@ -376,9 +400,14 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                           BarChartRodData(
                             fromY: 0,
                             toY: entry.value.toDouble(),
-                            color: isDarkTheme ? CustomColor.btnFaceNight : CustomColor.btnTextDay,
-                            width: MediaQuery.of(context).size.width / viewModel.results.length * 0.4,
-                            borderRadius: const BorderRadius.all(Radius.circular(6)),
+                            color: isDarkTheme
+                                ? CustomColor.btnFaceNight
+                                : CustomColor.btnTextDay,
+                            width: MediaQuery.of(context).size.width /
+                                viewModel.results.length *
+                                0.4,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(6)),
                           ),
                         ],
                       ),
@@ -393,43 +422,49 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
   }
 
   Widget _votingScreen(AudienceVotingViewModel viewModel) {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Válaszd ki azt az EGY párost, akik szerinted a legjobbak voltak:'),
+          const Text(
+              'Válaszd ki azt az EGY párost, akik szerinted a legjobbak voltak:'),
           const SizedBox(height: 10),
-          StreamBuilder(
-            stream: viewModel.getVotingOptions(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final List<String> options = snapshot.data ?? [];
-                if (options.isEmpty) {
-                  viewModel.selectOption('');
-                  return const Center(child: Text('Nincsenek lehetőségek. :('));
+          Expanded(
+            child: StreamBuilder(
+              stream: viewModel.getVotingOptions(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final List<String> options = snapshot.data ?? [];
+                  if (options.isEmpty) {
+                    viewModel.selectOption('');
+                    return const Center(
+                        child: Text('Nincsenek lehetőségek. :('));
+                  }
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: options.map((option) {
+                        return RadioListTile(
+                          title: Text(option),
+                          value: option,
+                          groupValue: viewModel.selectedOption,
+                          onChanged: (_) {
+                            viewModel.selectOption(option);
+                          },
+                          selected: viewModel.selectedOption == option,
+                        );
+                      }).toList(),
+                    ),
+                  );
                 }
-                return SingleChildScrollView(
-                  child: Column(
-                    children: options.map((option) {
-                      return RadioListTile(
-                        title: Text(option),
-                        value: option,
-                        groupValue: viewModel.selectedOption,
-                        onChanged: (_) {
-                          viewModel.selectOption(option);
-                        },
-                        selected: viewModel.selectedOption == option,
-                      );
-                    }).toList(),
-                  ),
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+              },
+            ),
           ),
           const SizedBox(height: 10),
           Row(
@@ -440,7 +475,8 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                   if (!viewModel.vote()) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Nem választottál ki egy párost sem, vagy a szavazás már lezárult!'),
+                        content: Text(
+                            'Nem választottál ki egy párost sem, vagy a szavazás már lezárult!'),
                       ),
                     );
                   }
@@ -448,7 +484,9 @@ class AudienceVotingScreenState extends State<AudienceVotingScreen> {
                 child: Text(
                   'Szavazás',
                   style: TextStyle(
-                      color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                      color: isDarkTheme
+                          ? CustomColor.btnTextNight
+                          : CustomColor.btnTextDay,
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
                 ),
