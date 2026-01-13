@@ -43,6 +43,28 @@ class _LoginScreenState extends State<LoginScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
+            if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Hiba történt a nevek betöltése közben.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _namesFuture = _authenticationViewModel.getNames();
+                        });
+                      },
+                      child: const Text('Újrapróbálás'),
+                    ),
+                  ],
+                ),
+              );
+            }
             final nameOptions = snapshot.data ?? [];
             return SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
