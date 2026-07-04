@@ -108,6 +108,8 @@ class AuthenticationViewModel {
   }
 
   Future<void> loginToFirebase(String username, String password) async {
+    //implement punishment for multiple failed attempts if needed
+
     errorMessage = "";
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -115,7 +117,6 @@ class AuthenticationViewModel {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-
       errorMessage = e.code;
     }
   }

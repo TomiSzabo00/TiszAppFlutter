@@ -64,10 +64,9 @@ class _OtpInputState extends State<OtpInput> {
             if (event.logicalKey == LogicalKeyboardKey.backspace) {
               // Check if the current field is empty
               if (_controllers[index].text.isEmpty && index > 0) {
-                // Move focus to the previous field
                 _focusNodes[index - 1].requestFocus();
-                // Optional: Clear the previous field when moving back
                 _controllers[index - 1].clear();
+                _updateParentValue();
               }
             }
           }
@@ -76,6 +75,8 @@ class _OtpInputState extends State<OtpInput> {
           controller: _controllers[index],
           focusNode: _focusNodes[index],
           keyboardType: TextInputType.number,
+          obscureText: true,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           textAlign: TextAlign.center,
           maxLength: 1,
           style: const TextStyle(

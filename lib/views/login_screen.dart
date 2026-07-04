@@ -26,6 +26,13 @@ class _LoginScreenState extends State<LoginScreen> {
   late Future<List<String>> _namesFuture;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     _authenticationViewModel = AuthenticationViewModel();
@@ -162,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() async {
-    if (_nameController.text.isEmpty || _currentOtp.length < 4) return;
+    if (_nameController.text.isEmpty || _currentOtp.length < 6) return;
     setState(() => _isLoading = true);
 
     try {
