@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -16,8 +17,8 @@ import 'package:tiszapp_flutter/viewmodels/pictures_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/profile_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/quiz_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/quiz/slow_quiz_viewmodel.dart';
-import 'package:tiszapp_flutter/viewmodels/song_request_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/scores_viewmodel.dart';
+import 'package:tiszapp_flutter/viewmodels/song_request_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/songs_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/sports_viewmodel.dart';
 import 'package:tiszapp_flutter/viewmodels/style_points_viewmodel.dart';
@@ -43,6 +44,11 @@ Future<void> main() async {
     alert: true,
     badge: true,
     sound: true,
+  );
+
+  await FirebaseAppCheck.instance.activate(
+    androidProvider:
+        AndroidProvider.debug, // Use 'playIntegrity' for production
   );
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -109,7 +115,8 @@ class MyApp extends StatelessWidget {
           inactiveTrackColor: CustomColor.btnFaceDay,
           thumbColor: CustomColor.btnTextDay,
           valueIndicatorColor: CustomColor.btnTextDay,
-          valueIndicatorTextStyle: const TextStyle(color: CustomColor.btnFaceDay),
+          valueIndicatorTextStyle:
+              const TextStyle(color: CustomColor.btnFaceDay),
           overlayColor: CustomColor.btnTextDay.withOpacity(0.3),
         ),
       ),
@@ -130,7 +137,8 @@ class MyApp extends StatelessWidget {
           inactiveTrackColor: CustomColor.btnFaceNight,
           thumbColor: CustomColor.btnTextNight,
           valueIndicatorColor: CustomColor.btnTextNight,
-          valueIndicatorTextStyle: const TextStyle(color: CustomColor.btnFaceNight),
+          valueIndicatorTextStyle:
+              const TextStyle(color: CustomColor.btnFaceNight),
           overlayColor: CustomColor.btnTextNight.withOpacity(0.3),
         ),
       ),
@@ -138,7 +146,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
 
 //te iiis

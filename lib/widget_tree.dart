@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tiszapp_flutter/colors.dart';
 import 'package:tiszapp_flutter/views/songs_screen.dart';
 import 'package:tiszapp_flutter/widgets/3d_button.dart';
+
 import 'views/login_screen.dart';
 import 'views/main_menu_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
@@ -32,7 +33,8 @@ class _WidgetTreeState extends State<WidgetTree> {
     super.initState();
     initConnectivity();
 
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     _authStateStream = FirebaseAuth.instance.authStateChanges();
   }
 
@@ -44,7 +46,8 @@ class _WidgetTreeState extends State<WidgetTree> {
 
   @override
   Widget build(BuildContext context) {
-    if (!positiveResults.any((element) => _connectionStatus.contains(element))) {
+    if (!positiveResults
+        .any((element) => _connectionStatus.contains(element))) {
       return _offlineScreen();
     }
     return StreamBuilder(
@@ -53,7 +56,7 @@ class _WidgetTreeState extends State<WidgetTree> {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if (user == null) {
-            return LoginScreen(context: context);
+            return LoginScreen();
           }
           return const MainMenu();
         }
@@ -95,7 +98,8 @@ class _WidgetTreeState extends State<WidgetTree> {
   }
 
   Widget _offlineScreen() {
-    final isDarkTheme = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -103,7 +107,9 @@ class _WidgetTreeState extends State<WidgetTree> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: isDarkTheme ? const AssetImage("images/bg2_night.png") : const AssetImage("images/bg2_day.png"),
+            image: isDarkTheme
+                ? const AssetImage("images/bg2_night.png")
+                : const AssetImage("images/bg2_day.png"),
             fit: BoxFit.cover,
           ),
         ),
@@ -138,7 +144,9 @@ class _WidgetTreeState extends State<WidgetTree> {
               child: Text(
                 'Offline daloskönyv',
                 style: TextStyle(
-                  color: isDarkTheme ? CustomColor.btnTextNight : CustomColor.btnTextDay,
+                  color: isDarkTheme
+                      ? CustomColor.btnTextNight
+                      : CustomColor.btnTextDay,
                   fontSize: 18,
                 ),
               ),
