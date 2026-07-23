@@ -47,8 +47,8 @@ Future<void> main() async {
   );
 
   await FirebaseAppCheck.instance.activate(
-    androidProvider:
-        AndroidProvider.debug, // Use 'playIntegrity' for production
+    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
